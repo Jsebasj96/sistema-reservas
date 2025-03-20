@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
 
-    // Si el usuario no completa el captcha, mostramos error
+    // Validamos si el usuario completó el reCAPTCHA
     if (!captchaValue) {
-      setError("⚠️ Por favor completa el reCAPTCHA");
+      toast.warning("⚠️ Por favor completa el reCAPTCHA");
       return;
     }
 
@@ -25,18 +24,21 @@ const Login = () => {
         captchaValue,
       });
 
-      alert("Inicio de sesión exitoso");
+      // Notificación de éxito
+      toast.success("✅ Inicio de sesión exitoso");
+
+      // Guardamos el token y redirigimos
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/reservas";
+      setTimeout(() => (window.location.href = "/reservas"), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || "Error de conexión");
+      // Notificación de error personalizada
+      toast.error(`❌ ${err.response?.data?.message || "Error de conexión"}`);
     }
   };
 
   return (
     <div className="login-container">
       <h2>Iniciar sesión</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <label>Email:</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -44,9 +46,9 @@ const Login = () => {
         <label>Contraseña:</label>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-        {/* Aquí agregamos el reCAPTCHA */}
+        {/* reCAPTCHA */}
         <ReCAPTCHA
-          sitekey="6LcY4PoqAAAAAP3_-8TnWNznGNTsM2hCsCUnMxIo" // Reemplaza con tu clave pública de Google
+          sitekey="6LcY4PoqAAAAAP3_-8TnWNznGNTsM2hCsCUnMxIo" // Reemplaza con tu clave pública real
           onChange={(value) => setCaptchaValue(value)}
         />
 

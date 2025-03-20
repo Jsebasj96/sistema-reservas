@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Reservas from "./components/Reservas";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 // Componente para proteger rutas privadas
@@ -11,7 +13,7 @@ const PrivateRoute = ({ children }) => {
   return token ? children : <Navigate to="/" />;
 };
 
-// Componente para redirigir si ya está autenticado (evita ver login o registro si ya está logueado)
+// Componente para redirigir si ya está autenticado
 const PublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   return token ? <Navigate to="/reservas" /> : children;
@@ -22,6 +24,18 @@ function App() {
     <Router>
       <div className="App">
         <h1>Sistema de Reservas</h1>
+        
+        {/* Contenedor de notificaciones */}
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+        />
+        
         <Routes>
           {/* Si ya está logueado, redirige directamente a reservas */}
           <Route
