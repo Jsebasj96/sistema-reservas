@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const axios = require('axios'); // Para validar el reCAPTCHA
 const { createUser, findUserByEmail } = require('../models/User');
 require('dotenv').config();
 
@@ -8,33 +9,19 @@ exports.register = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     try {
-        // ✅ Validar que todos los campos estén completos
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: 'Todos los campos son obligatorios' });
-        }
+        if (!name || !email || !password) return res.status(400).json({ message: 'Todos los campos son obligatorios' });
 
-        // 📧 **Validar formato de email**
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'Email no válido' });
-        }
+        if (!emailRegex.test(email)) return res.status(400).json({ message: 'Email no válido' });
 
-        // 🔒 **Validar que la contraseña tenga mínimo 6 caracteres**
-        if (password.length < 6) {
-            return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
-        }
+        if (password.length < 6) return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
 
-        // 🔍 **Comprobar si el usuario ya existe**
         const existingUser = await findUserByEmail(email);
         if (existingUser) return res.status(400).json({ message: 'Usuario ya registrado' });
 
-        // 🔐 **Encriptar la contraseña**
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 🎯 **Asignar rol por defecto "user" si no viene uno especificado**
         const userRole = role || 'user';
 
-        // ✅ **Crear el usuario**
         const newUser = await createUser(name, email, hashedPassword, userRole);
 
         res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser });
@@ -44,27 +31,31 @@ exports.register = async (req, res) => {
     }
 };
 
-// 🔐 **Inicio de sesión**
+// 🔐 **Inicio de sesión con reCAPTCHA**
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, captchaValue } = req.body;
 
     try {
         // ✅ **Validar que email y contraseña estén presentes**
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
-        }
+        if (!email || !password) return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
+
+        // 🔥 **Validar el reCAPTCHA con Google**
+        if (!captchaValue) return res.status(400).json({ message: 'Completa el reCAPTCHA' });
+
+        const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Toma la clave secreta desde el .env
+        const captchaResponse = await axios.post(
+            `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaValue}`
+        );
+
+        if (!captchaResponse.data.success) return res.status(400).json({ message: 'reCAPTCHA no válido' });
 
         // 🔍 **Buscar al usuario por email**
         const user = await findUserByEmail(email);
-        if (!user) {
-            return res.status(401).json({ message: 'Credenciales incorrectas' });
-        }
+        if (!user) return res.status(401).json({ message: 'Credenciales incorrectas' });
 
         // 🔒 **Comparar la contraseña**
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Credenciales incorrectas' });
-        }
+        if (!isPasswordValid) return res.status(401).json({ message: 'Credenciales incorrectas' });
 
         // 🔥 **Crear el token JWT, incluyendo el rol**
         const token = jwt.sign(
