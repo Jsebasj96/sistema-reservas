@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 
+# Ignorar cualquier package-lock.json fuera del frontend/backend
+**/node_modules/
+/package-lock.json
+
 # testing
 /coverage
 
@@ -22,4 +26,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Vercel config y cache
 .vercel
