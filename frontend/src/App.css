@@ -1,0 +1,55 @@
+/* Estiliza el contenedor principal */
+.App {
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  margin-top: 50px;
+}
+
+/* Contenedor del login */
+.login-container {
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos */
+h1, h2 {
+  color: #333;
+}
+
+/* Inputs de email y contraseña */
+input {
+  width: calc(100% - 16px);
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+/* Botón de login */
+button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Efecto al pasar el mouse sobre el botón */
+button:hover {
+  background-color: #45a049;
+}
+
+/* Agrega espacio entre los campos */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #555;
+}
