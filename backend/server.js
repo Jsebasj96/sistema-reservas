@@ -10,20 +10,23 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-// ✅ Configurar CORS para permitir localhost y el frontend en Vercel
+// ✅ Configurar CORS actualizado
 app.use(
-    cors({
-        origin: [
-            "http://localhost:3000", // Para desarrollo local
-            "https://sistema-reservas-frontend-bo0sq8oyx-jsebasj96s-projects.vercel.app" // URL del frontend en producción
-        ],
-        credentials: true, // Permitir cookies y headers protegidos
-    })
+  cors({
+    origin: [
+      "http://localhost:3000", // Para desarrollo local
+      "https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app", // URL actual de Vercel
+      "https://sistema-reservas-frontend-pied.vercel.app" // Si tienes otra URL vieja
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Métodos permitidos
+    allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
+    credentials: true, // Permitir cookies, tokens, etc.
+  })
 );
 
 app.use(express.json());
 
-// ✅ Configuración de rutas organizadas
+// ✅ Rutas organizadas
 app.use('/api/auth', authRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/bookings', bookingRoutes);
