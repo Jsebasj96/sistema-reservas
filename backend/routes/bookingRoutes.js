@@ -1,6 +1,6 @@
 const express = require('express');
-const verifyToken = require('../middlewares/authMiddleware'); // 🔒 Para proteger la ruta
-const { createBooking, getUserBookings, cancelBooking } = require('../models/Booking');
+const verifyToken = require('../middlewares/authMiddleware'); 
+const { createBooking, getUserBookings, cancelBooking, payBooking } = require('../models/Booking'); // Asegurarse de importar payBooking
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-// ❌ Asegurar que esta ruta existe para eliminar reservas
+// ❌ Cancelar una reserva
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const cancelledBooking = await cancelBooking(req.params.id, req.user.userId);
@@ -35,6 +35,25 @@ router.delete('/:id', verifyToken, async (req, res) => {
     res.json({ message: 'Reserva cancelada con éxito', booking: cancelledBooking });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// 💳 Pagar una reserva
+router.post('/:id/pay', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const paidBooking = await payBooking(id, userId);
+
+    if (!paidBooking) {
+      return res.status(404).json({ message: 'Reserva no encontrada o ya pagada' });
+    }
+
+    res.json({ message: 'Pago realizado con éxito', booking: paidBooking });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al procesar el pago' });
   }
 });
 
