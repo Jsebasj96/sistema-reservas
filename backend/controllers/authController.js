@@ -5,7 +5,7 @@ require('dotenv').config();
 
 // Registro de usuario
 exports.register = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role } = req.body;  // 📌 Asegurar que se recibe "role"
   try {
     // Verificar si el usuario ya existe
     const existingUser = await findUserByEmail(email);
@@ -14,8 +14,8 @@ exports.register = async (req, res) => {
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Permitir elegir el rol (solo mientras creamos el admin)
-    const userRole = role || 'user';
+    // 📌 Permitir asignar el rol enviado en la petición (temporalmente)
+    const userRole = role || 'user';  // ✅ Permite crear admins
 
     // Crear usuario en la base de datos
     const newUser = await createUser(name, email, hashedPassword, userRole);
