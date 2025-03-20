@@ -14,8 +14,8 @@ exports.register = async (req, res) => {
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Permitir asignar rol solo si es un admin el que registra
-    const userRole = req.user && req.user.role === 'admin' ? role : 'user';
+    // Permitir elegir el rol (solo mientras creamos el admin)
+    const userRole = role || 'user';
 
     // Crear usuario en la base de datos
     const newUser = await createUser(name, email, hashedPassword, userRole);
@@ -25,6 +25,7 @@ exports.register = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Inicio de sesión
 exports.login = async (req, res) => {
