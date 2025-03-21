@@ -72,4 +72,4 @@ const getBookingById = async (bookingId) => {
 };
 
 // Exportamos las funciones actualizadas
-module.exports = { createBooking, getUserBookings, cancelBooking, payBooking };
+module.exports = { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById };
