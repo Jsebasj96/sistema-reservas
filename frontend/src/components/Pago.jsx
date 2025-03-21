@@ -73,6 +73,9 @@ const Pago = () => {
       )}
 
       <button onClick={() => navigate("/reservas")}>Cancelar</button>
+      <button onClick={() => window.open(`https://sistema-reservas-final.onrender.com/api/bookings/${id}/ticket`, '_blank')}>
+      📄 Descargar Ticket
+      </button>
     </div>
   );
 };
