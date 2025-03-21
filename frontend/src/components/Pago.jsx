@@ -60,7 +60,7 @@ const Pago = () => {
 
       {booking ? (
         <>
-          <p>Vuelo: {booking.origin} → {booking.destination}</p>
+          <p>Vuelo: {booking.flight?.origin} → {booking.flight?.destination}</p>
           <p>Categoría: {booking.category}</p>
           <p>Precio total: ${parseFloat(booking?.price || 0).toFixed(2)}</p>
 
