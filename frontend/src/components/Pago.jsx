@@ -84,9 +84,9 @@ const Pago = () => {
 
       {booking ? (
         <>
-          <p>Vuelo: {booking.origin} → {booking.destination}</p>
+          <p>Vuelo: {booking.flight?.origin} → {booking.flight?.destination}</p>
           <p>Categoría: {booking.category}</p>
-          <p>Precio total: ${booking.price.toFixed(2)}</p>
+          <p>Precio total: ${booking.price ? Number(booking.price).toFixed(2) : "N/A"}</p>
 
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
