@@ -1,10 +1,10 @@
 const pool = require('../config/db');
 
-// Crear un nuevo usuario en la base de datos
-const createUser = async (name, email, hashedPassword, role = 'user') => {
+// Crear un nuevo usuario con más datos de contacto
+const createUser = async (name, email, hashedPassword, role = 'user', phone, address) => {
   const result = await pool.query(
-    'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at',
-    [name, email, hashedPassword, role]
+    'INSERT INTO users (name, email, password, role, phone, address) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, role, phone, address, created_at',
+    [name, email, hashedPassword, role, phone, address]
   );
   return result.rows[0];
 };

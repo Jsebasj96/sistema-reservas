@@ -1,21 +1,26 @@
 const express = require('express');
-const verifyToken = require('../middlewares/authMiddleware'); 
-const { createBooking, getUserBookings, cancelBooking, payBooking } = require('../models/Booking'); // Asegurarse de importar payBooking
+const verifyToken = require('../middlewares/authMiddleware');
+const { createBooking, getUserBookings, cancelBooking, payBooking } = require('../models/Booking');
 
 const router = express.Router();
 
-// Crear una reserva
+// ✅ Crear una reserva con categoría y precio calculado
 router.post('/', verifyToken, async (req, res) => {
-  const { flightId } = req.body;
+  const { flightId, category, segments } = req.body;
+
+  if (!["turista", "business"].includes(category)) {
+    return res.status(400).json({ message: "Categoría no válida" });
+  }
+
   try {
-    const newBooking = await createBooking(req.user.userId, flightId);
+    const newBooking = await createBooking(req.user.userId, flightId, category, segments || []);
     res.status(201).json({ message: 'Reserva creada con éxito', booking: newBooking });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Obtener todas las reservas del usuario autenticado
+// 🔥 Obtener todas las reservas del usuario autenticado
 router.get('/', verifyToken, async (req, res) => {
   try {
     const bookings = await getUserBookings(req.user.userId);
@@ -38,22 +43,15 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
-// 💳 Pagar una reserva
-router.post('/:id/pay', verifyToken, async (req, res) => {
+// 💳 Simular el pago de la reserva
+router.post("/:id/pay", verifyToken, async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.user.userId;
+    const result = await payBooking(req.params.id, req.user.userId);
+    if (!result) return res.status(404).json({ message: "Reserva no encontrada" });
 
-    const paidBooking = await payBooking(id, userId);
-
-    if (!paidBooking) {
-      return res.status(404).json({ message: 'Reserva no encontrada o ya pagada' });
-    }
-
-    res.json({ message: 'Pago realizado con éxito', booking: paidBooking });
+    res.status(200).json({ message: "Pago procesado correctamente", booking: result });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al procesar el pago' });
+    res.status(500).json({ message: "Error al procesar el pago" });
   }
 });
 
