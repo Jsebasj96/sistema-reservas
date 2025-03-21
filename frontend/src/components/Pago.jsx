@@ -9,32 +9,45 @@ const Pago = () => {
   const [isPaying, setIsPaying] = useState(false);
   const navigate = useNavigate();
 
-  // 🔥 Cargamos la reserva asociada
+  const token = localStorage.getItem("token"); // ✅ Obtenemos el token
+
+  // 🔥 Cargar la reserva asociada con el token en headers
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/bookings/${id}`);
+        const res = await axios.get(
+          `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }, // ✅ Agregamos el token
+          }
+        );
         setBooking(res.data);
       } catch (error) {
-        toast.error("Error al cargar la reserva");
+        toast.error("❌ Error al cargar la reserva");
       }
     };
     fetchBooking();
-  }, [id]);
+  }, [id, token]);
 
-  // 🎯 Simulamos el pago
+  // 🎯 Simular el pago con token en headers
   const handlePayment = async () => {
     setIsPaying(true);
 
     try {
-      const res = await axios.post(`https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`);
+      const res = await axios.post(
+        `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ Agregamos el token
+        }
+      );
 
       if (res.status === 200) {
         toast.success("✅ Pago realizado con éxito. Tu tiquete está listo.");
         setTimeout(() => navigate("/reservas"), 3000);
       }
     } catch (error) {
-      toast.error("Error al procesar el pago");
+      toast.error("❌ Error al procesar el pago");
     } finally {
       setIsPaying(false);
     }
@@ -44,13 +57,13 @@ const Pago = () => {
   return (
     <div className="payment-container">
       <h2>💳 Pago de tu Reserva</h2>
-  
+
       {booking ? (
         <>
           <p>Vuelo: {booking.origin} → {booking.destination}</p>
           <p>Categoría: {booking.category}</p>
           <p>Precio total: ${booking.price.toFixed(2)}</p>
-  
+
           <button onClick={handlePayment} disabled={isPaying}>
             {isPaying ? "Procesando pago..." : `Pagar $${booking.price}`}
           </button>
@@ -58,7 +71,7 @@ const Pago = () => {
       ) : (
         <p>Cargando reserva...</p>
       )}
-  
+
       <button onClick={() => navigate("/reservas")}>Cancelar</button>
     </div>
   );
