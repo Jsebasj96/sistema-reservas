@@ -1,9 +1,11 @@
-const pool = require('../config/db');
+const fs = require("fs");
+const PDFDocument = require("pdfkit");
+const pool = require("../config/db");
+const path = require("path");
 
 // 🔥 Crear una nueva reserva con precio según categoría
 const createBooking = async (userId, flightId, category, segments) => {
   try {
-    // ✅ Determinamos el precio según la categoría
     const priceField = category === "business" ? "price_business" : "price_turista";
     const flightResult = await pool.query(
       `SELECT ${priceField} AS price FROM flights WHERE id = $1`,
@@ -14,7 +16,6 @@ const createBooking = async (userId, flightId, category, segments) => {
 
     const price = flightResult.rows[0].price;
 
-    // 💥 Guardamos la reserva con el precio final
     const result = await pool.query(
       `INSERT INTO bookings (user_id, flight_id, category, segments, price, status) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -44,32 +45,73 @@ const getUserBookings = async (userId) => {
 // ❌ Cancelar una reserva
 const cancelBooking = async (bookingId, userId) => {
   const result = await pool.query(
-    'UPDATE bookings SET cancelled = TRUE, status = $1 WHERE id = $2 AND user_id = $3 RETURNING *',
-    ['CANCELLED', bookingId, userId]
+    "UPDATE bookings SET cancelled = TRUE, status = $1 WHERE id = $2 AND user_id = $3 RETURNING *",
+    ["CANCELLED", bookingId, userId]
   );
   return result.rows[0];
 };
 
-// 💳 Simular el pago de una reserva
+// 🔥 Generar un PDF con los detalles de la reserva
+const generateBookingPDF = async (booking) => {
+  const doc = new PDFDocument();
+  const filePath = path.join(__dirname, `../tickets/ticket_${booking.id}.pdf`);
+
+  // Crear carpeta 'tickets' si no existe
+  if (!fs.existsSync(path.join(__dirname, "../tickets"))) {
+    fs.mkdirSync(path.join(__dirname, "../tickets"), { recursive: true });
+  }
+
+  // Crear el flujo de escritura
+  const stream = fs.createWriteStream(filePath);
+  doc.pipe(stream);
+
+  // 🛫 Título del ticket
+  doc.fontSize(18).text("✈ Ticket de Reserva ✈", { align: "center" }).moveDown();
+  
+  // 📌 Detalles de la reserva
+  doc.fontSize(14).text(`ID de Reserva: ${booking.id}`);
+  doc.text(`Usuario ID: ${booking.user_id}`);
+  doc.text(`Vuelo ID: ${booking.flight_id}`);
+  doc.text(`Categoría: ${booking.category}`);
+  doc.text(`Precio: $${booking.price}`);
+  doc.text(`Estado: ${booking.status}`);
+  doc.text(`Fecha de Reserva: ${booking.booking_date}`);
+
+  // Finalizar y guardar el documento
+  doc.end();
+
+  return filePath; // Retornar la ruta del archivo
+};
+
+// 💳 Simular el pago de una reserva y generar el PDF
 const payBooking = async (bookingId, userId) => {
-  const result = await pool.query(
-    `UPDATE bookings 
-     SET paid = TRUE, status = $1 
-     WHERE id = $2 AND user_id = $3 RETURNING *`,
-    ['PAID', bookingId, userId]
-  );
-  return result.rows[0];
+  try {
+    const result = await pool.query(
+      `UPDATE bookings 
+       SET paid = TRUE, status = $1 
+       WHERE id = $2 AND user_id = $3 RETURNING *`,
+      ["PAID", bookingId, userId]
+    );
+
+    const booking = result.rows[0];
+    if (!booking) throw new Error("Reserva no encontrada");
+
+    // 🔥 Generar el PDF con la información de la reserva
+    const pdfPath = await generateBookingPDF(booking);
+    return { ...booking, pdfPath }; // Devolvemos la ruta del PDF
+  } catch (error) {
+    throw new Error("Error al procesar el pago: " + error.message);
+  }
 };
 
 // 🔍 Obtener una reserva por ID
 const getBookingById = async (bookingId) => {
   try {
-    const result = await pool.query('SELECT * FROM bookings WHERE id = $1', [bookingId]);
-    return result.rows[0]; // Devuelve la reserva encontrada
+    const result = await pool.query("SELECT * FROM bookings WHERE id = $1", [bookingId]);
+    return result.rows[0];
   } catch (error) {
     throw new Error("Error al obtener la reserva");
   }
 };
 
-// Exportamos las funciones actualizadas
 module.exports = { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById };
