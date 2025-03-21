@@ -43,6 +43,13 @@ const Register = () => {
         <label>Contraseña:</label>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
+        <label>Teléfono:</label>
+        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+
+        <label>Dirección:</label>
+        <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
+
+
         <button type="submit">Registrarse</button>
       </form>
 
@@ -51,4 +58,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Register;  

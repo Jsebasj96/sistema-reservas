@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Reservas from "./components/Reservas";
+import Pago from "./components/Pago"; // Importamos la nueva página
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -70,6 +71,44 @@ function App() {
           {/* Redirige cualquier ruta no existente al login */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+      </div>
+    </Router>
+  );
+}
+
+// Rutas protegidas
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/" />;
+};
+
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <h1>Sistema de Reservas</h1>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/reservas"
+            element={
+              <PrivateRoute>
+                <Reservas />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/pago/:id"
+            element={
+              <PrivateRoute>
+                <Pago />
+              </PrivateRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        <ToastContainer />
       </div>
     </Router>
   );
