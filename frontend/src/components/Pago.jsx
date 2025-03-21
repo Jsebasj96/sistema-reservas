@@ -62,7 +62,7 @@ const Pago = () => {
         <>
           <p>Vuelo: {booking.origin} → {booking.destination}</p>
           <p>Categoría: {booking.category}</p>
-          <p>Precio total: ${booking.price.toFixed(2)}</p>
+          <p>Precio total: ${parseFloat(booking?.price || 0).toFixed(2)}</p>
 
           <button onClick={handlePayment} disabled={isPaying}>
             {isPaying ? "Procesando pago..." : `Pagar $${booking.price}`}
