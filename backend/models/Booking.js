@@ -64,33 +64,34 @@ const generateBookingPDF = async (bookingId) => {
     const booking = result.rows[0];
     if (!booking) throw new Error("Reserva no encontrada");
 
-    // 📂 Crear carpeta "tickets" si no existe
     const ticketDir = path.join(__dirname, "../tickets");
-    if (!fs.existsSync(ticketDir)) {
-      fs.mkdirSync(ticketDir, { recursive: true });
-    }
+    if (!fs.existsSync(ticketDir)) fs.mkdirSync(ticketDir, { recursive: true });
 
-    const filePath = path.join(ticketDir, `ticket_${booking.id}.pdf`);
-
-    // 📝 Crear el documento PDF
+    const filePath = path.join(ticketDir, `reserva_${booking.id}.pdf`);
     const doc = new PDFDocument();
+
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // 🎟️ Información del ticket
-    doc.fontSize(20).text("✈️ Ticket de Reserva", { align: "center" });
+    // 📜 Escribir contenido mínimo en el PDF para pruebas
+    doc.fontSize(20).text("Ticket de Reserva", { align: "center" });
     doc.moveDown();
-    doc.fontSize(14).text(`✈️ Aerolínea: ${booking.airline}`);
-    doc.text(`🛫 Origen: ${booking.origin}`);
-    doc.text(`🛬 Destino: ${booking.destination}`);
-    doc.text(`📅 Salida: ${new Date(booking.departure_time).toLocaleString()}`);
-    doc.text(`💺 Categoría: ${booking.category}`);
-    doc.text(`💰 Precio: $${booking.price}`);
-    doc.text(`📄 Estado: ${booking.status}`);
+    doc.fontSize(14).text(`Aerolínea: ${booking.airline}`);
+    doc.text(`Origen: ${booking.origin}`);
+    doc.text(`Destino: ${booking.destination}`);
+    doc.text(`Salida: ${new Date(booking.departure_time).toLocaleString()}`);
+    doc.text(`Categoría: ${booking.category}`);
+    doc.text(`Precio: $${booking.price}`);
+    doc.text(`Estado: ${booking.status}`);
 
-    doc.end();
+    doc.end(); // ✅ Asegurar que el documento se cierra correctamente
 
-    return filePath; // ✅ Retornar la ruta del archivo PDF
+    // 📌 Esperar a que el archivo se escriba completamente antes de devolverlo
+    return new Promise((resolve, reject) => {
+      stream.on("finish", () => resolve(filePath));
+      stream.on("error", (err) => reject("Error al escribir el PDF: " + err.message));
+    });
+
   } catch (error) {
     throw new Error("Error al generar el PDF: " + error.message);
   }
