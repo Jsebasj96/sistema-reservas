@@ -1,6 +1,6 @@
 const express = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
-const { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById } = require('../models/Booking');
+const { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById, generateBookingPDF } = require('../models/Booking');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -117,6 +117,20 @@ router.get("/:id/ticket", verifyToken, async (req, res) => {
     res.download(filePath, `ticket_${booking.id}.pdf`);
   } catch (error) {
     res.status(500).json({ message: "Error al generar el ticket" });
+  }
+});
+
+// ✅ Ruta para generar el PDF de la reserva
+router.get('/:id/pdf', verifyToken, async (req, res) => {
+  try {
+    const pdfBuffer = await generateBookingPDF(req.params.id);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="ticket_${req.params.id}.pdf"`);
+    
+    res.send(pdfBuffer);
+  } catch (error) {
+    res.status(500).json({ error: "Error al generar el PDF" });
   }
 });
 
