@@ -7,6 +7,8 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState(""); // 🔹 Agregado
+  const [address, setAddress] = useState(""); // 🔹 Agregado
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -17,6 +19,8 @@ const Register = () => {
         name,
         email,
         password,
+        phone, // 🔹 Enviado al backend
+        address, // 🔹 Enviado al backend
       });
 
       // Notificación de éxito
@@ -49,7 +53,6 @@ const Register = () => {
         <label>Dirección:</label>
         <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
 
-
         <button type="submit">Registrarse</button>
       </form>
 
@@ -58,4 +61,4 @@ const Register = () => {
   );
 };
 
-export default Register;  
+export default Register;

@@ -41,7 +41,7 @@ const Reservas = () => {
       );
   
       toast.success("✅ Reserva exitosa. ¡Vamos a pagar!");
-      setTimeout(() => window.location.href = `/pago/${res.data.id}`, 2000);
+      setTimeout(() => window.location.href = `/pago/${res.data.booking.id}`, 2000);
     } catch (error) {
       toast.error("Error al reservar el vuelo");
     }

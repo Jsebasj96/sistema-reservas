@@ -25,7 +25,7 @@ function App() {
     <Router>
       <div className="App">
         <h1>Sistema de Reservas</h1>
-        
+
         {/* Contenedor de notificaciones */}
         <ToastContainer 
           position="top-right"
@@ -36,7 +36,7 @@ function App() {
           draggable
           theme="light"
         />
-        
+
         <Routes>
           {/* Si ya está logueado, redirige directamente a reservas */}
           <Route
@@ -68,36 +68,7 @@ function App() {
             }
           />
 
-          {/* Redirige cualquier ruta no existente al login */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
-
-// Rutas protegidas
-const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/" />;
-};
-
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <h1>Sistema de Reservas</h1>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/reservas"
-            element={
-              <PrivateRoute>
-                <Reservas />
-              </PrivateRoute>
-            }
-          />
+          {/* Página de pago protegida */}
           <Route
             path="/pago/:id"
             element={
@@ -106,9 +77,10 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Redirige cualquier ruta no existente al login */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-        <ToastContainer />
       </div>
     </Router>
   );
