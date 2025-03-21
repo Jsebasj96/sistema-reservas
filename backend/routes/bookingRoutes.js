@@ -1,6 +1,6 @@
 const express = require('express');
 const verifyToken = require('../middlewares/authMiddleware');
-const { createBooking, getUserBookings, cancelBooking, payBooking } = require('../models/Booking');
+const { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById } = require('../models/Booking');
 
 const router = express.Router();
 

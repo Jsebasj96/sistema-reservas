@@ -61,5 +61,15 @@ const payBooking = async (bookingId, userId) => {
   return result.rows[0];
 };
 
+// 🔍 Obtener una reserva por ID
+const getBookingById = async (bookingId) => {
+  try {
+    const result = await pool.query('SELECT * FROM bookings WHERE id = $1', [bookingId]);
+    return result.rows[0]; // Devuelve la reserva encontrada
+  } catch (error) {
+    throw new Error("Error al obtener la reserva");
+  }
+};
+
 // Exportamos las funciones actualizadas
 module.exports = { createBooking, getUserBookings, cancelBooking, payBooking };
