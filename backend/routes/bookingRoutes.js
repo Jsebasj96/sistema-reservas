@@ -42,10 +42,13 @@ router.post('/', verifyToken, async (req, res) => {
 });
 
 // 🔥 Obtener todas las reservas del usuario autenticado
-router.get('/', verifyToken, async (req, res) => {
+router.get("/:id", verifyToken, async (req, res) => {
   try {
-    const bookings = await getUserBookings(req.user.userId);
-    res.json(bookings);
+    const booking = await getBookingById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Reserva no encontrada" });
+    }
+    res.json(booking);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
