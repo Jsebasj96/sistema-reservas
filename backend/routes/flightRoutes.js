@@ -6,7 +6,28 @@ const { verifyAdmin } = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-// Crear un nuevo vuelo (🔒 Solo administradores)
+// ✅ Ruta pública para obtener todos los vuelos
+router.get('/', async (req, res) => {
+  try {
+    const flights = await getAllFlights();
+    res.json(flights);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los vuelos' });
+  }
+});
+
+// ✅ Ruta pública para obtener un vuelo por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const flight = await getFlightById(req.params.id);
+    if (!flight) return res.status(404).json({ error: 'Vuelo no encontrado' });
+    res.json(flight);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el vuelo' });
+  }
+});
+
+// 🔒 Ruta protegida para crear un nuevo vuelo (solo administradores)
 router.post(
   '/',
   verifyToken,
@@ -19,14 +40,12 @@ router.post(
     check('arrival_time', 'Debe ser una fecha válida de llegada').isISO8601(),
     check('price', 'El precio debe ser un número positivo').isFloat({ gt: 0 })
   ],
-  (req, res, next) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    next();
-  },
-  async (req, res) => {
+
     const { airline, origin, destination, departure_time, arrival_time, price } = req.body;
     try {
       const newFlight = await createFlight(airline, origin, destination, departure_time, arrival_time, price);
@@ -36,18 +55,5 @@ router.post(
     }
   }
 );
-
-module.exports = router;
-
-// Crear un nuevo vuelo (🔒 Solo administradores)
-router.post('/', verifyToken, verifyAdmin, async (req, res) => {
-  const { airline, origin, destination, departure_time, arrival_time, price } = req.body;
-  try {
-    const newFlight = await createFlight(airline, origin, destination, departure_time, arrival_time, price);
-    res.status(201).json({ message: 'Vuelo creado con éxito', flight: newFlight });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 module.exports = router;
