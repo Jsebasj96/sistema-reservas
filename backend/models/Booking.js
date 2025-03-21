@@ -52,35 +52,48 @@ const cancelBooking = async (bookingId, userId) => {
 };
 
 // 🔥 Generar un PDF con los detalles de la reserva
-const generateBookingPDF = async (booking) => {
-  const doc = new PDFDocument();
-  const filePath = path.join(__dirname, `../tickets/ticket_${booking.id}.pdf`);
+const generateBookingPDF = async (bookingId) => {
+  try {
+    const result = await pool.query(`
+      SELECT b.*, f.airline, f.origin, f.destination, f.departure_time, f.arrival_time
+      FROM bookings b
+      INNER JOIN flights f ON b.flight_id = f.id
+      WHERE b.id = $1
+    `, [bookingId]);
 
-  // Crear carpeta 'tickets' si no existe
-  if (!fs.existsSync(path.join(__dirname, "../tickets"))) {
-    fs.mkdirSync(path.join(__dirname, "../tickets"), { recursive: true });
+    const booking = result.rows[0];
+    if (!booking) throw new Error("Reserva no encontrada");
+
+    // 📂 Crear carpeta "tickets" si no existe
+    const ticketDir = path.join(__dirname, "../tickets");
+    if (!fs.existsSync(ticketDir)) {
+      fs.mkdirSync(ticketDir, { recursive: true });
+    }
+
+    const filePath = path.join(ticketDir, `ticket_${booking.id}.pdf`);
+
+    // 📝 Crear el documento PDF
+    const doc = new PDFDocument();
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
+
+    // 🎟️ Información del ticket
+    doc.fontSize(20).text("✈️ Ticket de Reserva", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(14).text(`✈️ Aerolínea: ${booking.airline}`);
+    doc.text(`🛫 Origen: ${booking.origin}`);
+    doc.text(`🛬 Destino: ${booking.destination}`);
+    doc.text(`📅 Salida: ${new Date(booking.departure_time).toLocaleString()}`);
+    doc.text(`💺 Categoría: ${booking.category}`);
+    doc.text(`💰 Precio: $${booking.price}`);
+    doc.text(`📄 Estado: ${booking.status}`);
+
+    doc.end();
+
+    return filePath; // ✅ Retornar la ruta del archivo PDF
+  } catch (error) {
+    throw new Error("Error al generar el PDF: " + error.message);
   }
-
-  // Crear el flujo de escritura
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
-
-  // 🛫 Título del ticket
-  doc.fontSize(18).text("✈ Ticket de Reserva ✈", { align: "center" }).moveDown();
-  
-  // 📌 Detalles de la reserva
-  doc.fontSize(14).text(`ID de Reserva: ${booking.id}`);
-  doc.text(`Usuario ID: ${booking.user_id}`);
-  doc.text(`Vuelo ID: ${booking.flight_id}`);
-  doc.text(`Categoría: ${booking.category}`);
-  doc.text(`Precio: $${booking.price}`);
-  doc.text(`Estado: ${booking.status}`);
-  doc.text(`Fecha de Reserva: ${booking.booking_date}`);
-
-  // Finalizar y guardar el documento
-  doc.end();
-
-  return filePath; // Retornar la ruta del archivo
 };
 
 // 💳 Simular el pago de una reserva y generar el PDF
@@ -97,8 +110,8 @@ const payBooking = async (bookingId, userId) => {
     if (!booking) throw new Error("Reserva no encontrada");
 
     // 🔥 Generar el PDF con la información de la reserva
-    const pdfPath = await generateBookingPDF(booking);
-    return { ...booking, pdfPath }; // Devolvemos la ruta del PDF
+    const pdfPath = await generateBookingPDF(booking.id);
+    return { ...booking, pdfPath }; // ✅ Devolvemos la ruta del PDF
   } catch (error) {
     throw new Error("Error al procesar el pago: " + error.message);
   }
@@ -107,16 +120,6 @@ const payBooking = async (bookingId, userId) => {
 // 🔍 Obtener una reserva por ID
 const getBookingById = async (bookingId) => {
   try {
-    const result = await pool.query("SELECT * FROM bookings WHERE id = $1", [bookingId]);
-    return result.rows[0];
-  } catch (error) {
-    throw new Error("Error al obtener la reserva");
-  }
-};
-
-// ✅ Función para generar el PDF
-const generateBookingPDF = async (bookingId) => {
-  try {
     const result = await pool.query(`
       SELECT b.*, f.airline, f.origin, f.destination, f.departure_time, f.arrival_time
       FROM bookings b
@@ -124,36 +127,11 @@ const generateBookingPDF = async (bookingId) => {
       WHERE b.id = $1
     `, [bookingId]);
 
-    const booking = result.rows[0];
-    if (!booking) throw new Error("Reserva no encontrada");
-
-    // 📝 Crear el documento PDF en memoria
-    const doc = new PDFDocument();
-    let buffers = [];
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', () => buffers);
-
-    // 🎟️ Información del ticket
-    doc.fontSize(20).text("✈️ Ticket de Reserva", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(14).text(`✈️ Aerolínea: ${booking.airline}`);
-    doc.text(`🛫 Origen: ${booking.origin}`);
-    doc.text(`🛬 Destino: ${booking.destination}`);
-    doc.text(`📅 Salida: ${new Date(booking.departure_time).toLocaleString()}`);
-    doc.text(`💺 Categoría: ${booking.category}`);
-    doc.text(`💰 Precio: $${booking.price}`);
-    doc.text(`📄 Estado: ${booking.status}`);
-
-    doc.end();
-
-    return new Promise((resolve, reject) => {
-      let buffer = Buffer.concat(buffers);
-      resolve(buffer);
-    });
-
+    return result.rows[0];
   } catch (error) {
-    throw new Error("Error al generar el PDF: " + error.message);
+    throw new Error("Error al obtener la reserva");
   }
 };
 
+// ✅ Exportamos las funciones sin duplicaciones
 module.exports = { createBooking, getUserBookings, cancelBooking, payBooking, getBookingById, generateBookingPDF };
