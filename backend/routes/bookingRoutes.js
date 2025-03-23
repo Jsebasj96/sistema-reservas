@@ -7,44 +7,30 @@ const path = require('path');
 
 const router = express.Router();
 
-// ✅ Crear una reserva con categoría y segmentos opcionales
+// ✅ Crear una reserva
 router.post('/', verifyToken, async (req, res) => {
   const { flightId, category, segments } = req.body;
 
-  // 🔍 Validar categoría
   if (!["turista", "business"].includes(category)) {
     return res.status(400).json({ message: "Categoría no válida" });
   }
 
   try {
-    // 📌 Crear reserva en la base de datos
     const newBooking = await createBooking(req.user.userId, flightId, category, segments || []);
-
-    // 🔍 Verificar si la reserva fue creada correctamente
     if (!newBooking || !newBooking.id) {
       return res.status(500).json({ error: "No se pudo crear la reserva" });
     }
 
-    // ✅ Devolver la reserva con el `id`
     res.status(201).json({
       message: 'Reserva creada con éxito',
-      booking: {
-        id: newBooking.id,
-        flight_id: newBooking.flight_id,
-        user_id: newBooking.user_id,
-        category: newBooking.category,
-        price: newBooking.price,
-        status: newBooking.status,
-        created_at: newBooking.created_at,
-      }
+      booking: newBooking
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// 🔥 Obtener todas las reservas del usuario autenticado
+// 🔥 Obtener una reserva por ID
 router.get("/:id", verifyToken, async (req, res) => {
   try {
     const booking = await getBookingById(req.params.id);
@@ -95,10 +81,14 @@ router.get("/:id/ticket", verifyToken, async (req, res) => {
 
     const filePath = path.join(__dirname, `../tickets/ticket_${booking.id}.pdf`);
 
-    // 📌 Verificar si el archivo ya existe para no generarlo de nuevo
+    console.log(`🔍 Verificando si existe el PDF en: ${filePath}`);
+
     if (!fs.existsSync(filePath)) {
+      console.log("📌 Archivo no existe. Generando nuevo PDF...");
+
       const doc = new PDFDocument();
-      doc.pipe(fs.createWriteStream(filePath));
+      const stream = fs.createWriteStream(filePath);
+      doc.pipe(stream);
 
       doc.fontSize(20).text("🎟 TICKET DE RESERVA", { align: "center" });
       doc.moveDown();
@@ -111,25 +101,39 @@ router.get("/:id/ticket", verifyToken, async (req, res) => {
       doc.text(`Fecha de Reserva: ${new Date(booking.booking_date).toLocaleString()}`);
 
       doc.end();
+
+      stream.on("finish", () => {
+        console.log(`✅ PDF generado con éxito: ${filePath}`);
+        res.download(filePath, `ticket_${booking.id}.pdf`);
+      });
+
+      stream.on("error", (err) => {
+        console.error("❌ Error al escribir el archivo PDF:", err);
+        res.status(500).json({ message: "Error al generar el ticket" });
+      });
+
+    } else {
+      console.log("✅ El archivo ya existe. Enviando PDF...");
+      res.download(filePath, `ticket_${booking.id}.pdf`);
     }
 
-    // 📎 Enviar el archivo como respuesta
-    res.download(filePath, `ticket_${booking.id}.pdf`);
   } catch (error) {
+    console.error("❌ Error general en la generación del ticket:", error);
     res.status(500).json({ message: "Error al generar el ticket" });
   }
 });
 
-// ✅ Ruta para generar el PDF de la reserva
+// ✅ Ruta para generar el PDF en memoria y enviarlo directamente
 router.get('/:id/pdf', verifyToken, async (req, res) => {
   try {
     const pdfBuffer = await generateBookingPDF(req.params.id);
     
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="ticket_${req.params.id}.pdf"`);
-    
+
     res.send(pdfBuffer);
   } catch (error) {
+    console.error("❌ Error al generar el PDF:", error);
     res.status(500).json({ error: "Error al generar el PDF" });
   }
 });
