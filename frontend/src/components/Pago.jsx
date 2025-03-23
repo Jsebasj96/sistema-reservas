@@ -7,32 +7,43 @@ const Pago = () => {
   const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false); // ✅ Estado para saber si se pagó
+  const [paymentSuccess, setPaymentSuccess] = useState(false); // ✅ Estado para pago exitoso
   const navigate = useNavigate();
   const token = localStorage.getItem("token"); // ✅ Obtener token
 
-  // 🔥 Cargamos la reserva asociada
-  useEffect(() => {
-    const fetchBooking = async () => {
-      try {
-        const res = await axios.get(
-          `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar el token
-          }
-        );
-        setBooking(res.data);
-      } catch (error) {
-        toast.error("Error al cargar la reserva");
-      }
-    };
-    fetchBooking();
-  }, [id, token]);
+  // 🔥 Función para cargar la reserva
+  const fetchBooking = async () => {
+    try {
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
+        }
+      );
+      setBooking(res.data);
 
-  // 🎯 Simulamos el pago
+      // Si la reserva ya está pagada, activar `paymentSuccess`
+      if (res.data.status === "pagado") {
+        setPaymentSuccess(true);
+      }
+    } catch (error) {
+      toast.error("❌ Error al cargar la reserva");
+    }
+  };
+
+  // 🟢 Cargar la reserva al montar el componente
+  useEffect(() => {
+    if (token) {
+      fetchBooking();
+    } else {
+      toast.error("⚠️ No estás autenticado.");
+      navigate("/login");
+    }
+  }, [id, token, navigate]);
+
+  // 🎯 Simular pago
   const handlePayment = async () => {
     setIsPaying(true);
-
     try {
       const res = await axios.post(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`,
@@ -43,11 +54,12 @@ const Pago = () => {
       );
 
       if (res.status === 200) {
-        toast.success("✅ Pago realizado con éxito. Tu tiquete está listo.");
-        setPaymentSuccess(true); // ✅ Activar estado de pago exitoso
+        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
+        setPaymentSuccess(true); // ✅ Habilitar botón de descarga
+        fetchBooking(); // Recargar datos de la reserva
       }
     } catch (error) {
-      toast.error("Error al procesar el pago");
+      toast.error("❌ Error al procesar el pago.");
     } finally {
       setIsPaying(false);
     }
@@ -55,6 +67,11 @@ const Pago = () => {
 
   // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
+    if (!paymentSuccess) {
+      toast.error("⚠️ Primero debes pagar la reserva.");
+      return;
+    }
+
     try {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pdf`,
@@ -68,16 +85,16 @@ const Pago = () => {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `reserva_${id}.pdf`);
+      link.setAttribute("download", `ticket_${id}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      toast.error("Error al descargar el ticket");
+      toast.error("❌ Error al descargar el ticket.");
     }
   };
 
-  // 🔥 Renderizamos la página de pago
+  // 🔥 Renderizar la página de pago
   return (
     <div className="payment-container">
       <h2>💳 Pago de tu Reserva</h2>
@@ -102,7 +119,7 @@ const Pago = () => {
         <p>Cargando reserva...</p>
       )}
 
-      <button onClick={() => navigate("/reservas")}>Volver</button>
+      <button onClick={() => navigate("/reservas")}>🔙 Volver</button>
     </div>
   );
 };
