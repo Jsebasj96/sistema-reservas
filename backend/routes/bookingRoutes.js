@@ -11,6 +11,7 @@ const {
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
+const qr = require("qrcode");
 
 const router = express.Router();
 
@@ -91,16 +92,42 @@ router.get("/:id/ticket", verifyToken, async (req, res) => {
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // ✅ **Datos en el PDF**
-    doc.fontSize(20).text("🎟 TICKET DE RESERVA", { align: "center" });
+     // ✈ **Encabezado con aerolínea**
+     doc.font("Helvetica-Bold").fontSize(22).text("✈️ Airline Express", { align: "center" });
+     doc.moveDown(1);
+
+     // 📌 **Código QR**
+    doc.image(qrCodePath, 400, doc.y, { fit: [100, 100], align: "right" });
+
+    // 🎫 **Código de reserva**
+    doc.fontSize(16).text(`🎫 Código de Reserva: ${booking.id}`, { align: "left" });
     doc.moveDown();
-    doc.fontSize(14).text(`Reserva ID: ${booking.id}`);
-    doc.text(`Usuario ID: ${booking.user_id}`);
-    doc.text(`Vuelo ID: ${booking.flight_id}`);
-    doc.text(`Categoría: ${booking.category}`);
-    doc.text(`Precio: $${booking.price}`);
-    doc.text(`Estado: ${booking.status}`);
-    doc.text(`Fecha de Reserva: ${new Date(booking.booking_date).toLocaleString()}`);
+
+    // 👤 **Datos del pasajero**
+    doc.fontSize(12).font("Helvetica").text(`👤 Usuario ID: ${booking.user_id}`);
+    doc.moveDown();
+
+    // ✈ **Detalles del vuelo**
+    doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(12).font("Helvetica");
+    doc.text(`🛫 Origen: ${booking.origin || "No disponible"}`);
+    doc.text(`🛬 Destino: ${booking.destination || "No disponible"}`);
+    doc.text(`📅 Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+    doc.text(`💺 Categoría: ${booking.category.toUpperCase()}`);
+    doc.text(`💰 Precio: $${Number(booking.price).toFixed(2)}`);
+    doc.moveDown();
+
+    // 📌 **Línea divisoria**
+    doc.moveDown();
+    doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown();
+
+    // ✅ **Mensaje final**
+    doc.fontSize(12).font("Helvetica-Oblique").text(
+      "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+      { align: "center" }
+    );
 
     doc.end();
 
@@ -139,18 +166,29 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
       res.send(pdfBuffer);
     });
 
-    // ✅ **Contenido del PDF**
-    doc.fontSize(20).text("🎟 TICKET DE RESERVA", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(14).text(`Reserva ID: ${booking.id}`);
-    doc.text(`Usuario ID: ${booking.user_id}`);
-    doc.text(`Vuelo ID: ${booking.flight_id}`);
-    doc.text(`Categoría: ${booking.category}`);
-    doc.text(`Precio: $${booking.price}`);
-    doc.text(`Estado: ${booking.status}`);
-    doc.text(`Fecha de Reserva: ${new Date(booking.booking_date).toLocaleString()}`);
-
-    doc.end();
+        // ✈ **Detalles del vuelo**
+        doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+        doc.moveDown(0.5);
+        doc.fontSize(12).font("Helvetica");
+        doc.text(`🛫 Origen: ${booking.origin || "No disponible"}`);
+        doc.text(`🛬 Destino: ${booking.destination || "No disponible"}`);
+        doc.text(`📅 Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+        doc.text(`💺 Categoría: ${booking.category.toUpperCase()}`);
+        doc.text(`💰 Precio: $${Number(booking.price).toFixed(2)}`);
+        doc.moveDown();
+    
+        // 📌 **Línea divisoria**
+        doc.moveDown();
+        doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown();
+    
+        // ✅ **Mensaje final**
+        doc.fontSize(12).font("Helvetica-Oblique").text(
+          "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+          { align: "center" }
+        );
+    
+        doc.end();
   } catch (error) {
     console.error("❌ Error al generar el PDF:", error);
     res.status(500).json({ error: "Error al generar el PDF" });
