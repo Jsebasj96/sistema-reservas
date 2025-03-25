@@ -8,6 +8,8 @@ const {
   getBookingById,
 } = require("../models/Booking");
 
+const { getUserById } = require("../models/User");
+
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
@@ -87,6 +89,11 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
 
+    const user = await getUserById(booking.user_id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
     const doc = new PDFDocument();
     let buffers = [];
 
@@ -99,15 +106,17 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
     });
 
         // ✈ **Encabezado con aerolínea**
-        doc.font("Helvetica-Bold").fontSize(22).text("✈️ Airline Express", { align: "center" });
+        doc.font("Helvetica-Bold").fontSize(36).text(" Airline Express", { align: "center" });
         doc.moveDown(1);
 
         // 🎫 **Código de reserva**
-        doc.fontSize(16).text(`🎫 Código de Reserva: ${booking.id}`, { align: "left" });
+        doc.fontSize(16).text(`Código de Reserva: ${booking.id}`, { align: "left" });
         doc.moveDown();
 
         // 👤 **Datos del pasajero**
-        doc.fontSize(12).font("Helvetica").text(`👤 Usuario ID: ${booking.user_id}`);
+        doc.fontSize(12).font("Helvetica").text(`Usuario ID: ${user.id}`);
+        doc.text(`Nombre: ${user.name}`);
+        doc.text(`Correo: ${user.email}`);
         doc.moveDown();
     
         // ✈ **Detalles del vuelo**
