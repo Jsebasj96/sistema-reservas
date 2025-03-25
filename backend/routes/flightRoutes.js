@@ -63,7 +63,14 @@ router.post(
 
     try {
       const { airline, origin, destination, departure_time, arrival_time, price } = req.body;
-      const newFlight = await createFlight(airline, origin, destination, departure_time, arrival_time, price);
+
+      // ✅ Calcular precios automáticamente
+      const price_turista = parseFloat(price).toFixed(2);
+      const price_business = (parseFloat(price) * 1.12).toFixed(2);
+
+      const newFlight = await createFlight(
+        airline, origin, destination, departure_time, arrival_time, price_turista, price_business
+      );
 
       res.status(201).json({ message: "Vuelo creado con éxito", flight: newFlight });
     } catch (error) {
@@ -95,6 +102,14 @@ router.put(
     }
 
     try {
+      const { price } = req.body;
+
+      // ✅ Si se actualiza el precio, recalcular price_turista y price_business
+      if (price) {
+        req.body.price_turista = parseFloat(price).toFixed(2);
+        req.body.price_business = (parseFloat(price) * 1.12).toFixed(2);
+      }
+
       const updatedFlight = await updateFlight(req.params.id, req.body);
       if (!updatedFlight) {
         return res.status(404).json({ error: "Vuelo no encontrado" });
