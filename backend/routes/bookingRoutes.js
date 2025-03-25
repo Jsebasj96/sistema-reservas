@@ -170,13 +170,6 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
         doc.font("Helvetica-Bold").fontSize(22).text("✈️ Airline Express", { align: "center" });
         doc.moveDown(1);
 
-        // 📌 **Código QR**
-        doc.image(qrCodePath, 400, doc.y, { fit: [100, 100], align: "right" });
-
-        // 🎫 **Código de reserva**
-        doc.fontSize(16).text(`🎫 Código de Reserva: ${booking.id}`, { align: "left" });
-        doc.moveDown();
-
         // 👤 **Datos del pasajero**
         doc.fontSize(12).font("Helvetica").text(`👤 Usuario ID: ${booking.user_id}`);
         doc.moveDown();
