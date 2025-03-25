@@ -79,6 +79,74 @@ router.post("/:id/pay", verifyToken, async (req, res) => {
   }
 });
 
+// 📄 **Generar un ticket en PDF y descargarlo**
+router.get("/:id/ticket", verifyToken, async (req, res) => {
+  try {
+    const booking = await getBookingById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Reserva no encontrada" });
+    }
+
+    const filePath = path.join(__dirname, `../tickets/ticket_${booking.id}.pdf`);
+    const doc = new PDFDocument();
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
+
+     // ✈ **Encabezado con aerolínea**
+     doc.font("Helvetica-Bold").fontSize(22).text("✈️ Airline Express", { align: "center" });
+     doc.moveDown(1);
+
+     // 📌 **Código QR**
+    doc.image(qrCodePath, 400, doc.y, { fit: [100, 100], align: "right" });
+
+    // 🎫 **Código de reserva**
+    doc.fontSize(16).text(`🎫 Código de Reserva: ${booking.id}`, { align: "left" });
+    doc.moveDown();
+
+    // 👤 **Datos del pasajero**
+    doc.fontSize(12).font("Helvetica").text(`👤 Usuario ID: ${booking.user_id}`);
+    doc.moveDown();
+
+    // ✈ **Detalles del vuelo**
+    doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(12).font("Helvetica");
+    doc.text(`🛫 Origen: ${booking.origin || "No disponible"}`);
+    doc.text(`🛬 Destino: ${booking.destination || "No disponible"}`);
+    doc.text(`📅 Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+    doc.text(`💺 Categoría: ${booking.category.toUpperCase()}`);
+    doc.text(`💰 Precio: $${Number(booking.price).toFixed(2)}`);
+    doc.moveDown();
+
+    // 📌 **Línea divisoria**
+    doc.moveDown();
+    doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown();
+
+    // ✅ **Mensaje final**
+    doc.fontSize(12).font("Helvetica-Oblique").text(
+      "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+      { align: "center" }
+    );
+
+    doc.end();
+
+    stream.on("finish", () => {
+      console.log(`✅ PDF generado con éxito: ${filePath}`);
+      res.download(filePath, `ticket_${booking.id}.pdf`);
+    });
+
+    stream.on("error", (err) => {
+      console.error("❌ Error al escribir el archivo PDF:", err);
+      res.status(500).json({ message: "Error al generar el ticket" });
+    });
+
+  } catch (error) {
+    console.error("❌ Error general en la generación del ticket:", error);
+    res.status(500).json({ message: "Error al generar el ticket" });
+  }
+});
+
 // ✅ **Generar el PDF en memoria y enviarlo directamente**
 router.get("/:id/pdf", verifyToken, async (req, res) => {
   try {
