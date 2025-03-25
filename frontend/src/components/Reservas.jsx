@@ -6,28 +6,32 @@ const Reservas = () => {
   const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [category, setCategory] = useState("turista");
-  const [userRole, setUserRole] = useState(null); // ⬅️ Estado para almacenar el rol del usuario
-  const [showForm, setShowForm] = useState(false); // ⬅️ Estado para mostrar/ocultar formulario de creación de vuelo
+  const [userRole, setUserRole] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [price, setPrice] = useState(""); 
+  const [priceTurista, setPriceTurista] = useState(""); 
+  const [priceBusiness, setPriceBusiness] = useState(""); 
 
   // 🔥 Obtener el rol del usuario desde el token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decodificar el token JWT
-      setUserRole(decodedToken.role); // ⬅️ Guardar el rol del usuario
+      const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decodificar JWT
+      setUserRole(decodedToken.role);
     }
   }, []);
 
   // 🔥 Cargar los vuelos desde el backend
+  const fetchFlights = async () => {
+    try {
+      const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights");
+      setFlights(res.data);
+    } catch (error) {
+      toast.error("Error cargando vuelos");
+    }
+  };
+
   useEffect(() => {
-    const fetchFlights = async () => {
-      try {
-        const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights");
-        setFlights(res.data);
-      } catch (error) {
-        toast.error("Error cargando vuelos");
-      }
-    };
     fetchFlights();
   }, []);
 
@@ -69,7 +73,7 @@ const Reservas = () => {
       destination: event.target.destination.value,
       departure_time: event.target.departure_time.value,
       arrival_time: event.target.arrival_time.value,
-      price: parseFloat(event.target.price.value),
+      price: price, 
     };
 
     try {
@@ -79,8 +83,23 @@ const Reservas = () => {
 
       toast.success("✅ Vuelo creado con éxito");
       setShowForm(false);
+      fetchFlights(); // 🔥 Actualizar la lista de vuelos automáticamente
     } catch (error) {
       toast.error("Error al crear el vuelo");
+    }
+  };
+
+  // 🛠️ Calcular precios automáticamente al ingresar el precio base
+  const handlePriceChange = (e) => {
+    const basePrice = parseFloat(e.target.value);
+    setPrice(basePrice);
+
+    if (!isNaN(basePrice) && basePrice > 0) {
+      setPriceTurista(basePrice.toFixed(2)); // 💰 Turista = Precio base
+      setPriceBusiness((basePrice * 1.12).toFixed(2)); // 💰 Business = Precio base + 12%
+    } else {
+      setPriceTurista("");
+      setPriceBusiness("");
     }
   };
 
@@ -93,7 +112,8 @@ const Reservas = () => {
           <div key={flight.id} className="flight-card">
             <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
             <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
-            <p>Precio: ${flight.price}</p>
+            <p>Precio Turista: ${flight.price_turista}</p>
+            <p>Precio Business: ${flight.price_business}</p>
             <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
           </div>
         ))
@@ -139,8 +159,14 @@ const Reservas = () => {
               <label>Hora de llegada:</label>
               <input type="datetime-local" name="arrival_time" required />
 
-              <label>Precio:</label>
-              <input type="number" name="price" step="0.01" required />
+              <label>Precio Base:</label>
+              <input type="number" name="price" step="0.01" value={price} onChange={handlePriceChange} required />
+
+              <label>Precio Clase Turista (Automático):</label>
+              <input type="number" value={priceTurista} readOnly />
+
+              <label>Precio Clase Business (Automático):</label>
+              <input type="number" value={priceBusiness} readOnly />
 
               <button type="submit">✈️ Crear Vuelo</button>
             </form>
