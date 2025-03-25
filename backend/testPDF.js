@@ -1,13 +1,14 @@
-const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
-const verifyToken = require('../middlewares/authMiddleware');
-const { getBookingById } = require('../models/Booking');
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+const qr = require("qrcode"); // 📌 Librería para generar QR
+const express = require("express");
+const verifyToken = require("../middlewares/authMiddleware");
+const { getBookingById } = require("../models/Booking");
 
 const router = express.Router();
 
-// 📄 Generar y descargar ticket en PDF
+// 📄 **Generar y descargar ticket en PDF con QR**
 router.get("/:id/ticket", verifyToken, async (req, res) => {
   try {
     const booking = await getBookingById(req.params.id);
@@ -15,42 +16,73 @@ router.get("/:id/ticket", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
 
-    // 📂 Ruta de almacenamiento del ticket
-    const ticketsDir = path.join(__dirname, '../tickets');
+    // 📂 **Ruta donde se almacenará el PDF**
+    const ticketsDir = path.join(__dirname, "../tickets");
     if (!fs.existsSync(ticketsDir)) {
       fs.mkdirSync(ticketsDir, { recursive: true });
     }
 
     const filePath = path.join(ticketsDir, `ticket_${booking.id}.pdf`);
 
-    // 📌 Generar el PDF
-    const doc = new PDFDocument();
+    // 📌 **Generar código QR con los detalles del vuelo**
+    const qrCodeData = `Reserva: ${booking.id} | Usuario: ${booking.user_id} | Vuelo: ${booking.flight_id} | Categoría: ${booking.category} | Precio: ${booking.price}`;
+    const qrCodePath = path.join(__dirname, `qr_${booking.id}.png`);
+    await qr.toFile(qrCodePath, qrCodeData);
+
+    // 📌 **Crear el documento PDF**
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    doc.fontSize(20).text("🎟 TICKET DE RESERVA", { align: "center" });
+    // ✈ **Encabezado con aerolínea**
+    doc.font("Helvetica-Bold").fontSize(20).text("✈️ Airline Express", { align: "center" });
+    doc.moveDown(0.5);
+
+    // 📌 **Código QR**
+    doc.image(qrCodePath, 400, doc.y, { fit: [100, 100], align: "right" });
+
+    // 🎫 **Código de reserva**
+    doc.fontSize(16).text(`🎫 Código de Reserva: ${booking.id}`, { align: "left" });
     doc.moveDown();
-    doc.fontSize(14).text(`Reserva ID: ${booking.id}`);
-    doc.text(`Usuario ID: ${booking.user_id}`);
-    doc.text(`Vuelo ID: ${booking.flight_id}`);
-    doc.text(`Categoría: ${booking.category}`);
-    doc.text(`Precio: $${booking.price}`);
-    doc.text(`Estado: ${booking.status}`);
-    doc.text(`Fecha de Reserva: ${new Date(booking.booking_date).toLocaleString()}`);
+
+    // 👤 **Datos del pasajero**
+    doc.fontSize(12).font("Helvetica").text(`👤 Usuario ID: ${booking.user_id}`);
+    doc.moveDown();
+
+    // ✈ **Detalles del vuelo**
+    doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(12).font("Helvetica");
+    doc.text(`🛫 Origen: ${booking.origin || "No disponible"}`);
+    doc.text(`🛬 Destino: ${booking.destination || "No disponible"}`);
+    doc.text(`📅 Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+    doc.text(`💺 Categoría: ${booking.category.toUpperCase()}`);
+    doc.text(`💰 Precio: $${Number(booking.price).toFixed(2)}`);
+    doc.moveDown();
+
+    // 📌 **Línea divisoria**
+    doc.moveDown();
+    doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown();
+
+    // ✅ **Mensaje final**
+    doc.fontSize(12).font("Helvetica-Oblique").text(
+      "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+      { align: "center" }
+    );
+
     doc.end();
 
-    // 📌 Esperar a que termine la escritura del archivo antes de enviarlo
-    stream.on('finish', () => {
+    // 📌 **Eliminar QR temporal después de generarlo**
+    fs.unlinkSync(qrCodePath);
+
+    // 📌 **Enviar el PDF al usuario**
+    stream.on("finish", () => {
       res.download(filePath, `ticket_${booking.id}.pdf`);
     });
 
-    stream.on('error', (err) => {
-      console.error("❌ Error generando PDF:", err);
-      res.status(500).json({ message: "Error al generar el ticket" });
-    });
-
   } catch (error) {
-    console.error("❌ Error en la generación del ticket:", error);
+    console.error("❌ Error al generar el ticket:", error);
     res.status(500).json({ message: "Error al generar el ticket" });
   }
 });
