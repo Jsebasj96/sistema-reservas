@@ -117,17 +117,19 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
         doc.fontSize(12).font("Helvetica").text(`Usuario ID: ${user.id}`);
         doc.text(`Nombre: ${user.name}`);
         doc.text(`Correo: ${user.email}`);
+        doc.text(`Telefono: ${user.phone}`);
+        doc.text(`Direccion: ${user.address}`);
         doc.moveDown();
     
         // ✈ **Detalles del vuelo**
         doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
         doc.moveDown(0.5);
         doc.fontSize(12).font("Helvetica");
-        doc.text(`🛫 Origen: ${booking.origin || "No disponible"}`);
-        doc.text(`🛬 Destino: ${booking.destination || "No disponible"}`);
-        doc.text(`📅 Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
-        doc.text(`💺 Categoría: ${booking.category.toUpperCase()}`);
-        doc.text(`💰 Precio: $${Number(booking.price).toFixed(2)}`);
+        doc.text(`Origen: ${booking.origin || "No disponible"}`);
+        doc.text(`Destino: ${booking.destination || "No disponible"}`);
+        doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+        doc.text(`Categoría: ${booking.category.toUpperCase()}`);
+        doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
         doc.moveDown();
     
         // 📌 **Línea divisoria**
