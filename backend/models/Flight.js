@@ -78,31 +78,39 @@ const getAvailableCities = async () => {
 // 🔍 Buscar vuelos directos o con escalas
 const findFlightsWithConnections = async (origin, destination) => {
   try {
+    console.log(`🔍 Buscando vuelos de ${origin} a ${destination}...`);
+
     const directFlight = await pool.query(
       "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
       [origin, destination]
     );
 
+    console.log(`✈️ Vuelos directos encontrados:`, directFlight.rows.length);
+
     if (directFlight.rows.length > 0) {
-      // ✈️ Hay un vuelo directo, lo retornamos
       return { flights: directFlight.rows, segments: [] };
     }
 
-    // 🛫 Buscar vuelos que salgan desde la ciudad de origen
+    console.log("❌ No hay vuelos directos. Buscando con escalas...");
+
     const firstLeg = await pool.query(
       "SELECT * FROM flights WHERE origin = $1 ORDER BY departure_time ASC",
       [origin]
     );
 
+    console.log(`🛫 Vuelos que salen de ${origin}:`, firstLeg.rows.length);
+
     for (let flight1 of firstLeg.rows) {
-      // 🛬 Buscar vuelos que conecten con el destino final desde la ciudad intermedia
+      console.log(`🔎 Probando conexión desde ${flight1.destination}...`);
+
       const secondLeg = await pool.query(
         "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
         [flight1.destination, destination]
       );
 
+      console.log(`🛬 Conexiones encontradas desde ${flight1.destination}:`, secondLeg.rows.length);
+
       if (secondLeg.rows.length > 0) {
-        // ✅ Si encontramos un vuelo con escala, lo retornamos
         return {
           flights: [flight1],
           segments: secondLeg.rows
@@ -110,9 +118,11 @@ const findFlightsWithConnections = async (origin, destination) => {
       }
     }
 
-    return { flights: [], segments: [] }; // ❌ No hay vuelos disponibles
+    console.log("❌ No se encontraron vuelos con conexiones.");
+    return { flights: [], segments: [] };
+
   } catch (error) {
-    console.error("❌ Error buscando vuelos:", error);
+    console.error("❌ Error en la búsqueda de vuelos:", error);
     throw new Error("Error buscando vuelos con conexiones");
   }
 };

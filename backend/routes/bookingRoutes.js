@@ -17,16 +17,18 @@ const qr = require("qrcode");
 
 const router = express.Router();
 
-// ✅ Crear una reserva (sin segmentos)
+// ✅ Crear una reserva
 router.post("/", verifyToken, async (req, res) => {
-  const { flightId, category } = req.body; // Removemos "segments"
+  const { flightId, category, segments } = req.body;
 
   if (!["turista", "business"].includes(category)) {
     return res.status(400).json({ message: "Categoría no válida" });
   }
 
   try {
-    const newBooking = await createBooking(req.user.userId, flightId, category, []); // Pasamos un array vacío
+    // 🔹 Crear la reserva con los tramos almacenados en JSON
+    const newBooking = await createBooking(req.user.userId, flightId, category, segments);
+
     if (!newBooking || !newBooking.id) {
       return res.status(500).json({ error: "No se pudo crear la reserva" });
     }
