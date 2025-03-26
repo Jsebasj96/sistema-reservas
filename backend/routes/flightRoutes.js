@@ -208,13 +208,23 @@ router.get("/search", async (req, res) => {
       return res.status(400).json({ error: "Debes proporcionar origen y destino" });
   }
 
-  // ⚠️ Verifica si los valores recibidos ya son códigos IATA por error
-  if (origin.length === 3 || destination.length === 3) {
-      console.warn("⚠️ Parece que origin/destination ya están en formato IATA, deberían ser nombres de ciudades");
+  // 🔥 Validamos si los valores recibidos son códigos IATA
+  if (origin.length === 3 && destination.length === 3) {
+      console.warn("⚠️ Los valores recibidos parecen ser códigos IATA, convirtiéndolos a nombres de ciudades...");
+      
+      // 🚨 Convertir de IATA a nombres de ciudades usando la tabla `airports`
+      const resultOrigin = await pool.query("SELECT city FROM airports WHERE iata_code = $1", [origin]);
+      const resultDestination = await pool.query("SELECT city FROM airports WHERE iata_code = $1", [destination]);
+
+      if (resultOrigin.rows.length > 0) origin = resultOrigin.rows[0].city;
+      if (resultDestination.rows.length > 0) destination = resultDestination.rows[0].city;
   }
 
+  console.log(`✅ Origen convertido a ciudad: '${origin}'`);
+  console.log(`✅ Destino convertido a ciudad: '${destination}'`);
+
   try {
-      // Llamamos a la función de búsqueda de vuelos con los nombres de ciudades
+      // 🚀 Ahora buscamos vuelos con los nombres de ciudades
       const flights = await findFlightsWithConnections(origin, destination);
       res.json(flights);
   } catch (error) {
