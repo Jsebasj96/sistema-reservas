@@ -38,10 +38,20 @@ const Reservas = () => {
   // Cargar los vuelos desde el backend
   const fetchFlights = async () => {
     try {
-      const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights");
-      setFlights(res.data);
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
+      );
+  
+      if (res.data.flights.length === 0 && res.data.segments.length === 0) {
+        toast.warning("⚠️ No hay vuelos disponibles para esta ruta.");
+      } else {
+        toast.success("✅ Vuelos encontrados.");
+      }
+  
+      setFlights(res.data.flights);
+      setSegments(res.data.segments);
     } catch (error) {
-      toast.error("Error cargando vuelos");
+      toast.error("❌ Error al obtener vuelos.");
     }
   };
 
@@ -288,12 +298,28 @@ const Reservas = () => {
         /* 🛫 Modo lista de vuelos normales */
         <div>
           {flights.length > 0 ? (
-            flights.map((flight) => (
-              <div key={flight.id} className="flight-card">
+            flights.map((flight, index) => (
+              <div key={index} className="flight-card">
                 <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
                 <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
                 <p>Precio Turista: ${flight.price_turista}</p>
                 <p>Precio Business: ${flight.price_business}</p>
+
+                {/* Mostrar tramos si hay conexiones */}
+                {segments.length > 0 && (
+                  <div className="segments-container">
+                    <h4>🛫 Escalas:</h4>
+                    {segments.map((segment, segIndex) => (
+                      <div key={segIndex} className="segment-card">
+                        <p>{`${segment.airline} - ${segment.origin} → ${segment.destination}`}</p>
+                        <p>Salida: {new Date(segment.departure_time).toLocaleString()}</p>
+                        <p>Precio Turista: ${segment.price_turista}</p>
+                        <p>Precio Business: ${segment.price_business}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
               </div>
             ))
