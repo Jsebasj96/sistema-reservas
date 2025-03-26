@@ -153,7 +153,7 @@ const Reservas = () => {
             {/* Seleccionar un vuelo existente */}
             <label>Seleccionar vuelo:</label>
             <select
-              value={segment.flightId || ""}
+              value={segment.flightId ? segment.flightId.toString() : ""}
               onChange={(e) => {
                 const selectedFlight = flights.find(flight => flight.id === parseInt(e.target.value));
                 handleSegmentChange(index, selectedFlight);
