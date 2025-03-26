@@ -9,7 +9,7 @@ const {
 } = require("../models/Booking");
 
 const { getUserById } = require("../models/User");
-const { createFlight } = require("../models/Flight");
+const { getFlightById } = require("../models/Flight");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
@@ -92,6 +92,11 @@ router.post("/:id/pay", verifyToken, async (req, res) => {
       const user = await getUserById(booking.user_id);
       if (!user) {
         return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const flight = await getFlightById(flight.id);
+      if (!user) {
+        return res.status(404).json({ message: "Vuelo no encontrado" });
       }
 
       const doc = new PDFDocument();
