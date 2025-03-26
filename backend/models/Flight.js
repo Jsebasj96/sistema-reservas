@@ -150,13 +150,15 @@ const testDatabaseConnection = async () => {
 testDatabaseConnection();
 
 const getIataCode = async (city) => {
-  const trimmedCity = city.trim(); // Eliminar espacios en blanco al inicio y al final
-  console.log("🔎 Buscando código IATA para la ciudad:", trimmedCity);
+  console.log(`🔎 Buscando código IATA para la ciudad: ${city}`);
 
-  const result = await pool.query("SELECT * FROM airports WHERE city ILIKE $1", [trimmedCity]);
+  const result = await pool.query(
+      "SELECT iata_code FROM airports WHERE LOWER(city) = LOWER($1) LIMIT 1",
+      [city]
+  );
 
-  console.log("📌 Resultado SQL en API para:", trimmedCity, result.rows);
-  
+  console.log(`📌 Resultado SQL en API para: ${city}`, result.rows);
+
   return result.rows.length > 0 ? result.rows[0].iata_code : null;
 };
 
