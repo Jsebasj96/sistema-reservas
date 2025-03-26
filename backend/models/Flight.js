@@ -76,54 +76,65 @@ const getAvailableCities = async () => {
 };
 
 // 🔍 Buscar vuelos directos o con escalas
-const findFlightsWithConnections = async (originIATA, destinationIATA) => {
+const findFlightsWithConnections = async (originCity, destinationCity) => {
   try {
-    console.log(`🔍 Buscando vuelos de ${originIATA} a ${destinationIATA}...`);
+      console.log(`🔍 Buscando vuelos de ${originCity} a ${destinationCity}...`);
 
-    // ✈️ Buscar vuelo directo
-    const directFlight = await pool.query(
-      "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
-      [originIATA, destinationIATA]
-    );
+      // ✅ Convertir ciudad a código IATA
+      const originIata = await getIataCode(originCity);
+      const destinationIata = await getIataCode(destinationCity);
 
-    if (directFlight.rows.length > 0) {
-      console.log(`✅ Vuelo directo encontrado.`);
-      return { flights: directFlight.rows, segments: [] };
-    }
+      if (!originIata || !destinationIata) {
+          console.log("❌ No se encontraron aeropuertos para las ciudades ingresadas");
+          return { error: "No se encontraron aeropuertos para las ciudades ingresadas" };
+      }
 
-    console.log("❌ No hay vuelos directos. Buscando con escalas...");
+      console.log(`✈️ Convertidos: ${originCity} -> ${originIata}, ${destinationCity} -> ${destinationIata}`);
 
-    // 🛫 Buscar vuelos que salgan desde el origen
-    const firstLeg = await pool.query(
-      "SELECT * FROM flights WHERE origin_iata = $1 ORDER BY departure_time ASC",
-      [originIATA]
-    );
-
-    for (let flight1 of firstLeg.rows) {
-      console.log(`🔎 Probando conexión desde ${flight1.destination_iata}...`);
-
-      // 🛬 Buscar vuelos que conecten con el destino final
-      const secondLeg = await pool.query(
-        "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
-        [flight1.destination_iata, destinationIATA]
+      // ✅ Buscar vuelos directos
+      const directFlight = await pool.query(
+          "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
+          [originIata, destinationIata]
       );
 
-      if (secondLeg.rows.length > 0) {
-        console.log(`✅ Conexión encontrada: ${flight1.destination_iata}`);
-        return {
-          flights: [flight1],
-          segments: secondLeg.rows,
-        };
+      if (directFlight.rows.length > 0) {
+          console.log("✅ Vuelo directo encontrado");
+          return { flights: directFlight.rows, segments: [] };
       }
-    }
 
-    console.log("❌ No se encontraron vuelos con conexiones.");
-    return { flights: [], segments: [] };
+      // 🔄 Buscar vuelos con conexiones
+      const firstLeg = await pool.query(
+          "SELECT * FROM flights WHERE origin_iata = $1 ORDER BY departure_time ASC",
+          [originIata]
+      );
+
+      for (let flight1 of firstLeg.rows) {
+          const secondLeg = await pool.query(
+              "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
+              [flight1.destination_iata, destinationIata]
+          );
+
+          if (secondLeg.rows.length > 0) {
+              console.log("✅ Vuelo con conexión encontrado");
+              return {
+                  flights: [flight1],
+                  segments: secondLeg.rows
+              };
+          }
+      }
+
+      console.log("❌ No se encontraron vuelos disponibles");
+      return { flights: [], segments: [] };
 
   } catch (error) {
-    console.error("❌ Error en la búsqueda de vuelos:", error);
-    throw new Error("Error buscando vuelos con conexiones");
+      console.error("❌ Error en la búsqueda de vuelos:", error);
+      throw new Error("Error buscando vuelos con conexiones");
   }
+};
+
+const getIataCode = async (city) => {
+  const result = await pool.query("SELECT iata_code FROM airports WHERE city = $1", [city]);
+  return result.rows.length > 0 ? result.rows[0].iata_code : null;
 };
 
 module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight, getAvailableCities, findFlightsWithConnections};
