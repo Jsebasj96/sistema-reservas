@@ -33,18 +33,18 @@ const Reservas = () => {
       try {
         const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
   
-        // Validamos que la respuesta sea un array y extraemos los nombres de las ciudades correctamente
+        console.log("📌 Respuesta API:", res.data); // 🔍 Verifica qué devuelve la API
+  
         if (Array.isArray(res.data)) {
-          const cities = res.data.map(item => item.city);
-          console.log("📌 Ciudades cargadas:", cities); // 🔍 Verifica en la consola
-          setAvailableCities(cities);
+          setAvailableCities(res.data.map(item => item.city)); // 🔹 Extrae solo los nombres de ciudades
         } else {
-          console.warn("⚠️ Respuesta inesperada de la API", res.data);
-          setAvailableCities([]);
+          console.error("❌ Error: La API no devolvió un array válido.");
+          toast.error("❌ Error al obtener ciudades.");
         }
+  
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
-        toast.error("❌ Error al obtener ciudades");
+        toast.error("❌ Error al obtener ciudades.");
       }
     };
   
