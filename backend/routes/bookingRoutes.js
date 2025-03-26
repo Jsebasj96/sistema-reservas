@@ -9,10 +9,7 @@ const {
 } = require("../models/Booking");
 
 const { getUserById } = require("../models/User");
-// Elimina o comenta estas líneas:
-// const { createFlightSegments } = require("../models/FlightSegment");
-// const { getFlightSegmentsByBookingId } = require("../models/FlightSegment");
-
+const { createFlight } = require("../models/Flight");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
@@ -84,68 +81,69 @@ router.post("/:id/pay", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Generar el PDF en memoria y enviarlo directamente (sin cambios respecto a segmentos)
-router.get("/:id/pdf", verifyToken, async (req, res) => {
-  try {
-    const booking = await getBookingById(req.params.id);
-    if (!booking) {
-      return res.status(404).json({ message: "Reserva no encontrada" });
+  // ✅ Generar el PDF en memoria y enviarlo directamente (sin cambios respecto a segmentos)
+  router.get("/:id/pdf", verifyToken, async (req, res) => {
+    try {
+      const booking = await getBookingById(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ message: "Reserva no encontrada" });
+      }
+
+      const user = await getUserById(booking.user_id);
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const doc = new PDFDocument();
+      let buffers = [];
+
+      doc.on("data", buffers.push.bind(buffers));
+      doc.on("end", () => {
+        const pdfBuffer = Buffer.concat(buffers);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="ticket_${booking.id}.pdf"`);
+        res.send(pdfBuffer);
+      });
+
+      // Encabezado con aerolínea
+      doc.font("Helvetica-Bold").fontSize(36).text(" Airline Express", { align: "center" });
+      doc.moveDown(1);
+      // Código de reserva
+      doc.fontSize(16).text(`Código de Reserva: ${booking.id}`, { align: "left" });
+      doc.moveDown();
+      // Datos del pasajero
+      doc.fontSize(12).font("Helvetica").text(`Usuario ID: ${user.id}`);
+      doc.text(`Nombre: ${user.name}`);
+      doc.text(`Correo: ${user.email}`);
+      doc.moveDown();
+      // Código de Vuelo
+      doc.fontSize(26).text(`Vuelo: ${flight.code}`, { align: "left" });
+      doc.moveDown();
+      // Detalles del vuelo
+      doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+      doc.moveDown(0.5);
+      doc.fontSize(12).font("Helvetica");
+      doc.text(`Origen: ${booking.origin || "No disponible"}`);
+      doc.text(`Destino: ${booking.destination || "No disponible"}`);
+      doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+      doc.text(`Categoría: ${booking.category.toUpperCase()}`);
+      doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
+      doc.moveDown();
+      // Línea divisoria
+      doc.moveDown();
+      doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+      doc.moveDown();
+      // Mensaje final
+      doc.fontSize(12).font("Helvetica-Oblique").text(
+        "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+        { align: "center" }
+      );
+
+      doc.end();
+    } catch (error) {
+      console.error("❌ Error al generar el PDF:", error);
+      res.status(500).json({ error: "Error al generar el PDF" });
     }
-
-    const user = await getUserById(booking.user_id);
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    const doc = new PDFDocument();
-    let buffers = [];
-
-    doc.on("data", buffers.push.bind(buffers));
-    doc.on("end", () => {
-      const pdfBuffer = Buffer.concat(buffers);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="ticket_${booking.id}.pdf"`);
-      res.send(pdfBuffer);
-    });
-
-    // Encabezado con aerolínea
-    doc.font("Helvetica-Bold").fontSize(36).text(" Airline Express", { align: "center" });
-    doc.moveDown(1);
-    // Código de reserva
-    doc.fontSize(16).text(`Código de Reserva: ${booking.id}`, { align: "left" });
-    doc.moveDown();
-    // Datos del pasajero
-    doc.fontSize(12).font("Helvetica").text(`Usuario ID: ${user.id}`);
-    doc.text(`Nombre: ${user.name}`);
-    doc.text(`Correo: ${user.email}`);
-    doc.text(`Teléfono: ${user.phone}`);
-    doc.text(`Dirección: ${user.address}`);
-    doc.moveDown();
-    // Detalles del vuelo
-    doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
-    doc.moveDown(0.5);
-    doc.fontSize(12).font("Helvetica");
-    doc.text(`Origen: ${booking.origin || "No disponible"}`);
-    doc.text(`Destino: ${booking.destination || "No disponible"}`);
-    doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
-    doc.text(`Categoría: ${booking.category.toUpperCase()}`);
-    doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
-    doc.moveDown();
-    // Línea divisoria
-    doc.moveDown();
-    doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-    doc.moveDown();
-    // Mensaje final
-    doc.fontSize(12).font("Helvetica-Oblique").text(
-      "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
-      { align: "center" }
-    );
-
-    doc.end();
-  } catch (error) {
-    console.error("❌ Error al generar el PDF:", error);
-    res.status(500).json({ error: "Error al generar el PDF" });
-  }
-});
+  });
 
 module.exports = router;
