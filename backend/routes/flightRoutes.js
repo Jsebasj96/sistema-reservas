@@ -28,11 +28,37 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * ✅ Obtener un vuelo por ID (Público)
+ * 🔍 Buscar vuelos con conexiones
+ * ⚠️ NOTA: Esta ruta debe ir antes de la de obtener vuelo por ID
+ */
+router.get("/search", async (req, res) => {
+  const { origin, destination } = req.query;
+
+  if (!origin || !destination) {
+    return res.status(400).json({ error: "Debes proporcionar origen y destino" });
+  }
+
+  try {
+    const flights = await findFlightsWithConnections(origin, destination);
+    res.json(flights);
+  } catch (error) {
+    console.error("❌ Error buscando vuelos:", error);
+    res.status(500).json({ error: "Error al buscar vuelos" });
+  }
+});
+
+/**
+ * ✅ Obtener un vuelo por ID (Debe ir después para no chocar con /search)
  */
 router.get("/:id", async (req, res) => {
+  const flightId = parseInt(req.params.id, 10); // Convertimos a número seguro
+
+  if (isNaN(flightId)) {
+    return res.status(400).json({ error: "ID de vuelo inválido" });
+  }
+
   try {
-    const flight = await getFlightById(req.params.id);
+    const flight = await getFlightById(flightId);
     if (!flight) return res.status(404).json({ error: "Vuelo no encontrado" });
 
     res.json(flight);
