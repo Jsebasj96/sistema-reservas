@@ -200,22 +200,20 @@ router.get("/cities", async (req, res) => {
 // ✅ Nueva ruta: Buscar vuelos con o sin escalas
 router.get("/search", async (req, res) => {
   const { origin, destination } = req.query;
+  
+  console.log(`🌍 Origen recibido en API: '${origin}'`);
+  console.log(`🌍 Destino recibido en API: '${destination}'`);
 
   if (!origin || !destination) {
-    return res.status(400).json({ error: "Origen y destino son obligatorios" });
+      return res.status(400).json({ error: "Debes proporcionar origen y destino" });
   }
 
   try {
-    const { flights, segments } = await findFlightsWithConnections(origin, destination);
-
-    if (flights.length === 0) {
-      return res.status(404).json({ message: "No hay vuelos disponibles para esta ruta" });
-    }
-
-    res.json({ flights, segments });
+      const flights = await findFlightsWithConnections(origin, destination);
+      res.json(flights);
   } catch (error) {
-    console.error("❌ Error en la búsqueda de vuelos:", error);
-    res.status(500).json({ error: "Error en la búsqueda de vuelos" });
+      console.error("❌ Error al buscar vuelos:", error);
+      res.status(500).json({ error: "Error al obtener vuelos" });
   }
 });
 
