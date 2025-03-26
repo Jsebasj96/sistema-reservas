@@ -32,12 +32,13 @@ const Reservas = () => {
   // 🔍 Obtener lista de ciudades disponibles desde la API
   const fetchCities = async () => {
     try {
-      const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
-      setAvailableCities(res.data);
+        const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
+        setAvailableCities(res.data);
     } catch (error) {
-      toast.error("❌ Error al obtener ciudades");
+        console.error("❌ Error al obtener ciudades:", error);
+        toast.error("❌ Error al obtener ciudades");
     }
-  };
+};
 
   // 🛫 Obtener todos los vuelos sin filtros (lista completa)
   const fetchAllFlights = async () => {
