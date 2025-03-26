@@ -15,6 +15,10 @@ const Reservas = () => {
   const [price, setPrice] = useState("");
   const [priceTurista, setPriceTurista] = useState("");
   const [priceBusiness, setPriceBusiness] = useState("");
+  const [selectedOrigin, setSelectedOrigin] = useState("");
+  const [selectedDestination, setSelectedDestination] = useState("");
+  const [segments, setSegments] = useState([]);
+  const [filteredFlights, setFilteredFlights] = useState([]);
 
   // Obtener el rol del usuario desde el token
   useEffect(() => {
