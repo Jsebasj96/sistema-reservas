@@ -19,10 +19,12 @@ const createFlight = async (airline, origin, destination, departure_time, arriva
   const price_business = (parseFloat(price) * 1.12).toFixed(2);
 
   const airlineCode = airline.substring(0, 2).toUpperCase();
+  const flightNumber = Math.floor(100 + Math.random() * 900);
+  const code = `${airlineCode}-${flightNumber}`;
 
   const result = await pool.query(
     `INSERT INTO flights (airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, code) 
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CAST($9 AS VARCHAR)) RETURNING *`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
     [airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, code]
   );
 
