@@ -66,4 +66,55 @@ const deleteFlight = async (id) => {
   return result.rows[0];
 };
 
-module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight };
+const getAvailableCities = async () => {
+  const result = await pool.query(`
+    SELECT DISTINCT origin FROM flights
+    UNION
+    SELECT DISTINCT destination FROM flights
+  `);
+  return result.rows.map(row => row.origin); // Solo enviamos los nombres de las ciudades
+};
+
+// 🔍 Buscar vuelos directos o con escalas
+const findFlightsWithConnections = async (origin, destination) => {
+  try {
+    const directFlight = await pool.query(
+      "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
+      [origin, destination]
+    );
+
+    if (directFlight.rows.length > 0) {
+      // ✈️ Hay un vuelo directo, lo retornamos
+      return { flights: directFlight.rows, segments: [] };
+    }
+
+    // 🛫 Buscar vuelos que salgan desde la ciudad de origen
+    const firstLeg = await pool.query(
+      "SELECT * FROM flights WHERE origin = $1 ORDER BY departure_time ASC",
+      [origin]
+    );
+
+    for (let flight1 of firstLeg.rows) {
+      // 🛬 Buscar vuelos que conecten con el destino final desde la ciudad intermedia
+      const secondLeg = await pool.query(
+        "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
+        [flight1.destination, destination]
+      );
+
+      if (secondLeg.rows.length > 0) {
+        // ✅ Si encontramos un vuelo con escala, lo retornamos
+        return {
+          flights: [flight1],
+          segments: secondLeg.rows
+        };
+      }
+    }
+
+    return { flights: [], segments: [] }; // ❌ No hay vuelos disponibles
+  } catch (error) {
+    console.error("❌ Error buscando vuelos:", error);
+    throw new Error("Error buscando vuelos con conexiones");
+  }
+};
+
+module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight, getAvailableCities, findFlightsWithConnections};

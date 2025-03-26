@@ -9,6 +9,7 @@ const {
 } = require("../models/Flight");
 const verifyToken = require("../middlewares/authMiddleware");
 const { verifyAdmin } = require("../middlewares/roleMiddleware");
+const { getAvailableCities } = require("../models/Flight");
 
 const router = express.Router();
 
@@ -137,6 +138,19 @@ router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {
   } catch (error) {
     console.error("❌ Error al eliminar el vuelo:", error);
     res.status(500).json({ error: "Error al eliminar el vuelo" });
+  }
+});
+
+/**
+ * ✅ Obtener las ciudades disponibles (origen y destino)
+ */
+router.get("/cities", async (req, res) => {
+  try {
+    const cities = await getAvailableCities();
+    res.json(cities);
+  } catch (error) {
+    console.error("❌ Error al obtener las ciudades:", error);
+    res.status(500).json({ error: "Error al obtener las ciudades" });
   }
 });
 
