@@ -139,8 +139,16 @@ const findFlightsWithConnections = async (origin, destination) => {
 };
 
 const getIataCode = async (city) => {
+  console.log(`🔍 Buscando código IATA para la ciudad: ${city}`);
   const result = await pool.query("SELECT iata_code FROM airports WHERE city = $1", [city]);
-  return result.rows.length > 0 ? result.rows[0].iata_code : null;
+
+  if (result.rows.length > 0) {
+      console.log(`✅ Código IATA encontrado: ${result.rows[0].iata_code}`);
+      return result.rows[0].iata_code;
+  } else {
+      console.log("❌ No se encontró código IATA");
+      return null;
+  }
 };
 
 module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight, getAvailableCities, findFlightsWithConnections};
