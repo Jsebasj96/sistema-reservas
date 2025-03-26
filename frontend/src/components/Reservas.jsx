@@ -33,8 +33,9 @@ const Reservas = () => {
       try {
         const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
         // Convertir el array de objetos a array de strings:
-        const cities = res.data.map(item => item.city);
-        setAvailableCities(cities);
+        const cities = Array.isArray(res.data)
+        ? res.data.map(item => (typeof item === "object" && item !== null ? item.city : item))
+        : [];setAvailableCities(cities);
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
         toast.error("❌ Error al obtener ciudades");
@@ -128,17 +129,23 @@ const Reservas = () => {
           <label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
-            {availableCities.map((city, index) => (
-              <option key={index} value={city}>{city}</option>
-            ))}
+            {availableCities.map((item, index) => {
+              const city = typeof item === "object" && item !== null ? item.city : item;
+              return <option key={index} value={city}>{city}</option>;
+            })}
           </select>
 
           <label>Ciudad de Destino:</label>
           <select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
-            {availableCities.filter(city => city !== selectedOrigin).map((city, index) => (
-              <option key={index} value={city}>{city}</option>
-            ))}
+            {availableCities.filter((item) => {
+              const city = typeof item === "object" && item !== null ? item.city : item;
+              return city !== selectedOrigin;
+            })
+            .map((item, index) => {
+              const city = typeof item === "object" && item !== null ? item.city : item;
+              return <option key={index} value={city}>{city}</option>;
+            })}
           </select>
 
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
