@@ -189,11 +189,11 @@ router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {
  */
 router.get("/cities", async (req, res) => {
   try {
-    const cities = await getAvailableCities();
-    res.json(cities);
+      const result = await pool.query("SELECT DISTINCT city FROM airports ORDER BY city ASC");
+      res.json(result.rows);
   } catch (error) {
-    console.error("❌ Error al obtener las ciudades:", error);
-    res.status(500).json({ error: "Error al obtener las ciudades" });
+      console.error("❌ Error al obtener ciudades:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
