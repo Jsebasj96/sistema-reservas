@@ -146,34 +146,41 @@ const Reservas = () => {
           </select>
 
           {/* 🔥 Formulario de segmentos */}
-          <h3>Agregar Segmentos (Opcional)</h3>
-          {segments.map((segment, index) => (
-            <div key={index} className="segment-form">
-              <label>Origen:</label>
-              <input
-                type="text"
-                value={segment.origin}
-                onChange={(e) => handleSegmentChange(index, "origin", e.target.value)}
-              />
+        <h3>Agregar Segmentos (Opcional)</h3>
+        {segments.map((segment, index) => (
+          <div key={index} className="segment-form">
+            
+            {/* Seleccionar un vuelo existente */}
+            <label>Seleccionar vuelo:</label>
+            <select
+              value={segment.flightId || ""}
+              onChange={(e) => {
+                const selectedFlight = flights.find(flight => flight.id === parseInt(e.target.value));
+                handleSegmentChange(index, selectedFlight);
+              }}
+            >
+              <option value="">Selecciona un vuelo</option>
+              {flights.map((flight) => (
+                <option key={flight.id} value={flight.id}>
+                  {flight.code} - {flight.origin} → {flight.destination}
+                </option>
+              ))}
+            </select>
 
-              <label>Destino:</label>
-              <input
-                type="text"
-                value={segment.destination}
-                onChange={(e) => handleSegmentChange(index, "destination", e.target.value)}
-              />
+            {/* Mostrar los datos del segmento autocompletados */}
+            <label>Origen:</label>
+            <input type="text" value={segment.origin} readOnly />
 
-              <label>Código de vuelo:</label>
-              <input
-                type="text"
-                value={segment.flightCode}
-                onChange={(e) => handleSegmentChange(index, "flightCode", e.target.value)}
-              />
-            </div>
-          ))}
-          <button onClick={handleAddSegment}>➕ Agregar Segmento</button>
+            <label>Destino:</label>
+            <input type="text" value={segment.destination} readOnly />
 
-          <button onClick={handleBooking}>Reservar ahora</button>
+            <label>Código de vuelo:</label>
+            <input type="text" value={segment.flightCode} readOnly />
+          </div>
+        ))}
+        <button onClick={handleAddSegment}>➕ Agregar Segmento</button>
+
+        <button onClick={handleBooking}>Reservar ahora</button>
         </div>
       )}
 
