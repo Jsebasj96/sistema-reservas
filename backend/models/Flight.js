@@ -150,20 +150,14 @@ const testDatabaseConnection = async () => {
 testDatabaseConnection();
 
 const getIataCode = async (city) => {
-  console.log(`🧐 Buscando código IATA para: '${city}'`);
+  const trimmedCity = city.trim(); // Eliminar espacios en blanco al inicio y al final
+  console.log("🔎 Buscando código IATA para la ciudad:", trimmedCity);
 
-  const result = await pool.query("SELECT * FROM airports WHERE city ILIKE $1", [city]);
-  console.log("📌 Resultado SQL en API para:", city, result.rows);
+  const result = await pool.query("SELECT * FROM airports WHERE city ILIKE $1", [trimmedCity]);
 
-  console.log(`📌 Resultado SQL para '${city}':`, result.rows);
-
-  if (result.rows.length === 0) {
-      console.warn(`⚠️ No se encontró un código IATA para la ciudad: '${city}'`);
-      return null;
-  }
-
-  console.log(`✅ Código IATA encontrado para '${city}': ${result.rows[0].iata_code}`);
-  return result.rows[0].iata_code;
+  console.log("📌 Resultado SQL en API para:", trimmedCity, result.rows);
+  
+  return result.rows.length > 0 ? result.rows[0].iata_code : null;
 };
 
 module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight, getAvailableCities, findFlightsWithConnections};
