@@ -31,12 +31,14 @@ const Reservas = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
+        const response = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
   
-        console.log("📌 Respuesta API:", res.data); // 🔍 Verifica qué devuelve la API
+        console.log("📌 Respuesta API:", response.data); // 🔍 Verifica qué devuelve la API
   
-        if (Array.isArray(res.data)) {
-          setAvailableCities(res.data.map(item => item.city)); // 🔹 Extrae solo los nombres de ciudades
+        if (Array.isArray(response.data)) {
+          const citiesList = response.data.map(item => item.city); // 🔹 Extrae solo los nombres de ciudades
+          console.log("✅ Ciudades extraídas:", citiesList);
+          setAvailableCities(citiesList);
         } else {
           console.error("❌ Error: La API no devolvió un array válido.");
           toast.error("❌ Error al obtener ciudades.");
