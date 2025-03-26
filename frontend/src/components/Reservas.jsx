@@ -18,13 +18,15 @@ const Reservas = () => {
     const fetchCities = async () => {
       try {
         const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
-        setAvailableCities(res.data);
+        // Si res.data es [{ city: "Bogota" }, { city: "Miami" }, ...] convertimos a un array de strings
+        const cities = res.data.map(item => item.city);
+        setAvailableCities(cities);
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
         toast.error("❌ Error al obtener ciudades");
       }
     };
-
+  
     fetchCities();
   }, []);
 
