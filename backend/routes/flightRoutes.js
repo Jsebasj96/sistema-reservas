@@ -5,12 +5,12 @@ const {
   getFlightById, 
   createFlight, 
   updateFlight, 
-  deleteFlight 
+  deleteFlight, 
+  getAvailableCities, 
+  findFlightsWithConnections 
 } = require("../models/Flight");
 const verifyToken = require("../middlewares/authMiddleware");
 const { verifyAdmin } = require("../middlewares/roleMiddleware");
-const { getAvailableCities } = require("../models/Flight");
-const { findFlightsWithConnections } = require("../models/Flight");
 const pool = require("../config/db");
 
 const router = express.Router();
@@ -29,45 +29,45 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * 🔍 Buscar vuelos con conexiones
- * ⚠️ NOTA: Esta ruta debe ir antes de la de obtener vuelo por ID
+ * 🔍 Buscar vuelos con o sin escalas
  */
 router.get("/search", async (req, res) => {
+  let { origin, destination } = req.query;
+
+  console.log(`🌍 Origen recibido: '${origin}'`);
+  console.log(`🌍 Destino recibido: '${destination}'`);
+
+  if (!origin || !destination) {
+    return res.status(400).json({ error: "Debes proporcionar origen y destino" });
+  }
+
   try {
-    const { origin, destination } = req.query;
-
-    if (!origin || !destination) {
-      return res.status(400).json({ error: "Debes proporcionar origen y destino" });
-    }
-
-    // 🔍 Convertir ciudades a códigos IATA
+    // Convertir ciudades a códigos IATA
     const getIATA = async (city) => {
       const result = await pool.query("SELECT iata_code FROM airports WHERE city = $1", [city]);
       return result.rows.length > 0 ? result.rows[0].iata_code : null;
     };
 
-    const originIATA = await getIATA(origin);
-    const destinationIATA = await getIATA(destination);
+    const originIATA = origin.length === 3 ? origin : await getIATA(origin);
+    const destinationIATA = destination.length === 3 ? destination : await getIATA(destination);
 
     if (!originIATA || !destinationIATA) {
       return res.status(404).json({ error: "No se encontraron aeropuertos para las ciudades ingresadas" });
     }
 
-    // 🔥 Buscar vuelos con conexión
     const result = await findFlightsWithConnections(originIATA, destinationIATA);
     res.json(result);
-
   } catch (error) {
-    console.error("❌ Error al obtener vuelos:", error);
+    console.error("❌ Error al buscar vuelos:", error);
     res.status(500).json({ error: "Error al obtener vuelos" });
   }
 });
 
 /**
- * ✅ Obtener un vuelo por ID (Debe ir después para no chocar con /search)
+ * ✅ Obtener un vuelo por ID
  */
 router.get("/:id", async (req, res) => {
-  const flightId = parseInt(req.params.id, 10); // Convertimos a número seguro
+  const flightId = parseInt(req.params.id, 10);
 
   if (isNaN(flightId)) {
     return res.status(400).json({ error: "ID de vuelo inválido" });
@@ -107,8 +107,6 @@ router.post(
 
     try {
       const { airline, origin, destination, departure_time, arrival_time, price } = req.body;
-
-      // ✅ Calcular precios automáticamente
       const price_turista = parseFloat(price).toFixed(2);
       const price_business = (parseFloat(price) * 1.12).toFixed(2);
 
@@ -132,12 +130,12 @@ router.put(
   verifyToken,
   verifyAdmin,
   [
-    check("airline", "El nombre de la aerolínea es obligatorio").optional().not().isEmpty(),
-    check("origin", "El origen es obligatorio").optional().not().isEmpty(),
-    check("destination", "El destino es obligatorio").optional().not().isEmpty(),
-    check("departure_time", "Debe ser una fecha válida de salida").optional().isISO8601(),
-    check("arrival_time", "Debe ser una fecha válida de llegada").optional().isISO8601(),
-    check("price", "El precio debe ser un número positivo").optional().isFloat({ gt: 0 }),
+    check("airline").optional().not().isEmpty(),
+    check("origin").optional().not().isEmpty(),
+    check("destination").optional().not().isEmpty(),
+    check("departure_time").optional().isISO8601(),
+    check("arrival_time").optional().isISO8601(),
+    check("price").optional().isFloat({ gt: 0 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -148,7 +146,6 @@ router.put(
     try {
       const { price } = req.body;
 
-      // ✅ Si se actualiza el precio, recalcular price_turista y price_business
       if (price) {
         req.body.price_turista = parseFloat(price).toFixed(2);
         req.body.price_business = (parseFloat(price) * 1.12).toFixed(2);
@@ -185,41 +182,15 @@ router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {
 });
 
 /**
- * ✅ Obtener las ciudades disponibles (origen y destino)
+ * ✅ Obtener las ciudades disponibles
  */
 router.get("/cities", async (req, res) => {
   try {
-      const result = await pool.query("SELECT DISTINCT city FROM airports ORDER BY city ASC");
-      res.json(result.rows);
+    const result = await pool.query("SELECT DISTINCT city FROM airports ORDER BY city ASC");
+    res.json(result.rows);
   } catch (error) {
-      console.error("❌ Error al obtener ciudades:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
-  }
-});
-
-// ✅ Nueva ruta: Buscar vuelos con o sin escalas
-router.get("/search", async (req, res) => {
-  let { origin, destination } = req.query;
-
-  console.log(`🌍 Origen recibido en API: '${origin}'`);
-  console.log(`🌍 Destino recibido en API: '${destination}'`);
-
-  if (!origin || !destination) {
-      return res.status(400).json({ error: "Debes proporcionar origen y destino" });
-  }
-
-  // ⚠️ Verifica si los valores recibidos ya son códigos IATA por error
-  if (origin.length === 3 || destination.length === 3) {
-      console.warn("⚠️ Parece que origin/destination ya están en formato IATA, deberían ser nombres de ciudades");
-  }
-
-  try {
-      // Llamamos a la función de búsqueda de vuelos con los nombres de ciudades
-      const flights = await findFlightsWithConnections(origin, destination);
-      res.json(flights);
-  } catch (error) {
-      console.error("❌ Error al buscar vuelos:", error);
-      res.status(500).json({ error: "Error al obtener vuelos" });
+    console.error("❌ Error al obtener ciudades:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
