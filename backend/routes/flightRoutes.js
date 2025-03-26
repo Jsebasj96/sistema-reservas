@@ -11,6 +11,7 @@ const verifyToken = require("../middlewares/authMiddleware");
 const { verifyAdmin } = require("../middlewares/roleMiddleware");
 const { getAvailableCities } = require("../models/Flight");
 const { findFlightsWithConnections } = require("../models/Flight");
+const pool = require("../config/db");
 
 const router = express.Router();
 
@@ -32,18 +33,33 @@ router.get("/", async (req, res) => {
  * ⚠️ NOTA: Esta ruta debe ir antes de la de obtener vuelo por ID
  */
 router.get("/search", async (req, res) => {
-  const { origin, destination } = req.query;
-
-  if (!origin || !destination) {
-    return res.status(400).json({ error: "Debes proporcionar origen y destino" });
-  }
-
   try {
-    const flights = await findFlightsWithConnections(origin, destination);
-    res.json(flights);
+    const { origin, destination } = req.query;
+
+    if (!origin || !destination) {
+      return res.status(400).json({ error: "Debes proporcionar origen y destino" });
+    }
+
+    // 🔍 Convertir ciudades a códigos IATA
+    const getIATA = async (city) => {
+      const result = await pool.query("SELECT iata_code FROM airports WHERE city = $1", [city]);
+      return result.rows.length > 0 ? result.rows[0].iata_code : null;
+    };
+
+    const originIATA = await getIATA(origin);
+    const destinationIATA = await getIATA(destination);
+
+    if (!originIATA || !destinationIATA) {
+      return res.status(404).json({ error: "No se encontraron aeropuertos para las ciudades ingresadas" });
+    }
+
+    // 🔥 Buscar vuelos con conexión
+    const result = await findFlightsWithConnections(originIATA, destinationIATA);
+    res.json(result);
+
   } catch (error) {
-    console.error("❌ Error buscando vuelos:", error);
-    res.status(500).json({ error: "Error al buscar vuelos" });
+    console.error("❌ Error al obtener vuelos:", error);
+    res.status(500).json({ error: "Error al obtener vuelos" });
   }
 });
 

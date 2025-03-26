@@ -76,43 +76,52 @@ const getAvailableCities = async () => {
 };
 
 // 🔍 Buscar vuelos directos o con escalas
-const findFlightsWithConnections = async (origin, destination) => {
+const findFlightsWithConnections = async (originIATA, destinationIATA) => {
   try {
+    console.log(`🔍 Buscando vuelos de ${originIATA} a ${destinationIATA}...`);
+
+    // ✈️ Buscar vuelo directo
     const directFlight = await pool.query(
-      "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
-      [origin, destination]
+      "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
+      [originIATA, destinationIATA]
     );
 
     if (directFlight.rows.length > 0) {
-      // ✈️ Hay un vuelo directo, lo retornamos
+      console.log(`✅ Vuelo directo encontrado.`);
       return { flights: directFlight.rows, segments: [] };
     }
 
-    // 🛫 Buscar vuelos que salgan desde la ciudad de origen
+    console.log("❌ No hay vuelos directos. Buscando con escalas...");
+
+    // 🛫 Buscar vuelos que salgan desde el origen
     const firstLeg = await pool.query(
-      "SELECT * FROM flights WHERE origin = $1 ORDER BY departure_time ASC",
-      [origin]
+      "SELECT * FROM flights WHERE origin_iata = $1 ORDER BY departure_time ASC",
+      [originIATA]
     );
 
     for (let flight1 of firstLeg.rows) {
-      // 🛬 Buscar vuelos que conecten con el destino final desde la ciudad intermedia
+      console.log(`🔎 Probando conexión desde ${flight1.destination_iata}...`);
+
+      // 🛬 Buscar vuelos que conecten con el destino final
       const secondLeg = await pool.query(
-        "SELECT * FROM flights WHERE origin = $1 AND destination = $2 ORDER BY departure_time ASC",
-        [flight1.destination, destination]
+        "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
+        [flight1.destination_iata, destinationIATA]
       );
 
       if (secondLeg.rows.length > 0) {
-        // ✅ Si encontramos un vuelo con escala, lo retornamos
+        console.log(`✅ Conexión encontrada: ${flight1.destination_iata}`);
         return {
           flights: [flight1],
-          segments: secondLeg.rows
+          segments: secondLeg.rows,
         };
       }
     }
 
-    return { flights: [], segments: [] }; // ❌ No hay vuelos disponibles
+    console.log("❌ No se encontraron vuelos con conexiones.");
+    return { flights: [], segments: [] };
+
   } catch (error) {
-    console.error("❌ Error buscando vuelos:", error);
+    console.error("❌ Error en la búsqueda de vuelos:", error);
     throw new Error("Error buscando vuelos con conexiones");
   }
 };
