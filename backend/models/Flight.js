@@ -22,8 +22,8 @@ const createFlight = async (airline, origin, destination, departure_time, arriva
 
   const result = await pool.query(
     `INSERT INTO flights (airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, code) 
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CONCAT($9, '-', nextval('flights_id_seq'))) RETURNING *`,
-    [airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, airlineCode]
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CAST($9 AS VARCHAR)) RETURNING *`,
+    [airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, code]
   );
 
   return result.rows[0];
