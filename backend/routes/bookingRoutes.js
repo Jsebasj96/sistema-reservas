@@ -9,6 +9,8 @@ const {
 } = require("../models/Booking");
 
 const { getUserById } = require("../models/User");
+const { createFlightSegments } = require("../models/FlightSegment");
+const { getFlightSegmentsByBookingId } = require("../models/FlightSegment");
 
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
@@ -31,9 +33,14 @@ router.post("/", verifyToken, async (req, res) => {
       return res.status(500).json({ error: "No se pudo crear la reserva" });
     }
 
+    let createdSegments = [];
+    if (segments && segments.length > 0) {
+      createdSegments = await createFlightSegments(newBooking.id, segments);
+    }
+
     res.status(201).json({
       message: "Reserva creada con éxito",
-      booking: newBooking,
+      booking: { ...newBooking, segments: createdSegments }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -47,7 +54,8 @@ router.get("/:id", verifyToken, async (req, res) => {
     if (!booking) {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
-    res.json(booking);
+    const segments = await getFlightSegmentsByBookingId(req.params.id);
+    res.json({ ...booking, segments });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

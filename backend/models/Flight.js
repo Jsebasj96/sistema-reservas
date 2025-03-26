@@ -18,10 +18,12 @@ const createFlight = async (airline, origin, destination, departure_time, arriva
   const price_turista = parseFloat(price).toFixed(2);
   const price_business = (parseFloat(price) * 1.12).toFixed(2);
 
+  const airlineCode = airline.substring(0, 2).toUpperCase();
+
   const result = await pool.query(
-    `INSERT INTO flights (airline, origin, destination, departure_time, arrival_time, price, price_turista, price_business) 
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-    [airline, origin, destination, departure_time, arrival_time, price, price_turista, price_business]
+    `INSERT INTO flights (airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, code) 
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CONCAT($9, '-', nextval('flights_id_seq'))) RETURNING *`,
+    [airline, origin, destination, departure_time, arrival_time, price, price_business, price_turista, airlineCode]
   );
 
   return result.rows[0];
