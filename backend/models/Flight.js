@@ -80,20 +80,24 @@ const findFlightsWithConnections = async (origin, destination) => {
   try {
       console.log(`🔍 Buscando vuelos de ${origin} a ${destination}...`);
 
-      const originIata = await getIataCode(origin);
-      const destinationIata = await getIataCode(destination);
+      console.log(`🔎 Buscando código IATA para la ciudad (nombre real): ${origin}`);
+      console.log(`🔎 Buscando código IATA para la ciudad (nombre real): ${destination}`);
 
-      console.log(`📍 Código IATA de origen: ${originIata}`);
-      console.log(`📍 Código IATA de destino: ${destinationIata}`);
+      const originIATA = await getIataCode(origin);
+      const destinationIATA = await getIataCode(destination);
 
-      if (!originIata || !destinationIata) {
+      console.log(`📍 Código IATA de origen después de consulta: ${originIATA}`);
+      console.log(`📍 Código IATA de destino después de consulta: ${destinationIATA}`);
+
+      if (!originIATA || !destinationIATA) {
           console.log("❌ No se encontraron códigos IATA para las ciudades ingresadas");
-          return { flights: [], segments: [] };
+          return { error: "No se encontraron aeropuertos para las ciudades ingresadas" };
       }
 
+      // Buscar vuelos directos
       const directFlight = await pool.query(
           "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
-          [originIata, destinationIata]
+          [originIATA, destinationIATA]
       );
 
       console.log(`✈️ Vuelos directos encontrados:`, directFlight.rows.length);
@@ -102,38 +106,10 @@ const findFlightsWithConnections = async (origin, destination) => {
           return { flights: directFlight.rows, segments: [] };
       }
 
-      console.log("❌ No hay vuelos directos. Buscando con escalas...");
-
-      const firstLeg = await pool.query(
-          "SELECT * FROM flights WHERE origin_iata = $1 ORDER BY departure_time ASC",
-          [originIata]
-      );
-
-      console.log(`🛫 Vuelos que salen de ${originIata}:`, firstLeg.rows.length);
-
-      for (let flight1 of firstLeg.rows) {
-          console.log(`🔎 Probando conexión desde ${flight1.destination_iata}...`);
-
-          const secondLeg = await pool.query(
-              "SELECT * FROM flights WHERE origin_iata = $1 AND destination_iata = $2 ORDER BY departure_time ASC",
-              [flight1.destination_iata, destinationIata]
-          );
-
-          console.log(`🛬 Conexiones encontradas desde ${flight1.destination_iata}:`, secondLeg.rows.length);
-
-          if (secondLeg.rows.length > 0) {
-              return {
-                  flights: [flight1],
-                  segments: secondLeg.rows
-              };
-          }
-      }
-
-      console.log("❌ No se encontraron vuelos con conexiones.");
       return { flights: [], segments: [] };
 
   } catch (error) {
-      console.error("❌ Error en la búsqueda de vuelos:", error);
+      console.error("❌ Error buscando vuelos:", error);
       throw new Error("Error buscando vuelos con conexiones");
   }
 };
