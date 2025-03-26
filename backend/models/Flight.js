@@ -154,16 +154,13 @@ const testDatabaseConnection = async () => {
 testDatabaseConnection();
 
 const getIataCode = async (city) => {
-  console.log(`🔎 Buscando código IATA para la ciudad: ${city}`);
-
-  const result = await pool.query(
-      "SELECT iata_code FROM airports WHERE LOWER(city) = LOWER($1) LIMIT 1",
-      [city]
-  );
-
-  console.log(`📌 Resultado SQL en API para: ${city}`, result.rows);
-
+  const result = await pool.query("SELECT iata_code FROM airports WHERE LOWER(TRIM(city)) = LOWER(TRIM($1))", [city]);
   return result.rows.length > 0 ? result.rows[0].iata_code : null;
+};
+
+const getCityByIataCode = async (iataCode) => {
+  const result = await pool.query("SELECT city FROM airports WHERE iata_code = $1", [iataCode]);
+  return result.rows.length > 0 ? result.rows[0].city : null;
 };
 
 module.exports = { getAllFlights, getFlightById, createFlight, updateFlight, deleteFlight, getAvailableCities, findFlightsWithConnections};
