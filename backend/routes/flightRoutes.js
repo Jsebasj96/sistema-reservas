@@ -16,6 +16,30 @@ const pool = require("../config/db");
 const router = express.Router();
 
 /**
+ * ✅ Obtener las ciudades disponibles
+ */
+router.get("/cities", async (req, res) => {
+  try {
+    console.log("🔍 Solicitando ciudades...");
+
+    // CONSULTA CORRECTA: Obtener ciudades únicas de la tabla 'airports'
+    const result = await pool.query("SELECT DISTINCT city FROM airports ORDER BY city ASC");
+
+    // Verificar si hay resultados
+    if (result.rows.length === 0) {
+      console.warn("⚠️ No hay ciudades en la base de datos");
+      return res.status(404).json({ error: "No hay ciudades disponibles" });
+    }
+
+    console.log("✅ Ciudades encontradas:", result.rows);
+    res.json(result.rows); // Enviar las ciudades como respuesta
+  } catch (error) {
+    console.error("❌ Error al obtener ciudades:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+/**
  * ✅ Obtener todos los vuelos (Público)
  */
 router.get("/", async (req, res) => {
@@ -178,30 +202,6 @@ router.delete("/:id", verifyToken, verifyAdmin, async (req, res) => {
   } catch (error) {
     console.error("❌ Error al eliminar el vuelo:", error);
     res.status(500).json({ error: "Error al eliminar el vuelo" });
-  }
-});
-
-/**
- * ✅ Obtener las ciudades disponibles
- */
-router.get("/cities", async (req, res) => {
-  try {
-    console.log("🔍 Solicitando ciudades...");
-
-    // CONSULTA CORRECTA: Obtener ciudades únicas de la tabla 'airports'
-    const result = await pool.query("SELECT DISTINCT city FROM airports ORDER BY city ASC");
-
-    // Verificar si hay resultados
-    if (result.rows.length === 0) {
-      console.warn("⚠️ No hay ciudades en la base de datos");
-      return res.status(404).json({ error: "No hay ciudades disponibles" });
-    }
-
-    console.log("✅ Ciudades encontradas:", result.rows);
-    res.json(result.rows); // Enviar las ciudades como respuesta
-  } catch (error) {
-    console.error("❌ Error al obtener ciudades:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
