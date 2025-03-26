@@ -11,6 +11,7 @@ const Reservas = () => {
   const [price, setPrice] = useState(""); 
   const [priceTurista, setPriceTurista] = useState(""); 
   const [priceBusiness, setPriceBusiness] = useState(""); 
+  const [segments, setSegments] = useState([]); // 🔥 Lista de segmentos
 
   // 🔥 Obtener el rol del usuario desde el token
   useEffect(() => {
@@ -35,7 +36,7 @@ const Reservas = () => {
     fetchFlights();
   }, []);
 
-  // ✈️ Manejar la reserva
+  // ✈️ Manejar la reserva con segmentos
   const handleBooking = async () => {
     if (!selectedFlight) {
       toast.warning("Selecciona un vuelo primero");
@@ -49,6 +50,7 @@ const Reservas = () => {
         {
           flightId: selectedFlight.id,
           category,
+          segments,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -103,6 +105,18 @@ const Reservas = () => {
     }
   };
 
+  // 📌 Agregar un segmento de vuelo a la reserva
+  const handleAddSegment = () => {
+    setSegments([...segments, { origin: "", destination: "", flightCode: "" }]);
+  };
+
+  // 📌 Actualizar la información de un segmento
+  const handleSegmentChange = (index, field, value) => {
+    const updatedSegments = [...segments];
+    updatedSegments[index][field] = value;
+    setSegments(updatedSegments);
+  };
+
   return (
     <div>
       <h2>✈️ Vuelos disponibles</h2>
@@ -130,6 +144,34 @@ const Reservas = () => {
             <option value="turista">Turista</option>
             <option value="business">Business</option>
           </select>
+
+          {/* 🔥 Formulario de segmentos */}
+          <h3>Agregar Segmentos (Opcional)</h3>
+          {segments.map((segment, index) => (
+            <div key={index} className="segment-form">
+              <label>Origen:</label>
+              <input
+                type="text"
+                value={segment.origin}
+                onChange={(e) => handleSegmentChange(index, "origin", e.target.value)}
+              />
+
+              <label>Destino:</label>
+              <input
+                type="text"
+                value={segment.destination}
+                onChange={(e) => handleSegmentChange(index, "destination", e.target.value)}
+              />
+
+              <label>Código de vuelo:</label>
+              <input
+                type="text"
+                value={segment.flightCode}
+                onChange={(e) => handleSegmentChange(index, "flightCode", e.target.value)}
+              />
+            </div>
+          ))}
+          <button onClick={handleAddSegment}>➕ Agregar Segmento</button>
 
           <button onClick={handleBooking}>Reservar ahora</button>
         </div>
@@ -162,25 +204,13 @@ const Reservas = () => {
               <label>Precio Base:</label>
               <input type="number" name="price" step="0.01" value={price} onChange={handlePriceChange} required />
 
-              <label>Precio Clase Turista (Automático):</label>
-              <input type="number" value={priceTurista} readOnly />
-
-              <label>Precio Clase Business (Automático):</label>
-              <input type="number" value={priceBusiness} readOnly />
-
               <button type="submit">✈️ Crear Vuelo</button>
             </form>
           )}
         </>
       )}
 
-      {/* Botón de cerrar sesión */}
-      <button
-        onClick={() => {
-          localStorage.removeItem("token");
-          window.location.href = "/";
-        }}
-      >
+      <button onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}>
         Cerrar sesión
       </button>
     </div>
