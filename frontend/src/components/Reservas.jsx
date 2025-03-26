@@ -10,45 +10,37 @@ const Reservas = () => {
   const [searchMode, setSearchMode] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [category, setCategory] = useState("turista");
-  const [userRole, setUserRole] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [price, setPrice] = useState("");
-  const [priceTurista, setPriceTurista] = useState("");
-  const [priceBusiness, setPriceBusiness] = useState("");
   const [segments, setSegments] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
-
-  // 🟢 Obtener el rol del usuario desde el token
+  
+  // 🔹 Obtener ciudades disponibles
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      setUserRole(decodedToken.role);
-    }
-    fetchCities();
-    fetchAllFlights();
-  }, []);
-
-  // 🔍 Obtener lista de ciudades disponibles desde la API
-  const fetchCities = async () => {
-    try {
+    const fetchCities = async () => {
+      try {
         const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
         setAvailableCities(res.data);
-    } catch (error) {
+      } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
         toast.error("❌ Error al obtener ciudades");
-    }
-};
+      }
+    };
 
-  // 🛫 Obtener todos los vuelos sin filtros (lista completa)
-  const fetchAllFlights = async () => {
-    try {
-      const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights");
-      setFlights(res.data);
-    } catch (error) {
-      toast.error("❌ Error al obtener vuelos.");
-    }
-  };
+    fetchCities();
+  }, []);
+
+  // 🔹 Obtener todos los vuelos disponibles
+  useEffect(() => {
+    const fetchAllFlights = async () => {
+      try {
+        const res = await axios.get("https://sistema-reservas-final.onrender.com/api/flights");
+        setFlights(res.data);
+      } catch (error) {
+        toast.error("❌ Error al obtener vuelos.");
+      }
+    };
+
+    fetchAllFlights();
+  }, []);
 
   // 🔍 Buscar vuelos por origen y destino
   const fetchFlights = async () => {
@@ -84,18 +76,17 @@ const Reservas = () => {
 
     try {
       const token = localStorage.getItem("token");
+
       const flightData = {
-        flightId: selectedFlight.tramos ? selectedFlight.tramos[0].id : selectedFlight.id,
+        flightId: selectedFlight.id, 
         category,
-        segments: selectedFlight.tramos
-          ? selectedFlight.tramos.map(tramo => ({
-              flight_id: tramo.id,
-              origin: tramo.origin,
-              destination: tramo.destination,
-              departure_time: tramo.departure_time,
-              arrival_time: tramo.arrival_time,
-            }))
-          : []
+        segments: segments.map(segment => ({
+          flight_id: segment.id,
+          origin: segment.origin,
+          destination: segment.destination,
+          departure_time: segment.departure_time,
+          arrival_time: segment.arrival_time,
+        }))
       };
 
       const res = await axios.post("https://sistema-reservas-final.onrender.com/api/bookings", flightData, {
@@ -140,54 +131,45 @@ const Reservas = () => {
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
 
           {/* 📌 Resultados de búsqueda */}
-          {filteredFlights.length > 0 ? (
-            filteredFlights.map((flight, index) => (
-              <div key={index} className="flight-card">
-                <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
-                <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
-                <p>💰 Precio: ${flight.price_turista}</p>
-                <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
-              </div>
-            ))
+          {filteredFlights.length > 0 || segments.length > 0 ? (
+            <div>
+              {filteredFlights.map((flight, index) => (
+                <div key={index} className="flight-card">
+                  <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
+                  <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
+                  <p>💰 Precio: ${flight.price_turista}</p>
+                  <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
+                </div>
+              ))}
+              {segments.length > 0 && (
+                <div>
+                  <h3>Tramos del vuelo seleccionado:</h3>
+                  {segments.map((segment, index) => (
+                    <div key={index} className="segment-card">
+                      <p>{`${segment.airline} - ${segment.origin} → ${segment.destination}`}</p>
+                      <p>Salida: {new Date(segment.departure_time).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           ) : (
             <p>No se encontraron vuelos</p>
           )}
         </div>
       ) : (
-        /* 🛫 Modo lista de vuelos normales */
-        <div>
-          {flights.length > 0 ? (
-            flights.map((flight, index) => (
-              <div key={index} className="flight-card">
-                <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
-                <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
-                <p>Precio Turista: ${flight.price_turista}</p>
-                <p>Precio Business: ${flight.price_business}</p>
-                <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
-              </div>
-            ))
-          ) : (
-            <p>No hay vuelos disponibles en este momento</p>
-          )}
-        </div>
+        flights.map((flight, index) => (
+          <div key={index} className="flight-card">
+            <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
+            <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
+            <p>Precio Turista: ${flight.price_turista}</p>
+            <p>Precio Business: ${flight.price_business}</p>
+            <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
+          </div>
+        ))
       )}
 
-      {selectedFlight && (
-        <div className="booking-options">
-          <h3>Reserva tu vuelo</h3>
-          <label>Categoría:</label>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="turista">Turista</option>
-            <option value="business">Business</option>
-          </select>
-          <button onClick={handleBooking}>Reservar ahora</button>
-        </div>
-      )}
-
-      {/* 🚪 Botón de cerrar sesión */}
-      <button onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}>
-        Cerrar sesión
-      </button>
+      {selectedFlight && <button onClick={handleBooking}>Reservar ahora</button>}
     </div>
   );
 };
