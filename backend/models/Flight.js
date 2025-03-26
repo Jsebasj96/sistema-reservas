@@ -138,10 +138,22 @@ const findFlightsWithConnections = async (origin, destination) => {
   }
 };
 
+const testDatabaseConnection = async () => {
+  try {
+      const result = await pool.query("SELECT NOW() AS current_time");
+      console.log("✅ Conexión a la base de datos exitosa:", result.rows[0]);
+  } catch (error) {
+      console.error("❌ Error al conectar con la base de datos:", error);
+  }
+};
+
+testDatabaseConnection();
+
 const getIataCode = async (city) => {
   console.log(`🧐 Buscando código IATA para: '${city}'`);
 
-  const result = await pool.query("SELECT iata_code FROM airports WHERE LOWER(city) = LOWER($1)", [city]);
+  const result = await pool.query("SELECT * FROM airports WHERE city ILIKE $1", [city]);
+  console.log("📌 Resultado SQL en API para:", city, result.rows);
 
   console.log(`📌 Resultado SQL para '${city}':`, result.rows);
 
