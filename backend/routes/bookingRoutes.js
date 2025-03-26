@@ -94,8 +94,8 @@ router.post("/:id/pay", verifyToken, async (req, res) => {
         return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
-      const flight = await getFlightById(flight.id);
-      if (!user) {
+      const flight = await getFlightById(booking.flight_id);
+      if (!flight) {
         return res.status(404).json({ message: "Vuelo no encontrado" });
       }
 
