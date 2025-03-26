@@ -111,10 +111,19 @@ const Reservas = () => {
   };
 
   // 📌 Actualizar la información de un segmento
-  const handleSegmentChange = (index, field, value) => {
-    const updatedSegments = [...segments];
-    updatedSegments[index][field] = value;
-    setSegments(updatedSegments);
+  const handleSegmentChange = (index, flightId) => {
+    const selectedFlight = flights.find(flight => flight.id.toString() === flightId);
+    
+    if (selectedFlight) {
+      const updatedSegments = [...segments];
+      updatedSegments[index] = {
+        flightId: selectedFlight.id,
+        origin: selectedFlight.origin,
+        destination: selectedFlight.destination,
+        flightCode: selectedFlight.code,
+      };
+      setSegments(updatedSegments);
+    }
   };
 
   return (
@@ -153,19 +162,15 @@ const Reservas = () => {
             {/* Seleccionar un vuelo existente */}
             <label>Seleccionar vuelo:</label>
             <select
-              value={segment.flightId ? segment.flightId.toString() : ""}
-              onChange={(e) => {
-                const selectedFlight = flights.find(flight => flight.id === parseInt(e.target.value));
-                handleSegmentChange(index, selectedFlight);
-              }}
-            >
-              <option value="">Selecciona un vuelo</option>
-              {flights.map((flight) => (
-                <option key={flight.id} value={flight.id}>
-                  {flight.code} - {flight.origin} → {flight.destination}
-                </option>
-              ))}
-            </select>
+            value={segment.flightId !== undefined ? segment.flightId.toString() : ""}
+            onChange={(e) => handleSegmentChange(index, e.target.value)}>
+            <option value="">Selecciona un vuelo</option>
+            {flights.map((flight) => (
+              <option key={flight.id} value={flight.id.toString()}>
+                {flight.code} - {flight.origin} → {flight.destination}
+              </option>
+            ))}
+          </select>
 
             {/* Mostrar los datos del segmento autocompletados */}
             <label>Origen:</label>
