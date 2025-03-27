@@ -7,6 +7,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
   const [filteredFlights, setFilteredFlights] = useState([]);
+  const [selectedFlights, setSelectedFlights] = useState([]); // 🛫 Tramos seleccionados
+  const [category, setCategory] = useState("turista"); // ✅ Estado para categoría de boleto
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -35,88 +37,73 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
     }
 
     try {
-      console.log("🔍 Buscando vuelos de:", selectedOrigin, "a", selectedDestination);
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
 
-      console.log("👉 Respuesta de API:", res.data);
-
       if (!res.data || !Array.isArray(res.data.flights)) {
-        console.error("❌ Respuesta inesperada de la API:", res.data);
-        toast.error("❌ Error al obtener vuelos. Inténtalo de nuevo.");
+        toast.error("❌ No se encontraron vuelos.");
         return;
       }
 
       const flights = res.data.flights;
-      const segments = res.data.segments || []; // ✅ Asegurar que `segments` esté definido
-      console.log("👉 Vuelos directos:", flights);
-      console.log("👉 Tramos adicionales:", segments);
+      const segments = res.data.segments || [];
 
       if (flights.length > 0 || segments.length > 0) {
-        const allFlights = [...flights, ...segments]; // ✅ Agregar segmentos
-        console.log("🛫 Vuelos finales a mostrar:", allFlights);
-      
-        setFilteredFlights(allFlights);
-        setSegments(segments); // ✅ Guardamos los segmentos
-        toast.success(`✅ Se encontraron ${allFlights.length} tramo(s).`);
+        setFilteredFlights([...flights, ...segments]);
+        setSegments(segments);
+        toast.success(`✅ Se encontraron ${flights.length + segments.length} vuelos.`);
       } else {
-        console.log("❌ No hay vuelos disponibles.");
         toast.error("❌ No se encontraron vuelos.");
       }
     } catch (error) {
-      console.error("❌ Error al buscar vuelos:", error);
       toast.error("❌ No se pudieron buscar vuelos.");
     }
   };
 
-  const findConnectingFlights = async (origin, destination) => {
+  const handleSelectFlight = (flight) => {
+    // Si ya está en la lista, lo eliminamos; si no, lo agregamos
+    setSelectedFlights((prev) =>
+      prev.some((f) => f.id === flight.id)
+        ? prev.filter((f) => f.id !== flight.id)
+        : [...prev, flight]
+    );
+  };
+
+  const handleBooking = async () => {
+    if (selectedFlights.length === 0) {
+      toast.warning("⚠️ Debes seleccionar al menos un tramo.");
+      return;
+    }
+
     try {
-      console.log("🔍 Buscando rutas con escalas...");
-      const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/flights`);
+      const token = localStorage.getItem("token");
 
-      if (!Array.isArray(res.data)) {
-        console.error("❌ Estructura incorrecta de datos en vuelos:", res.data);
-        toast.error("❌ No se pudieron obtener los vuelos.");
-        return;
-      }
-
-      const allFlights = res.data;
-      let possibleRoutes = [];
-      let visited = new Set();
-
-      const findRoutes = (current, path) => {
-        if (current === destination) {
-          possibleRoutes.push([...path]); // Guardamos toda la ruta encontrada
-          return;
-        }
-        visited.add(current);
-
-        allFlights
-          .filter((f) => f.origin === current && !visited.has(f.destination))
-          .forEach((nextFlight) => {
-            findRoutes(nextFlight.destination, [...path, nextFlight]);
-          });
-
-        visited.delete(current);
+      const flightData = {
+        category,
+        segments: selectedFlights.map((segment) => ({
+          flight_id: segment.id,
+          origin: segment.origin,
+          destination: segment.destination,
+          departure_time: segment.departure_time,
+          arrival_time: segment.arrival_time,
+        })),
+        price: selectedFlights.reduce(
+          (total, flight) => total + (category === "business" ? flight.price_business : flight.price_turista),
+          0
+        ), // ✅ Sumar precios según categoría
       };
 
-      findRoutes(origin, []);
+      const res = await axios.post(
+        "https://sistema-reservas-final.onrender.com/api/bookings",
+        flightData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      if (possibleRoutes.length > 0) {
-        const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
-
-        console.log("🛫 Ruta con escalas encontrada:", bestRoute);
-
-        setFilteredFlights([bestRoute[0]]); // Primer tramo
-        setSegments(bestRoute.slice(1)); // Resto de tramos como escalas
-        toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
-      } else {
-        toast.error("❌ No se encontraron rutas con escalas.");
-      }
+      toast.success("✅ Reserva exitosa. ¡Vamos a pagar!");
+      setTimeout(() => (window.location.href = `/pago/${res.data.booking.id}`), 2000);
     } catch (error) {
-      console.error("❌ Error buscando rutas con escalas:", error);
-      toast.error("❌ No se pudo encontrar una ruta.");
+      toast.error("❌ No se pudo realizar la reserva.");
     }
   };
 
@@ -155,22 +142,49 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
       {filteredFlights.length > 0 && (
         <div>
           {filteredFlights.map((flight, index) => (
-            <div key={index} className="flight-card">
+            <div key={index} className="flight-card" style={{ border: selectedFlights.some((f) => f.id === flight.id) ? "2px solid green" : "none" }}>
               <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
               <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
-              <p>💰 Precio: ${flight.price_turista}</p>
-              <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
+              <p>💰 Precio Turista: ${flight.price_turista}</p>
+              <p>💎 Precio Business: ${flight.price_business}</p>
+              <button onClick={() => handleSelectFlight(flight)}>
+                {selectedFlights.some((f) => f.id === flight.id) ? "✅ Seleccionado" : "Seleccionar"}
+              </button>
             </div>
           ))}
         </div>
       )}
 
-      {filteredFlights.length === 0 && (
-        <p>🔎 No se encontraron vuelos directos ni rutas con escalas.</p>
+      {selectedFlights.length > 0 && (
+        <div>
+          <h3>🎫 Selección de Categoría</h3>
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="turista">
+              Turista - ${selectedFlights.reduce((total, flight) => total + flight.price_turista, 0)}
+            </option>
+            <option value="business">
+              Business - ${selectedFlights.reduce((total, flight) => total + flight.price_business, 0)}
+            </option>
+          </select>
+          <button onClick={handleBooking}>Reservar ahora</button>
+        </div>
       )}
+
+      <p>{filteredFlights.length === 0 && "🔎 No se encontraron vuelos directos ni rutas con escalas."}</p>
 
       <button onClick={volverAReservas} style={{ marginTop: "20px", backgroundColor: "#f44336", color: "white" }}>
         ⬅️ Volver a Reservas
+      </button>
+
+      {/* 🚪 Botón de cerrar sesión */}
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.href = "/";
+        }}
+        style={{ marginTop: "20px", backgroundColor: "#d32f2f", color: "white" }}
+      >
+        Cerrar sesión
       </button>
     </div>
   );
