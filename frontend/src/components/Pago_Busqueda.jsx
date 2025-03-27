@@ -18,35 +18,40 @@ const PagoBusqueda = () => {
 
   // 🔹 Simula el pago
   const handlePayment = async () => {
-  setIsPaying(true);
-  try {
-    const res = await axios.post(
-      "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
-      { selectedFlights, category, totalPrice },
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    setIsPaying(true);
+    try {
+      const res = await axios.post(
+        "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
+        { selectedFlights, category, totalPrice },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      console.log("🔍 Respuesta de la API:", res.data); // Verifica qué datos devuelve
+  
+      if (res.status === 200) {
+        toast.success("✅ Pago exitoso. Generando ticket...");
+  
+        // 📌 Asegúrate de que la API devuelve un bookingId válido
+        const newBookingId = res.data.bookingId || res.data.id; 
+        console.log("📌 Booking ID recibido:", newBookingId);
+  
+        if (!newBookingId) {
+          toast.error("⚠️ No se recibió un bookingId válido.");
+          return;
+        }
+  
+        setBookingId(newBookingId); // Guardar el ID de la nueva reserva
+        setPaymentSuccess(true);
       }
-    );
-
-    if (res.status === 200) {
-      toast.success("✅ Pago exitoso. Generando ticket...");
-
-      // 📌 Asegúrate de obtener el ID de la nueva reserva
-      const newBookingId = res.data.bookingId || res.data.id;
-      if (!newBookingId) {
-        toast.error("⚠️ No se recibió un bookingId válido.");
-        return;
-      }
-
-      setBookingId(newBookingId); // Guardar el nuevo ID
-      setPaymentSuccess(true);
+    } catch (error) {
+      console.error("❌ Error en la petición:", error);
+      toast.error("❌ Error al procesar el pago.");
+    } finally {
+      setIsPaying(false);
     }
-  } catch (error) {
-    toast.error("❌ Error al procesar el pago.");
-  } finally {
-    setIsPaying(false);
-  }
-};
+  };
 
   // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
