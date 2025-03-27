@@ -49,15 +49,20 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
       }
 
       const flights = res.data.flights;
-      console.log("👉 Vuelos directos encontrados:", flights);
+      const segments = res.data.segments || []; // ✅ Asegurar que `segments` esté definido
+      console.log("👉 Vuelos directos:", flights);
+      console.log("👉 Tramos adicionales:", segments);
 
-      if (flights.length > 0) {
-        setFilteredFlights(flights);
-        setSegments([]); // Sin escalas
-        toast.success("✅ Vuelos directos encontrados.");
+      if (flights.length > 0 || segments.length > 0) {
+        const allFlights = [...flights, ...segments]; // ✅ Agregar segmentos
+        console.log("🛫 Vuelos finales a mostrar:", allFlights);
+      
+        setFilteredFlights(allFlights);
+        setSegments(segments); // ✅ Guardamos los segmentos
+        toast.success(`✅ Se encontraron ${allFlights.length} tramo(s).`);
       } else {
-        console.log("❌ No hay vuelos directos, buscando rutas con escalas...");
-        await findConnectingFlights(selectedOrigin, selectedDestination);
+        console.log("❌ No hay vuelos disponibles.");
+        toast.error("❌ No se encontraron vuelos.");
       }
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
