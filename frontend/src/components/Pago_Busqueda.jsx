@@ -46,11 +46,12 @@ const PagoBusqueda = () => {
     }
 
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
+        { flightIds: selectedFlights.map(flight => flight.id) }, // ✅ Enviar los vuelos seleccionados
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Autenticación
-          responseType: "blob", // 📂 Indicar que es un archivo PDF
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob",
         }
       );
 
