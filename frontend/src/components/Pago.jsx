@@ -4,14 +4,13 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); // 📌 Capturamos el ID de la reserva desde la URL
+  const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // Función para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
@@ -23,7 +22,6 @@ const Pago = () => {
 
       const { segments, flight, status } = res.data;
 
-      // Verificar si es un vuelo directo o con tramos
       const isMultiSegment = segments && segments.length > 0;
 
       // Calcular el precio total sumando todos los tramos
