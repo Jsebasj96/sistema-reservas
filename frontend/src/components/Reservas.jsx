@@ -13,14 +13,14 @@ const Reservas = () => {
   const [segments, setSegments] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
 
-  // 🔹 Obtener ciudades disponibles desde el backend
+  // 🔹 Obtener ciudades disponibles
   useEffect(() => {
     const fetchCities = async () => {
       try {
         const response = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
 
         if (Array.isArray(response.data)) {
-          const citiesList = response.data.map((item) => item.city);
+          const citiesList = response.data.map((item) => item.city).filter(Boolean);
           setAvailableCities(citiesList);
         } else {
           console.error("❌ Error: la API no devolvió un array válido.");
@@ -34,7 +34,7 @@ const Reservas = () => {
     fetchCities();
   }, []);
 
-  // 🔹 Obtener todos los vuelos disponibles
+  // 🔹 Obtener todos los vuelos
   useEffect(() => {
     const fetchAllFlights = async () => {
       try {
@@ -58,13 +58,9 @@ const Reservas = () => {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
-      if (res.data.flights.length === 0 && res.data.segments.length === 0) {
-        toast.warning("⚠️ No hay vuelos disponibles para esta ruta.");
-      } else {
-        toast.success("✅ Vuelos encontrados.");
-      }
-      setFilteredFlights(res.data.flights);
-      setSegments(res.data.segments);
+      setFilteredFlights(res.data.flights || []);
+      setSegments(res.data.segments || []);
+      toast.success("✅ Vuelos encontrados.");
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
       toast.error("❌ No se pudieron buscar vuelos.");
@@ -118,11 +114,15 @@ const Reservas = () => {
           <label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
-            {availableCities.map((city, index) => (
-              <option key={index} value={city}>
-                {city}
-              </option>
-            ))}
+            {availableCities.length > 0 ? (
+              availableCities.map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>Cargando ciudades...</option>
+            )}
           </select>
 
           <label>Ciudad de Destino:</label>
