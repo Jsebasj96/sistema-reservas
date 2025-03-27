@@ -157,7 +157,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
 
       {selectedFlights.length > 0 && (
         <div>
-          <h3>🎫 Selección de Categoría </h3>
+          <h3>🎫 Selección de Categoría</h3>
           <select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="turista">
               Turista - ${selectedFlights.reduce((total, flight) => total + Number(flight.price_turista), 0).toLocaleString()}
