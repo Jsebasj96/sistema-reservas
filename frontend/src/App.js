@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Reservas from "./components/Reservas";
+import BusquedaVuelos from "./components/BusquedaVuelos"; // ✅ Importamos la nueva página
 import Pago from "./components/Pago"; // Importamos la nueva página
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -64,6 +65,16 @@ function App() {
             element={
               <PrivateRoute>
                 <Reservas />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Nueva ruta para búsqueda de vuelos protegida */}
+          <Route
+            path="/busqueda-vuelos"
+            element={
+              <PrivateRoute>
+                <BusquedaVuelos />
               </PrivateRoute>
             }
           />

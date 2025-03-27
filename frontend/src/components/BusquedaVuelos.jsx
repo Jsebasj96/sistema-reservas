@@ -29,22 +29,74 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     fetchCities();
   }, []);
 
-  // 🔍 Buscar vuelos por origen y destino
+  // 🔍 Buscar vuelos (directo o por tramos)
   const fetchFlights = async () => {
     if (!selectedOrigin || !selectedDestination) {
       toast.warning("⚠️ Selecciona una ciudad de origen y destino.");
       return;
     }
+
     try {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
-      setFilteredFlights(res.data.flights || []);
-      setSegments(res.data.segments || []);
-      toast.success("✅ Vuelos encontrados.");
+
+      if (res.data.flights.length > 0) {
+        // ✅ Si hay vuelo directo, lo mostramos
+        setFilteredFlights(res.data.flights);
+        setSegments([]); // No hay tramos si el vuelo es directo
+        toast.success("✅ Vuelos encontrados.");
+      } else {
+        // ❌ No hay vuelo directo, buscar rutas con escalas
+        findConnectingFlights(selectedOrigin, selectedDestination);
+      }
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
       toast.error("❌ No se pudieron buscar vuelos.");
+    }
+  };
+
+  // 🔄 Buscar vuelos con escalas automáticamente
+  const findConnectingFlights = async (origin, destination) => {
+    try {
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/flights`
+      );
+      const allFlights = res.data;
+
+      let possibleRoutes = [];
+      let visited = new Set();
+
+      const findRoutes = (current, path) => {
+        if (current === destination) {
+          possibleRoutes.push([...path]);
+          return;
+        }
+        visited.add(current);
+
+        allFlights
+          .filter((f) => f.origin === current && !visited.has(f.destination))
+          .forEach((nextFlight) => {
+            findRoutes(nextFlight.destination, [...path, nextFlight]);
+          });
+
+        visited.delete(current);
+      };
+
+      findRoutes(origin, []);
+
+      if (possibleRoutes.length > 0) {
+        // 🛫 Tomamos la ruta más corta
+        const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
+        setFilteredFlights([bestRoute[0]]); // Tomamos el primer vuelo como "principal"
+        setSegments(bestRoute.slice(1)); // Los demás son tramos
+        toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
+      } else {
+        toast.error("❌ No se encontraron rutas con escalas.");
+      }
+    } catch (error) {
+      console.error("❌ Error buscando rutas con escalas:", error);
+      toast.error("❌ No se pudo encontrar una ruta.");
     }
   };
 

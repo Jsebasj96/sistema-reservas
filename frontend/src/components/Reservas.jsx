@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import BusquedaVuelos from "./BusquedaVuelos"; // ✅ Importamos el nuevo componente
+import { useNavigate } from "react-router-dom"; // ✅ Importamos useNavigate
 
 const Reservas = () => {
   const [flights, setFlights] = useState([]);
-  const [searchMode, setSearchMode] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [category, setCategory] = useState("turista");
   const [segments, setSegments] = useState([]);
+  const navigate = useNavigate(); // ✅ Hook para redirigir a otra página
 
   // 🔹 Obtener todos los vuelos
   useEffect(() => {
@@ -59,35 +59,32 @@ const Reservas = () => {
     <div>
       <h2>✈️ Vuelos disponibles</h2>
 
-      {/* 🔄 Alternar entre lista de vuelos y búsqueda */}
-      <button onClick={() => setSearchMode(!searchMode)}>
-        {searchMode ? "🔙 Volver a Lista de Vuelos" : "🔍 Buscar Vuelo por Ciudad"}
-      </button>
+      {/* 🔄 Botón que redirige a la búsqueda de vuelos en una nueva página */}
+      <button onClick={() => navigate("/busqueda-vuelos")}>🔍 Buscar Vuelo por Ciudad</button>
 
-      {searchMode ? (
-        <BusquedaVuelos setSelectedFlight={setSelectedFlight} setSegments={setSegments} />
-      ) : (
-        <div>
-          {flights.length > 0 ? (
-            flights.map((flight, index) => (
-              <div key={index} className="flight-card">
-                <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
-                <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
-                <p>Precio Turista: ${flight.price_turista}</p>
-                <p>Precio Business: ${flight.price_business}</p>
-                <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
-              </div>
-            ))
-          ) : (
-            <p>No hay vuelos disponibles en este momento</p>
-          )}
-        </div>
-      )}
+      <div>
+        {flights.length > 0 ? (
+          flights.map((flight, index) => (
+            <div key={index} className="flight-card">
+              <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
+              <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
+              <p>Precio Turista: ${flight.price_turista}</p>
+              <p>Precio Business: ${flight.price_business}</p>
+              <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
+            </div>
+          ))
+        ) : (
+          <p>No hay vuelos disponibles en este momento</p>
+        )}
+      </div>
 
       {selectedFlight && <button onClick={handleBooking}>Reservar ahora</button>}
 
       {/* 🚪 Botón de cerrar sesión */}
-      <button onClick={() => localStorage.removeItem("token") || (window.location.href = "/")}>
+      <button onClick={() => {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      }}>
         Cerrar sesión
       </button>
     </div>
