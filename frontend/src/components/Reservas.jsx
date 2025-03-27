@@ -10,7 +10,7 @@ const Reservas = () => {
   const [segments, setSegments] = useState([]);
   const navigate = useNavigate(); 
 
-  // 🔹 Obtener todos los vuelos
+  //  Obtener todos los vuelos
   useEffect(() => {
     const fetchAllFlights = async () => {
       try {
@@ -23,7 +23,7 @@ const Reservas = () => {
     fetchAllFlights();
   }, []);
 
-  // 🎫 Reservar vuelo seleccionado
+  //  Reservar vuelo seleccionado
   const handleBooking = async () => {
     if (!selectedFlight) {
       toast.warning("⚠️ Selecciona un vuelo primero");
