@@ -9,7 +9,7 @@ const PagoBusqueda = () => {
   const { selectedFlights, category, totalPrice } = location.state || {};
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const token = localStorage.getItem("token"); // ✅ Obtener token
+  const token = localStorage.getItem("token"); 
 
   if (!selectedFlights || selectedFlights.length === 0) {
     return <h2>No hay tramos seleccionados.</h2>;
