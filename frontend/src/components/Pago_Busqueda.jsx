@@ -44,18 +44,28 @@ const PagoBusqueda = () => {
       toast.error("⚠️ Primero debes pagar la reserva.");
       return;
     }
-
+  
     try {
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
-        { flightIds: selectedFlights.map(flight => flight.id) }, // ✅ Enviar IDs en el body
+      const token = localStorage.getItem("token"); // 🔹 Obtener token del localStorage
+      if (!token) {
+        toast.error("❌ No hay sesión activa. Inicia sesión.");
+        return;
+      }
+  
+      const flightIdsString = selectedFlights.map(flight => flight.id).join(","); // 🔹 Convertir IDs a string separado por comas
+  
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIdsString}`, 
         {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob", // 📂 Indicar que es un archivo PDF
+          headers: { 
+            Authorization: `Bearer ${token}`, // 🔹 Incluir el token en los headers
+            "Content-Type": "application/json" 
+          },
+          responseType: "blob", // 🔹 Importante para recibir el PDF correctamente
         }
       );
-
-      // Crear enlace de descarga
+  
+      // ✅ Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -64,34 +74,42 @@ const PagoBusqueda = () => {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
+      console.error("❌ Error al descargar el ticket:", error);
       toast.error("❌ Error al descargar el ticket.");
     }
   };
 
   return (
-    <div className="payment-container">
-      <h2>💳 Pago de Tramos Seleccionados</h2>
+    <div>
+      <h2>🛫 Pago de Reservas</h2>
+      <h3>Resumen de Tramos Seleccionados</h3>
 
-      {selectedFlights.map((flight, index) => (
-        <div key={index}>
-          <p>Vuelo {index + 1}: {flight.origin} → {flight.destination}</p>
-          <p>Fecha: {flight.departure_time}</p>
-        </div>
-      ))}
+      <ul>
+        {selectedFlights.map((flight, index) => (
+          <li key={index}>
+            <strong>{flight.origin} → {flight.destination}</strong><br />
+            🕐 Salida: {new Date(flight.departure_time).toLocaleString()}<br />
+            🕐 Llegada: {new Date(flight.arrival_time).toLocaleString()}<br />
+            💰 Precio: ${category === "turista" ? flight.price_turista : flight.price_business}
+          </li>
+        ))}
+      </ul>
 
-      <h3>Total a pagar: ${totalPrice}</h3>
+      <h3>Total a Pagar: <span style={{ color: "green" }}>${totalPrice}</span></h3>
 
       {!paymentSuccess ? (
-        <button onClick={handlePayment} disabled={isPaying}>
-          {isPaying ? "Procesando pago..." : `Pagar $${totalPrice}`}
+        <button onClick={handlePayment} disabled={isPaying} style={{ backgroundColor: "green", color: "white", padding: "10px", marginTop: "10px" }}>
+          {isPaying ? "Procesando pago..." : "💳 Pagar Ahora"}
         </button>
       ) : (
-        <button onClick={handleDownloadPDF}>
+        <button onClick={handleDownloadPDF} style={{ backgroundColor: "blue", color: "white", padding: "10px", marginTop: "10px" }}>
           📥 Descargar Ticket PDF
         </button>
       )}
 
-      <button onClick={() => navigate("/buscar")}>🔙 Volver</button>
+      <button onClick={() => navigate("/")} style={{ marginLeft: "10px", padding: "10px" }}>
+        🔙 Volver al Inicio
+      </button>
     </div>
   );
 };
