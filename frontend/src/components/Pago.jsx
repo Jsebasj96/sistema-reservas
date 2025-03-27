@@ -7,9 +7,9 @@ const Pago = () => {
   const { id } = useParams(); // 📌 Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false); // ✅ Estado para pago exitoso
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token"); // ✅ Obtener token
+  const token = localStorage.getItem("token");
 
   // 🔥 Función para cargar la reserva
   const fetchBooking = async () => {
@@ -17,33 +17,33 @@ const Pago = () => {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // Verificamos si la reserva tiene tramos o es un vuelo directo
       const { segments, flight, status } = res.data;
+
+      // 📌 Verificar si es un vuelo directo o con tramos
+      const isMultiSegment = segments && segments.length > 0;
+
+      // 📌 Calcular el precio total sumando todos los tramos
+      const totalPrice = isMultiSegment
+        ? segments.reduce((sum, segment) => sum + segment.price, 0)
+        : flight?.price || 0;
+
       setBooking({
         ...res.data,
-        isMultiSegment: segments && segments.length > 0, // Si tiene segmentos, es vuelo con tramos
-        totalPrice: calculateTotalPrice(res.data),
+        isMultiSegment,
+        totalPrice,
       });
 
-      // ✅ Si la reserva ya está pagada, activar `paymentSuccess`
+      // ✅ Si la reserva ya está pagada, marcarla como pagada
       if (status === "pagado") {
         setPaymentSuccess(true);
       }
     } catch (error) {
       toast.error("❌ Error al cargar la reserva");
     }
-  };
-
-  // Función para calcular el precio total correctamente
-  const calculateTotalPrice = (bookingData) => {
-    if (bookingData.segments && bookingData.segments.length > 0) {
-      return bookingData.segments.reduce((sum, segment) => sum + segment.price, 0);
-    }
-    return bookingData.flight ? bookingData.flight.price : 0;
   };
 
   // 🟢 Cargar la reserva al montar el componente
@@ -64,14 +64,14 @@ const Pago = () => {
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (res.status === 200) {
         toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
-        setPaymentSuccess(true); // ✅ Habilitar botón de descarga
-        fetchBooking(); // Recargar datos de la reserva
+        setPaymentSuccess(true);
+        fetchBooking();
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
@@ -80,36 +80,6 @@ const Pago = () => {
     }
   };
 
-  // 📥 Descargar PDF después del pago
-  const handleDownloadPDF = async () => {
-    if (!paymentSuccess) {
-      toast.error("⚠️ Primero debes pagar la reserva.");
-      return;
-    }
-
-    try {
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pdf`,
-        {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
-          responseType: "blob", // 📂 Indicar que es un archivo PDF
-        }
-      );
-
-      // Crear enlace de descarga
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `ticket_${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      toast.error("❌ Error al descargar el ticket.");
-    }
-  };
-
-  // 🔥 Renderizar la página de pago
   return (
     <div className="payment-container">
       <h2>💳 Pago de tu Reserva</h2>
@@ -117,12 +87,14 @@ const Pago = () => {
       {booking ? (
         <>
           <h3>Detalles del Vuelo:</h3>
+
+          {/* 🔥 Si es un vuelo con tramos, mostrar todos los segmentos */}
           {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
               {booking.segments.map((segment, index) => (
                 <div key={index} className="segment">
-                  <p>✈️ Tramo {index + 1}: {segment.origin} → {segment.destination}</p>
+                  <h4>✈️ Tramo {index + 1}: {segment.origin} → {segment.destination}</h4>
                   <p>🕐 Salida: {segment.departure_time ? new Date(segment.departure_time).toLocaleString() : "Hora no disponible"}</p>
                   <p>🛬 Llegada: {segment.arrival_time ? new Date(segment.arrival_time).toLocaleString() : "Hora no disponible"}</p>
                   <p>💰 Precio: ${segment.price.toFixed(2)}</p>
@@ -131,6 +103,7 @@ const Pago = () => {
             </>
           ) : (
             <>
+              {/* 🔥 Si es un vuelo directo, mostrar como en el código original */}
               <p><strong>Tipo:</strong> Vuelo directo</p>
               <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
               <p>🕐 Salida: {booking.flight?.departure_time ? new Date(booking.flight.departure_time).toLocaleString() : "Hora no disponible"}</p>
@@ -139,16 +112,18 @@ const Pago = () => {
             </>
           )}
 
+          {/* 🔥 Datos generales de la reserva */}
           <p>🎟️ Categoría: {booking.category}</p>
-          <p>💰 Precio total: ${booking.totalPrice.toFixed(2)}</p>
+          <p><strong>💰 Precio total:</strong> ${booking.totalPrice.toFixed(2)}</p>
 
+          {/* 🔥 Botón de pago */}
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
               {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
             </button>
           ) : (
-            <button onClick={handleDownloadPDF}>
-              📥 Descargar Ticket PDF
+            <button>
+              ✅ Pago realizado
             </button>
           )}
         </>
