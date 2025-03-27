@@ -28,7 +28,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     fetchCities();
   }, []);
 
-  // ✅ Función para buscar vuelos
+  // ✅ Buscar vuelos directos o con escalas
   const fetchFlights = async () => {
     if (!selectedOrigin || !selectedDestination) {
       toast.warning("⚠️ Selecciona una ciudad de origen y destino.");
@@ -56,7 +56,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     }
   };
 
-  // 🔄 Función para buscar vuelos con escalas
+  // 🔄 Buscar rutas con escalas
   const findConnectingFlights = async (origin, destination) => {
     try {
       const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/flights`);
@@ -85,9 +85,9 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       if (possibleRoutes.length > 0) {
         const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
-        setFilteredFlights([bestRoute[0]]);
-        setSegments(bestRoute.slice(1));
-        toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
+        setFilteredFlights(bestRoute); // ✅ Mostrar todos los tramos en la búsqueda
+        setSegments(bestRoute.slice(1)); 
+        toast.success(`✅ Ruta con ${bestRoute.length - 1} escala(s) encontrada.`);
       } else {
         toast.error("❌ No se encontraron rutas con escalas.");
       }
@@ -97,9 +97,9 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     }
   };
 
-  // 🔙 Función para volver a la página de reservas
+  // 🔙 Volver a reservas
   const volverAReservas = () => {
-    window.location.href = "/reservas"; // ⚠️ Ajusta esta ruta según tu aplicación
+    window.location.href = "/reservas"; 
   };
 
   return (
