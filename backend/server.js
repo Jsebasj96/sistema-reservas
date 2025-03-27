@@ -16,7 +16,7 @@ app.use(
     origin: [
       "http://localhost:3000", // Para desarrollo local
       "https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app", // URL actual de Vercel
-      "https://sistema-reservas-frontend-pied.vercel.app" // Si tienes otra URL vieja
+      "https://sistema-reservas-eight.vercel.app" // Si tienes otra URL vieja
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Métodos permitidos
     allowedHeaders: ["Content-Type", "Authorization"], // Headers permitidos
