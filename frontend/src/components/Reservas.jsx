@@ -10,7 +10,6 @@ const Reservas = () => {
   const [segments, setSegments] = useState([]);
   const navigate = useNavigate(); 
 
-  
   useEffect(() => {
     const fetchAllFlights = async () => {
       try {
@@ -23,7 +22,10 @@ const Reservas = () => {
     fetchAllFlights();
   }, []);
 
-  
+  const handleSelectFlight = (flight) => {
+    setSelectedFlight(selectedFlight?.id === flight.id ? null : flight);
+  };
+
   const handleBooking = async () => {
     if (!selectedFlight) {
       toast.warning("⚠️ Selecciona un vuelo primero");
@@ -60,18 +62,27 @@ const Reservas = () => {
     <div>
       <h2>✈️ Vuelos disponibles</h2>
 
-      
       <button onClick={() => navigate("/busqueda-vuelos")}>Buscar Vuelo por Ciudad</button>
 
       <div>
         {flights.length > 0 ? (
           flights.map((flight, index) => (
-            <div key={index} className="flight-card">
+            <div
+              key={index}
+              className="flight-card"
+              style={{
+                border: selectedFlight?.id === flight.id ? "2px solid green" : "none",
+                padding: "10px",
+                margin: "10px 0",
+              }}
+            >
               <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
               <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
               <p>Precio Turista: ${flight.price_turista}</p>
               <p>Precio Business: ${flight.price_business}</p>
-              <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
+              <button onClick={() => handleSelectFlight(flight)}>
+                {selectedFlight?.id === flight.id ? "✅ Seleccionado" : "Seleccionar"}
+              </button>
             </div>
           ))
         ) : (
@@ -79,7 +90,6 @@ const Reservas = () => {
         )}
       </div>
 
-      
       {selectedFlight && (
         <div>
           <h3>Selecciona la categoría de tu boleto:</h3>
@@ -91,7 +101,6 @@ const Reservas = () => {
         </div>
       )}
 
-      {/* Botón de cerrar sesión  */}
       <button onClick={() => {
         localStorage.removeItem("token");
         window.location.href = "/";
