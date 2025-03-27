@@ -97,6 +97,11 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     }
   };
 
+  // 🔙 Función para volver a la página de reservas
+  const volverAReservas = () => {
+    window.location.href = "/reservas"; // ⚠️ Ajusta esta ruta según tu aplicación
+  };
+
   return (
     <div>
       <h3>🔍 Buscar Vuelo por Ciudad</h3>
@@ -123,8 +128,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
           ))}
       </select>
 
-      {/* ✅ Botón corregido */}
-      <button onClick={() => fetchFlights()}>✈️ Buscar Vuelos</button>
+      {/* ✅ Botón de búsqueda */}
+      <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
 
       {/* 📌 Mostrar resultados */}
       {filteredFlights.length > 0 && (
@@ -139,6 +144,11 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
           ))}
         </div>
       )}
+
+      {/* 🔙 Botón para volver a la página de reservas */}
+      <button onClick={volverAReservas} style={{ marginTop: "20px", backgroundColor: "#f44336", color: "white" }}>
+        ⬅️ Volver a Reservas
+      </button>
     </div>
   );
 };
