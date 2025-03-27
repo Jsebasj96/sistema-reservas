@@ -63,7 +63,16 @@ const Reservas = () => {
       <div>
         {flights.length > 0 ? (
           flights.map((flight, index) => (
-            <div key={index} className="flight-card">
+            <div 
+              key={index} 
+              className="flight-card" 
+              style={{
+                border: selectedFlight?.id === flight.id ? "3px solid green" : "1px solid #ccc",
+                padding: "10px",
+                margin: "10px",
+                borderRadius: "5px"
+              }}
+            >
               <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
               <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
               <p>Precio Turista: ${flight.price_turista}</p>
