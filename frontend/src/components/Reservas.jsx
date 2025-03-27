@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"; // ✅ Importamos useNavigate
 const Reservas = () => {
   const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
-  const [category, setCategory] = useState("turista");
+  const [category, setCategory] = useState("turista"); // ✅ Estado para categoría
   const [segments, setSegments] = useState([]);
   const navigate = useNavigate(); // ✅ Hook para redirigir a otra página
 
@@ -34,6 +34,7 @@ const Reservas = () => {
       const flightData = {
         flightId: selectedFlight.id,
         category,
+        price: category === "business" ? selectedFlight.price_business : selectedFlight.price_turista, // ✅ Agregar precio correcto
         segments: segments.map((segment) => ({
           flight_id: segment.id,
           origin: segment.origin,
@@ -78,7 +79,17 @@ const Reservas = () => {
         )}
       </div>
 
-      {selectedFlight && <button onClick={handleBooking}>Reservar ahora</button>}
+      {/* 🔹 Selección de categoría y botón de reserva */}
+      {selectedFlight && (
+        <div>
+          <h3>Selecciona la categoría de tu boleto:</h3>
+          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <option value="turista">Turista - ${selectedFlight.price_turista}</option>
+            <option value="business">Business - ${selectedFlight.price_business}</option>
+          </select>
+          <button onClick={handleBooking}>Reservar ahora</button>
+        </div>
+      )}
 
       {/* 🚪 Botón de cerrar sesión */}
       <button onClick={() => {
