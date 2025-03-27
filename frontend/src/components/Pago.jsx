@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -16,19 +16,17 @@ const Pago = () => {
     try {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const { segments, flight, status } = res.data;
 
-      // Verificar si es un vuelo directo o con tramos
+      // Verificar si es un vuelo con tramos
       const isMultiSegment = segments && segments.length > 0;
 
-      // Calcular el precio total sumando todos los tramos
+      // Calcular el precio total
       const totalPrice = isMultiSegment
-        ? segments.reduce((sum, segment) => sum + segment.price, 0)
+        ? segments.reduce((sum, segment) => sum + (segment.price || 0), 0)
         : flight?.price || 0;
 
       setBooking({
@@ -37,7 +35,6 @@ const Pago = () => {
         totalPrice,
       });
 
-      // Si la reserva ya está pagada, marcarla como pagada
       if (status === "pagado") {
         setPaymentSuccess(true);
       }
@@ -46,7 +43,6 @@ const Pago = () => {
     }
   };
 
-  // 🟢 Cargar la reserva al montar el componente
   useEffect(() => {
     if (token) {
       fetchBooking();
@@ -56,20 +52,17 @@ const Pago = () => {
     }
   }, [id, token, navigate]);
 
-  // 🎯 Simular pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
       const res = await axios.post(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.status === 200) {
-        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
+        toast.success("✅ Pago realizado con éxito.");
         setPaymentSuccess(true);
         fetchBooking();
       }
@@ -88,7 +81,6 @@ const Pago = () => {
         <>
           <h3>Detalles del Vuelo:</h3>
 
-          {/* 🔥 Si es un vuelo con tramos, mostrar todos los segmentos */}
           {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
@@ -97,26 +89,23 @@ const Pago = () => {
                   <h4>✈️ Tramo {index + 1}: {segment.origin} → {segment.destination}</h4>
                   <p>🕐 Salida: {segment.departure_time ? new Date(segment.departure_time).toLocaleString() : "Hora no disponible"}</p>
                   <p>🛬 Llegada: {segment.arrival_time ? new Date(segment.arrival_time).toLocaleString() : "Hora no disponible"}</p>
-                  <p>💰 Precio: ${segment.price.toFixed(2)}</p>
+                  <p>💰 Precio: ${segment.price ? segment.price.toFixed(2) : "N/A"}</p>
                 </div>
               ))}
             </>
           ) : (
             <>
-              {/* 🔥 Si es un vuelo directo, mostrar como en el código original */}
               <p><strong>Tipo:</strong> Vuelo directo</p>
-              <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
+              <p>✈️ {booking.flight?.origin || "Origen no disponible"} → {booking.flight?.destination || "Destino no disponible"}</p>
               <p>🕐 Salida: {booking.flight?.departure_time ? new Date(booking.flight.departure_time).toLocaleString() : "Hora no disponible"}</p>
               <p>🛬 Llegada: {booking.flight?.arrival_time ? new Date(booking.flight.arrival_time).toLocaleString() : "Hora no disponible"}</p>
               <p>💰 Precio: ${booking.flight?.price ? booking.flight.price.toFixed(2) : "N/A"}</p>
             </>
           )}
 
-          {/* 🔥 Datos generales de la reserva */}
-          <p>🎟️ Categoría: {booking.category}</p>
+          <p>🎟️ Categoría: {booking.category || "No especificada"}</p>
           <p><strong>💰 Precio total:</strong> ${booking.totalPrice.toFixed(2)}</p>
 
-          {/* 🔥 Botón de pago */}
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
               {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
