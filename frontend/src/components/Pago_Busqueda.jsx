@@ -8,20 +8,29 @@ const PagoBusqueda = () => {
   const navigate = useNavigate();
   const { selectedFlights, category, totalPrice } = location.state || {};
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false); 
-  const token = localStorage.getItem("token"); 
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const token = localStorage.getItem("token");
 
   if (!selectedFlights || selectedFlights.length === 0) {
     return <h2>No hay tramos seleccionados.</h2>;
   }
 
-  // 🔹 Simula el pago (sin depender de `bookingId`)
+  // 🔹 Simula el pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulación de espera de pago
-      toast.success("✅ Pago exitoso. Generando ticket...");
-      setPaymentSuccess(true); // ✅ Habilita la descarga
+      const res = await axios.post(
+        "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
+        { selectedFlights, category, totalPrice },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.status === 200) {
+        toast.success("✅ Pago exitoso. Generando ticket...");
+        setPaymentSuccess(true); // ✅ Habilitar la descarga
+      }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
     } finally {
@@ -29,7 +38,7 @@ const PagoBusqueda = () => {
     }
   };
 
-  // 📥 Descargar PDF
+  // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
     if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
@@ -37,9 +46,9 @@ const PagoBusqueda = () => {
     }
 
     try {
-      const flightIds = selectedFlights.map(flight => flight.id).join(",");
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIds}`, 
+      const res = await axios.post(
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple`,
+        { selectedFlights, category, totalPrice }, // ✅ Enviar los vuelos seleccionados en el body
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
