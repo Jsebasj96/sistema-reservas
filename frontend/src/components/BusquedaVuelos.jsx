@@ -84,7 +84,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
       const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
   
       const bookingData = {
-        flightId: selectedFlights[0].id, // ✅ Primer vuelo como ID principal
+        flightId: selectedFlights[0].id, //  Primer vuelo como ID principal
         category,
         segments: selectedFlights.map((segment) => ({
           flight_id: segment.id,
@@ -93,7 +93,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
           departure_time: segment.departure_time,
           arrival_time: segment.arrival_time,
         })),
-        total_price: totalPrice, // ✅ Enviar el total
+        total_price: totalPrice, //  Enviar el total
       };
   
       const res = await axios.post(
@@ -110,8 +110,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
       }, 2000);
       
     } catch (error) {
-      console.error("❌ Error al reservar:", error);
-      toast.error("❌ No se pudo realizar la reserva.");
+      console.error(" Error al reservar:", error);
+      toast.error(" No se pudo realizar la reserva.");
     }
   };
 
