@@ -15,7 +15,7 @@ const PagoBusqueda = () => {
     return <h2>No hay tramos seleccionados.</h2>;
   }
 
-  // Simula el pago
+  // 🔹 Simula el pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
@@ -46,16 +46,16 @@ const PagoBusqueda = () => {
     }
 
     try {
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
-        { flightIds: selectedFlights.map(flight => flight.id) }, // ✅ Enviar los vuelos seleccionados
+      const flightIds = selectedFlights.map(flight => flight.id).join(",");
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIds}`, // ✅ Pasar los IDs en la URL
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
         }
       );
 
-      // Crear enlace de descarga
+      // ✅ Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
