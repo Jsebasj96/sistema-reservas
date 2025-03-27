@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Reservas from "./components/Reservas";
-import BusquedaVuelos from "./components/BusquedaVuelos"; // ✅ Importamos la nueva página
-import Pago from "./components/Pago"; // Importamos la nueva página
+import BusquedaVuelos from "./components/BusquedaVuelos";
+import Pago from "./components/Pago";
+import PagoBusqueda from "./components/Pago_Busqueda"; // Importación corregida
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -39,7 +40,7 @@ function App() {
         />
 
         <Routes>
-          {/* Si ya está logueado, redirige directamente a reservas */}
+          {/* Página de inicio / Login */}
           <Route
             path="/"
             element={
@@ -49,7 +50,7 @@ function App() {
             }
           />
 
-          {/* Página de registro, también redirige si ya tiene sesión */}
+          {/* Página de registro */}
           <Route
             path="/register"
             element={
@@ -69,7 +70,7 @@ function App() {
             }
           />
 
-          {/* Nueva ruta para búsqueda de vuelos protegida */}
+          {/* Página de búsqueda de vuelos protegida */}
           <Route
             path="/busqueda-vuelos"
             element={
@@ -79,12 +80,22 @@ function App() {
             }
           />
 
-          {/* Página de pago protegida */}
+          {/* Página de pago protegida para reservas */}
           <Route
             path="/pago/:id"
             element={
               <PrivateRoute>
                 <Pago />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Página de pago protegida para la búsqueda de vuelos */}
+          <Route
+            path="/pago-busqueda"
+            element={
+              <PrivateRoute>
+                <PagoBusqueda />
               </PrivateRoute>
             }
           />

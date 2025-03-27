@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [availableCities, setAvailableCities] = useState([]);
@@ -9,6 +10,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [filteredFlights, setFilteredFlights] = useState([]);
   const [selectedFlights, setSelectedFlights] = useState([]); 
   const [category, setCategory] = useState("turista");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -62,7 +65,6 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   };
 
   const handleSelectFlight = (flight) => {
-    
     setSelectedFlights((prev) =>
       prev.some((f) => f.id === flight.id)
         ? prev.filter((f) => f.id !== flight.id)
@@ -70,49 +72,23 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
     );
   };
 
-  const handleBooking = async () => {
+  // Nueva función para redirigir a la página de pago de búsqueda
+  const handleRedirectToPayment = () => {
     if (!selectedFlights.length) {
       toast.warning("⚠️ Selecciona al menos un tramo para reservar.");
       return;
     }
-  
-    try {
-      const token = localStorage.getItem("token");
-      
-      
-      const priceField = category === "turista" ? "price_turista" : "price_business";
-      const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
-  
-      const bookingData = {
-        flightId: selectedFlights[0].id, //
+
+    const priceField = category === "turista" ? "price_turista" : "price_business";
+    const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
+
+    navigate("/pago-busqueda", {
+      state: {
+        selectedFlights,
         category,
-        segments: selectedFlights.map((segment) => ({
-          flight_id: segment.id,
-          origin: segment.origin,
-          destination: segment.destination,
-          departure_time: segment.departure_time,
-          arrival_time: segment.arrival_time,
-        })),
-        total_price: totalPrice, //
-      };
-  
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings",
-        bookingData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-  
-      toast.success("✅ Reserva exitosa. Redirigiendo a pago...");
-  
-      // Redirigir a la página de pagos después de reservar
-      setTimeout(() => {
-        window.location.href = `/pago/${res.data.booking.id}`;
-      }, 2000);
-      
-    } catch (error) {
-      console.error(" Error al reservar:", error);
-      toast.error(" No se pudo realizar la reserva.");
-    }
+        totalPrice,
+      },
+    });
   };
 
   const volverAReservas = () => {
@@ -174,7 +150,11 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
               Business - ${selectedFlights.reduce((total, flight) => total + Number(flight.price_business), 0).toLocaleString()}
             </option>
           </select>
-          <button onClick={handleBooking}>Reservar ahora</button>
+
+          {/* Botón modificado para redirigir a la sección de pago sin afectar reservas */}
+          <button onClick={handleRedirectToPayment} style={{ backgroundColor: "#4CAF50", color: "white", padding: "10px", marginTop: "10px" }}>
+            💳 Proceder al Pago
+          </button>
         </div>
       )}
 
