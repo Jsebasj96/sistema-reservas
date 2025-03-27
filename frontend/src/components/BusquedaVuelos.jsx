@@ -41,20 +41,23 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
   
-      // ✅ Validamos la estructura de la respuesta
+      // ✅ Verificamos que la respuesta tenga datos válidos
       if (!res.data || !Array.isArray(res.data.flights)) {
-        console.error("❌ Respuesta de la API inesperada:", res.data);
-        throw new Error("Estructura de datos incorrecta.");
+        console.error("❌ Respuesta inesperada de la API:", res.data);
+        toast.error("❌ Error al obtener vuelos. Inténtalo de nuevo.");
+        return;
       }
   
-      if (res.data.flights.length > 0) {
-        console.log("✅ Vuelos directos encontrados:", res.data.flights);
-        setFilteredFlights(res.data.flights); 
-        setSegments([]); 
+      const flights = res.data.flights;
+  
+      if (flights.length > 0) {
+        console.log("✅ Vuelos directos encontrados:", flights);
+        setFilteredFlights(flights); // ✅ Siempre un array
+        setSegments([]); // ✅ Sin escalas
         toast.success("✅ Vuelos directos encontrados.");
       } else {
         console.log("❌ No hay vuelos directos, buscando rutas con escalas...");
-        await findConnectingFlights(selectedOrigin, selectedDestination); // ✅ Aseguramos que se usa `await`
+        await findConnectingFlights(selectedOrigin, selectedDestination); // ✅ Aseguramos el uso de `await`
       }
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
@@ -67,18 +70,21 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     try {
       console.log("🔍 Buscando rutas con escalas...");
       const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/flights`);
-      const allFlights = res.data;
-  
-      if (!Array.isArray(allFlights)) {
-        throw new Error("Estructura incorrecta de datos en vuelos.");
+      
+      if (!Array.isArray(res.data)) {
+        console.error("❌ Estructura incorrecta de datos en vuelos:", res.data);
+        toast.error("❌ No se pudieron obtener los vuelos.");
+        return;
       }
   
+      const allFlights = res.data;
       let possibleRoutes = [];
       let visited = new Set();
   
+      // 🔄 Función para buscar rutas recursivamente
       const findRoutes = (current, path) => {
         if (current === destination) {
-          possibleRoutes.push([...path]);
+          possibleRoutes.push([...path]); // ✅ Guardamos TODA la ruta encontrada
           return;
         }
         visited.add(current);
@@ -96,10 +102,11 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
   
       if (possibleRoutes.length > 0) {
         const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
+  
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
   
-        setFilteredFlights(bestRoute); // ✅ Guardamos todos los vuelos en la ruta
-        setSegments(bestRoute.slice(1)); // ✅ Guardamos las escalas
+        setFilteredFlights([bestRoute[0]]); // ✅ Primer tramo
+        setSegments(bestRoute.slice(1)); // ✅ El resto de tramos
         toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
       } else {
         toast.error("❌ No se encontraron rutas con escalas.");
@@ -109,6 +116,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       toast.error("❌ No se pudo encontrar una ruta.");
     }
   };
+  
 
   // 🔙 Volver a reservas
   const volverAReservas = () => {
