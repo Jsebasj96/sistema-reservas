@@ -42,7 +42,7 @@ const Pago = () => {
         setPaymentSuccess(true);
       }
     } catch (error) {
-      toast.error("❌ Error al cargar la reserva");
+      toast.error("❌ Error al cargar la reserva. ");
     }
   };
 
@@ -74,7 +74,7 @@ const Pago = () => {
         fetchBooking();
       }
     } catch (error) {
-      toast.error(" Error al procesar el pago.");
+      toast.error(" Error al procesar el pago. ");
     } finally {
       setIsPaying(false);
     }
@@ -135,5 +135,5 @@ const Pago = () => {
     </div>
   );
 };
-// return
+
 export default Pago;
