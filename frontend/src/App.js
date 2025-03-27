@@ -40,7 +40,7 @@ function App() {
         />
 
         <Routes>
-          {/* Página de inicio / Login */}
+          {/* Si ya está logueado, redirige directamente a reservas */}
           <Route
             path="/"
             element={
@@ -50,7 +50,7 @@ function App() {
             }
           />
 
-          {/* Página de registro */}
+          {/* Página de registro, también redirige si ya tiene sesión */}
           <Route
             path="/register"
             element={
@@ -70,7 +70,7 @@ function App() {
             }
           />
 
-          {/* Página de búsqueda de vuelos protegida */}
+          {/* Nueva ruta para búsqueda de vuelos protegida */}
           <Route
             path="/busqueda-vuelos"
             element={
@@ -80,7 +80,7 @@ function App() {
             }
           />
 
-          {/* Página de pago protegida para reservas */}
+          {/* Página de pago protegida */}
           <Route
             path="/pago/:id"
             element={
