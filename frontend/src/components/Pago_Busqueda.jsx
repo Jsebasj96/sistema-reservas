@@ -8,31 +8,20 @@ const PagoBusqueda = () => {
   const navigate = useNavigate();
   const { selectedFlights, category, totalPrice } = location.state || {};
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [bookingId, setBookingId] = useState(null); // ✅ Guardar ID de reserva correctamente
+  const [paymentSuccess, setPaymentSuccess] = useState(false); 
   const token = localStorage.getItem("token"); 
 
   if (!selectedFlights || selectedFlights.length === 0) {
     return <h2>No hay tramos seleccionados.</h2>;
   }
 
-  // 🔹 Simula el pago
+  // 🔹 Simula el pago (sin depender de `bookingId`)
   const handlePayment = async () => {
     setIsPaying(true);
     try {
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
-        { selectedFlights, category, totalPrice }, 
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.status === 200 && res.data.bookingId) { // ✅ Asegurar que devuelve el bookingId
-        toast.success("✅ Pago exitoso. Generando ticket...");
-        setBookingId(res.data.bookingId); // ✅ Guardar ID de reserva
-        setPaymentSuccess(true); 
-      } else {
-        toast.error("❌ Error: No se recibió el ID de la reserva.");
-      }
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulación de espera de pago
+      toast.success("✅ Pago exitoso. Generando ticket...");
+      setPaymentSuccess(true); // ✅ Habilita la descarga
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
     } finally {
@@ -40,22 +29,24 @@ const PagoBusqueda = () => {
     }
   };
 
-  // 📥 Descargar PDF usando pdfkit
+  // 📥 Descargar PDF
   const handleDownloadPDF = async () => {
-    if (!paymentSuccess || !bookingId) {
+    if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
       return;
     }
 
     try {
+      const flightIds = selectedFlights.map(flight => flight.id).join(",");
       const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?bookingId=${bookingId}`, 
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIds}`, 
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
         }
       );
 
+      // ✅ Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
