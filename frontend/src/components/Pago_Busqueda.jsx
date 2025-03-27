@@ -10,6 +10,7 @@ const PagoBusqueda = () => {
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const token = localStorage.getItem("token");
+  const [bookingId, setBookingId] = useState(null); // Nuevo estado para el bookingId
 
   if (!selectedFlights || selectedFlights.length === 0) {
     return <h2>No hay tramos seleccionados.</h2>;
@@ -17,26 +18,35 @@ const PagoBusqueda = () => {
 
   // 🔹 Simula el pago
   const handlePayment = async () => {
-    setIsPaying(true);
-    try {
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
-        { selectedFlights, category, totalPrice },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.status === 200) {
-        toast.success("✅ Pago exitoso. Generando ticket...");
-        setPaymentSuccess(true); // ✅ Habilitar la descarga
+  setIsPaying(true);
+  try {
+    const res = await axios.post(
+      "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
+      { selectedFlights, category, totalPrice },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    } catch (error) {
-      toast.error("❌ Error al procesar el pago.");
-    } finally {
-      setIsPaying(false);
+    );
+
+    if (res.status === 200) {
+      toast.success("✅ Pago exitoso. Generando ticket...");
+
+      // 📌 Asegúrate de obtener el ID de la nueva reserva
+      const newBookingId = res.data.bookingId || res.data.id;
+      if (!newBookingId) {
+        toast.error("⚠️ No se recibió un bookingId válido.");
+        return;
+      }
+
+      setBookingId(newBookingId); // Guardar el nuevo ID
+      setPaymentSuccess(true);
     }
-  };
+  } catch (error) {
+    toast.error("❌ Error al procesar el pago.");
+  } finally {
+    setIsPaying(false);
+  }
+};
 
   // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
@@ -52,17 +62,6 @@ const PagoBusqueda = () => {
         return;
       }
   
-      // 📌 Verificar si hay vuelos seleccionados
-      if (selectedFlights.length === 0) {
-        toast.error("⚠️ No hay vuelos seleccionados.");
-        return;
-      }
-  
-      console.log("selectedFlights:", selectedFlights); // Ver estructura de datos
-  
-      // 📌 Intentar obtener el bookingId
-      const bookingId = selectedFlights[0]?.bookingId || selectedFlights[0]?.id;
-  
       if (!bookingId) {
         toast.error("⚠️ No se encontró un ID de reserva válido.");
         return;
@@ -73,9 +72,7 @@ const PagoBusqueda = () => {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${bookingId}/pdf`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
         }
       );
@@ -83,8 +80,6 @@ const PagoBusqueda = () => {
       if (!res.data || res.data.size === 0) {
         throw new Error("El PDF recibido está vacío.");
       }
-  
-      console.log("PDF recibido correctamente:", res);
   
       // Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
