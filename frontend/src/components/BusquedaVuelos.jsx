@@ -182,7 +182,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
         ⬅️ Volver a Reservas
       </button>
 
-      {/* Botón de cerrar sesión */}
+      
       <button
         onClick={() => {
           localStorage.removeItem("token");

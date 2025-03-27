@@ -26,7 +26,7 @@ const Pago = () => {
       
       const isMultiSegment = segments && segments.length > 0;
 
-      // Calcular el precio total sumando todos los tramos
+      
       const totalPrice = isMultiSegment
         ? segments.reduce((sum, segment) => sum + segment.price, 0)
         : flight?.price || 0;
@@ -37,7 +37,7 @@ const Pago = () => {
         totalPrice,
       });
 
-      // Si la reserva ya está pagada, marcarla como pagada
+      
       if (status === "pagado") {
         setPaymentSuccess(true);
       }
