@@ -7,11 +7,11 @@ const Pago = () => {
   const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false); // ✅ Estado para pago exitoso
+  const [paymentSuccess, setPaymentSuccess] = useState(false); // 
   const navigate = useNavigate();
   const token = localStorage.getItem("token"); // ✅ Obtener token
 
-  // 🔥 Función para cargar la reserva
+  // Función para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
