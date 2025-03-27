@@ -46,11 +46,20 @@ const PagoBusqueda = () => {
     }
   
     try {
+      const token = localStorage.getItem("token"); // 🔹 Asegurar que el token está disponible
+      if (!token) {
+        toast.error("❌ No hay sesión activa. Inicia sesión.");
+        return;
+      }
+  
       const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple", // ✅ POST en lugar de GET
-        { flightIds: selectedFlights.map(flight => flight.id) }, // ✅ Enviar IDs en el cuerpo
+        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
+        { flightIds: selectedFlights.map(flight => flight.id) }, // 🔹 Enviar IDs en el body
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`, // 🔹 Enviar token correctamente
+            "Content-Type": "application/json" 
+          },
           responseType: "blob",
         }
       );
