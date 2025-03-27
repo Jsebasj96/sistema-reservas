@@ -44,17 +44,17 @@ const PagoBusqueda = () => {
       toast.error("⚠️ Primero debes pagar la reserva.");
       return;
     }
-
+  
     try {
       const res = await axios.post(
-        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple`,
-        { selectedFlights, category, totalPrice }, // ✅ Enviar los vuelos seleccionados en el body
+        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple", // ✅ POST en lugar de GET
+        { flightIds: selectedFlights.map(flight => flight.id) }, // ✅ Enviar IDs en el cuerpo
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
         }
       );
-
+  
       // ✅ Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
