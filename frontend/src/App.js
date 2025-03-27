@@ -5,7 +5,7 @@ import Register from "./components/Register";
 import Reservas from "./components/Reservas";
 import BusquedaVuelos from "./components/BusquedaVuelos";
 import Pago from "./components/Pago";
-import PagoBusqueda from "./components/Pago_Busqueda"; // Importación corregida
+import PagoBusqueda from "./components/Pago_Busqueda";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
