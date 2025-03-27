@@ -7,8 +7,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
   const [filteredFlights, setFilteredFlights] = useState([]);
-  const [selectedFlights, setSelectedFlights] = useState([]); // 
-  const [category, setCategory] = useState("turista"); // 
+  const [selectedFlights, setSelectedFlights] = useState([]); 
+  const [category, setCategory] = useState("turista");
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -62,7 +62,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   };
 
   const handleSelectFlight = (flight) => {
-    // Si ya está en la lista, lo eliminamos; si no, lo agregamos
+    
     setSelectedFlights((prev) =>
       prev.some((f) => f.id === flight.id)
         ? prev.filter((f) => f.id !== flight.id)
@@ -79,7 +79,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
     try {
       const token = localStorage.getItem("token");
       
-      // 📌 Se determina la categoría y el precio total
+      
       const priceField = category === "turista" ? "price_turista" : "price_business";
       const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
   

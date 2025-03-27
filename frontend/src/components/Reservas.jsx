@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // ✅ Importamos useNavigate
+import { useNavigate } from "react-router-dom"; 
 
 const Reservas = () => {
   const [flights, setFlights] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
-  const [category, setCategory] = useState("turista"); // ✅ Estado para categoría
+  const [category, setCategory] = useState("turista"); 
   const [segments, setSegments] = useState([]);
-  const navigate = useNavigate(); // ✅ Hook para redirigir a otra página
+  const navigate = useNavigate(); 
 
   // 🔹 Obtener todos los vuelos
   useEffect(() => {
@@ -34,7 +34,7 @@ const Reservas = () => {
       const flightData = {
         flightId: selectedFlight.id,
         category,
-        price: category === "business" ? selectedFlight.price_business : selectedFlight.price_turista, // ✅ Agregar precio correcto
+        price: category === "business" ? selectedFlight.price_business : selectedFlight.price_turista, 
         segments: segments.map((segment) => ({
           flight_id: segment.id,
           origin: segment.origin,
