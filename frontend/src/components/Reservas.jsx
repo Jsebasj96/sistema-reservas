@@ -37,6 +37,11 @@ const Reservas = () => {
   
     fetchCities();
   }, []);
+  
+  // 🔥 Imprimir en consola cada vez que cambie availableCities
+  useEffect(() => {
+    console.log("🚀 Ciudades actualizadas:", availableCities);
+  }, [availableCities]);
 
   // 🔹 Obtener todos los vuelos
   useEffect(() => {
