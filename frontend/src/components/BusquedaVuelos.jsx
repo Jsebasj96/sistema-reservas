@@ -93,7 +93,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
           departure_time: segment.departure_time,
           arrival_time: segment.arrival_time,
         })),
-        total_price: totalPrice, //  Enviar el total
+        total_price: totalPrice, //
       };
   
       const res = await axios.post(
