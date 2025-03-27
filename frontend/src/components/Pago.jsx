@@ -21,15 +21,29 @@ const Pago = () => {
         }
       );
 
-      setBooking(res.data);
+      // Verificamos si la reserva tiene tramos o es un vuelo directo
+      const { segments, flight, status } = res.data;
+      setBooking({
+        ...res.data,
+        isMultiSegment: segments && segments.length > 0, // Si tiene segmentos, es vuelo con tramos
+        totalPrice: calculateTotalPrice(res.data),
+      });
 
       // ✅ Si la reserva ya está pagada, activar `paymentSuccess`
-      if (res.data.status === "pagado") {
+      if (status === "pagado") {
         setPaymentSuccess(true);
       }
     } catch (error) {
       toast.error("❌ Error al cargar la reserva");
     }
+  };
+
+  // Función para calcular el precio total correctamente
+  const calculateTotalPrice = (bookingData) => {
+    if (bookingData.segments && bookingData.segments.length > 0) {
+      return bookingData.segments.reduce((sum, segment) => sum + segment.price, 0);
+    }
+    return bookingData.flight ? bookingData.flight.price : 0;
   };
 
   // 🟢 Cargar la reserva al montar el componente
@@ -103,14 +117,15 @@ const Pago = () => {
       {booking ? (
         <>
           <h3>Detalles del Vuelo:</h3>
-          {booking.segments && booking.segments.length > 0 ? (
+          {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
               {booking.segments.map((segment, index) => (
                 <div key={index} className="segment">
                   <p>✈️ Tramo {index + 1}: {segment.origin} → {segment.destination}</p>
-                  <p>🕐 Salida: {new Date(segment.departure_time).toLocaleString()}</p>
-                  <p>🛬 Llegada: {new Date(segment.arrival_time).toLocaleString()}</p>
+                  <p>🕐 Salida: {segment.departure_time ? new Date(segment.departure_time).toLocaleString() : "Hora no disponible"}</p>
+                  <p>🛬 Llegada: {segment.arrival_time ? new Date(segment.arrival_time).toLocaleString() : "Hora no disponible"}</p>
+                  <p>💰 Precio: ${segment.price.toFixed(2)}</p>
                 </div>
               ))}
             </>
@@ -118,17 +133,18 @@ const Pago = () => {
             <>
               <p><strong>Tipo:</strong> Vuelo directo</p>
               <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
-              <p>🕐 Salida: {new Date(booking.flight?.departure_time).toLocaleString()}</p>
-              <p>🛬 Llegada: {new Date(booking.flight?.arrival_time).toLocaleString()}</p>
+              <p>🕐 Salida: {booking.flight?.departure_time ? new Date(booking.flight.departure_time).toLocaleString() : "Hora no disponible"}</p>
+              <p>🛬 Llegada: {booking.flight?.arrival_time ? new Date(booking.flight.arrival_time).toLocaleString() : "Hora no disponible"}</p>
+              <p>💰 Precio: ${booking.flight?.price ? booking.flight.price.toFixed(2) : "N/A"}</p>
             </>
           )}
 
           <p>🎟️ Categoría: {booking.category}</p>
-          <p>💰 Precio total: ${booking.price ? Number(booking.price).toFixed(2) : "N/A"}</p>
+          <p>💰 Precio total: ${booking.totalPrice.toFixed(2)}</p>
 
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
-              {isPaying ? "Procesando pago..." : `Pagar $${booking.price}`}
+              {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
             </button>
           ) : (
             <button onClick={handleDownloadPDF}>
