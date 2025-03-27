@@ -169,7 +169,7 @@ const Reservas = () => {
         </div>
       ) : (
         <div>
-          {flights.length > 0 ? (
+          {/*{flights.length > 0 ? (
             flights.map((flight, index) => (
               <div key={index} className="flight-card">
                 <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
@@ -181,7 +181,7 @@ const Reservas = () => {
             ))
           ) : (
             <p>No hay vuelos disponibles en este momento</p>
-          )}
+          )}*/}
         </div>
       )}
 
