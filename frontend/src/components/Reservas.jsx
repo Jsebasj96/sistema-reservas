@@ -3,57 +3,38 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Reservas = () => {
-  // Estados para vuelos y ciudades
   const [flights, setFlights] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
-  
-  // Estados para la búsqueda
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
   const [searchMode, setSearchMode] = useState(false);
-  
-  // Estados para vuelo seleccionado y reserva
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [category, setCategory] = useState("turista");
   const [segments, setSegments] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
-
-  // Obtener el rol del usuario (si es necesario para mostrar funciones de admin)
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      // Aquí podrías usar setUserRole(decodedToken.role) si lo necesitas en el UI
-    }
-  }, []);
 
   // 🔹 Obtener ciudades disponibles desde el backend
   useEffect(() => {
     const fetchCities = async () => {
       try {
         const response = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
-        
-        console.log("📌 Respuesta API:", response.data);
-  
+
         if (Array.isArray(response.data)) {
-          const citiesList = response.data.map(item => (typeof item === "object" && item !== null ? item.city : item));
-          console.log("✅ Ciudades extraídas:", citiesList);
-          setAvailableCities(citiesList); // Guardar solo strings
+          const citiesList = response.data.map((item) => item.city);
+          setAvailableCities(citiesList);
         } else {
-          console.error("❌ La API no devolvió un array válido.");
-          toast.error("❌ Error al obtener ciudades.");
+          console.error("❌ Error: la API no devolvió un array válido.");
         }
-        
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
-        toast.error("❌ Error al obtener ciudades.");
+        toast.error("❌ No se pudieron cargar las ciudades.");
       }
     };
-  
+
     fetchCities();
   }, []);
 
-  // 🔹 Obtener todos los vuelos (lista completa)
+  // 🔹 Obtener todos los vuelos disponibles
   useEffect(() => {
     const fetchAllFlights = async () => {
       try {
@@ -86,7 +67,7 @@ const Reservas = () => {
       setSegments(res.data.segments);
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
-      toast.error("❌ Error al buscar vuelos.");
+      toast.error("❌ No se pudieron buscar vuelos.");
     }
   };
 
@@ -98,27 +79,27 @@ const Reservas = () => {
     }
     try {
       const token = localStorage.getItem("token");
-      // Se envía el id del vuelo directo; si hay segmentos, se envían en "segments"
       const flightData = {
         flightId: selectedFlight.id,
         category,
-        segments: segments.map(segment => ({
+        segments: segments.map((segment) => ({
           flight_id: segment.id,
           origin: segment.origin,
           destination: segment.destination,
           departure_time: segment.departure_time,
           arrival_time: segment.arrival_time,
-        }))
+        })),
       };
 
       const res = await axios.post("https://sistema-reservas-final.onrender.com/api/bookings", flightData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       toast.success("✅ Reserva exitosa. ¡Vamos a pagar!");
       setTimeout(() => (window.location.href = `/pago/${res.data.booking.id}`), 2000);
     } catch (error) {
       console.error("❌ Error al reservar el vuelo:", error);
-      toast.error("❌ Error al reservar el vuelo");
+      toast.error("❌ No se pudo realizar la reserva.");
     }
   };
 
@@ -136,33 +117,24 @@ const Reservas = () => {
           <h3>Buscar Vuelo por Ciudad</h3>
           <label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
-          <option value="">Seleccione una ciudad</option>
-          {availableCities.map((cityObj, index) => {
-            const cityName = cityObj.city || cityObj; // Si es un objeto, extrae el nombre
-            return (
-              <option key={index} value={cityName}>
-                {cityName}
+            <option value="">Seleccione una ciudad</option>
+            {availableCities.map((city, index) => (
+              <option key={index} value={city}>
+                {city}
               </option>
-            );
-          })}
+            ))}
           </select>
 
           <label>Ciudad de Destino:</label>
           <select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
-          <option value="">Seleccione una ciudad</option>
-          {availableCities
-            .filter(cityObj => {
-              const cityName = cityObj.city || cityObj;
-              return cityName !== selectedOrigin;
-            })
-            .map((cityObj, index) => {
-              const cityName = cityObj.city || cityObj;
-              return (
-                <option key={index} value={cityName}>
-                  {cityName}
+            <option value="">Seleccione una ciudad</option>
+            {availableCities
+              .filter((city) => city !== selectedOrigin)
+              .map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
                 </option>
-              );
-            })}
+              ))}
           </select>
 
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
@@ -195,7 +167,6 @@ const Reservas = () => {
           )}
         </div>
       ) : (
-        // Modo lista de vuelos sin filtro
         <div>
           {flights.length > 0 ? (
             flights.map((flight, index) => (
@@ -216,7 +187,7 @@ const Reservas = () => {
       {selectedFlight && <button onClick={handleBooking}>Reservar ahora</button>}
 
       {/* 🚪 Botón de cerrar sesión */}
-      <button onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}>
+      <button onClick={() => localStorage.removeItem("token") || (window.location.href = "/")}>
         Cerrar sesión
       </button>
     </div>
