@@ -60,7 +60,7 @@ const Reservas = () => {
       <h2>✈️ Vuelos disponibles</h2>
 
       {/* 🔄 Botón que redirige a la búsqueda de vuelos en una nueva página */}
-      <button onClick={() => navigate("/busqueda-vuelos")}>🔍 Buscar Vuelo por Ciudad</button>
+      <button onClick={() => navigate("/busqueda-vuelos")}>Buscar Vuelo por Ciudad</button>
 
       <div>
         {flights.length > 0 ? (
