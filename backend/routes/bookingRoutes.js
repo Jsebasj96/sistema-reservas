@@ -153,4 +153,25 @@ router.post("/:id/pay", verifyToken, async (req, res) => {
     }
   });
 
+// Ruta para pagar múltiples reservas
+router.post("/pay-multiple", verifyToken, async (req, res) => {
+  try {
+    const { selectedFlights, category, totalPrice } = req.body;
+
+    if (!selectedFlights || selectedFlights.length === 0) {
+      return res.status(400).json({ error: "No hay vuelos seleccionados" });
+    }
+
+    // Simular lógica de pago
+    console.log("Procesando pago de múltiples vuelos...", selectedFlights);
+
+    // Aquí podrías agregar la lógica de pago real si usas Stripe, PayPal, etc.
+
+    res.status(200).json({ message: "Pago exitoso" });
+  } catch (error) {
+    console.error("Error en el pago múltiple:", error);
+    res.status(500).json({ error: "Error en el pago" });
+  }
+});
+
 module.exports = router;
