@@ -11,7 +11,7 @@ const Pago = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // Funcion para cargar la reserva
+  
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
@@ -23,7 +23,7 @@ const Pago = () => {
 
       const { segments, flight, status } = res.data;
 
-      // Verificar si es un vuelo directo o con tramos
+      
       const isMultiSegment = segments && segments.length > 0;
 
       // Calcular el precio total sumando todos los tramos
