@@ -175,41 +175,52 @@ router.post("/pay-multiple", verifyToken, async (req, res) => {
 });
 
 // ✅ Generar el PDF de múltiples reservas pagadas
-router.post("/pdf-multiple", verifyToken, async (req, res) => {  // 🔹 POST en lugar de GET
+router.post("/pdf-multiple", verifyToken, async (req, res) => {
   try {
-    const { flightIds } = req.body; // 🔹 Recibir datos desde el body
+    const { flightIds } = req.body; // ✅ Recibe los IDs en el body
 
     if (!flightIds || !flightIds.length) {
       return res.status(400).json({ error: "No se proporcionaron IDs de vuelos" });
     }
 
-    const bookings = await Booking.findAll({ 
-      where: { flight_id: flightIds, userId: req.user.userId } 
-    });
+    const bookings = await getBookingsByFlightIds(flightIds, req.user.userId);
 
     if (!bookings.length) {
       return res.status(404).json({ message: "No se encontraron reservas" });
     }
 
-    const pdfDoc = new PDFDocument();
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=ticket_vuelos.pdf`);
+    const doc = new PDFDocument();
+    let buffers = [];
 
-    pdfDoc.pipe(res);
-    pdfDoc.text("✈️ Ticket de Vuelo\n\n");
-
-    bookings.forEach((booking, index) => {
-      pdfDoc.text(`Vuelo ${index + 1}: ${booking.origin} → ${booking.destination}`);
-      pdfDoc.text(`Fecha de salida: ${booking.departure_time}`);
-      pdfDoc.text(`Categoría: ${booking.category}`);
-      pdfDoc.text(`Precio: $${booking.price}\n\n`);
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=ticket_vuelos.pdf");
+      res.send(pdfBuffer);
     });
 
-    pdfDoc.end();
+    doc.font("Helvetica-Bold").fontSize(24).text("Airline Express", { align: "center" });
+    doc.moveDown();
+
+    bookings.forEach((booking, index) => {
+      doc.fontSize(16).text(`Vuelo ${index + 1}: ${booking.origin} → ${booking.destination}`);
+      doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+      doc.text(`Categoría: ${booking.category.toUpperCase()}`);
+      doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
+      doc.moveDown();
+    });
+
+    doc.end();
   } catch (error) {
-    console.error("Error al generar PDF:", error);
+    console.error("Error al generar el PDF:", error);
     res.status(500).json({ message: "Error al generar el ticket PDF" });
   }
 });
+
+// ✅ Función para obtener reservas por IDs de vuelo y usuario
+async function getBookingsByFlightIds(flightIds, userId) {
+  return await Booking.findAll({ where: { flight_id: flightIds, user_id: userId } });
+}
 
 module.exports = router;
