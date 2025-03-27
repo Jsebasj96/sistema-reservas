@@ -19,18 +19,20 @@ const Reservas = () => {
       try {
         const response = await axios.get("https://sistema-reservas-final.onrender.com/api/flights/cities");
   
-        console.log("📌 Respuesta API:", response.data); // Verificar formato
+        console.log("📌 Respuesta API:", response.data);
   
         if (Array.isArray(response.data)) {
-          const citiesList = response.data.map(item => item.city); // Extraer solo los nombres
+          const citiesList = response.data.map(item => item.city); // Extraer solo el nombre de la ciudad
           console.log("✅ Ciudades extraídas:", citiesList);
           setAvailableCities(citiesList);
         } else {
-          throw new Error("La API no devolvió un array válido");
+          console.error("❌ La API no devolvió un array válido.");
+          toast.error("❌ Error al obtener ciudades.");
         }
+  
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
-        toast.error("❌ No se pudieron cargar las ciudades.");
+        toast.error("❌ Error al obtener ciudades.");
       }
     };
   
@@ -116,19 +118,21 @@ const Reservas = () => {
           <h3>Buscar Vuelo por Ciudad</h3>
           <label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
-          <option value="">Seleccione una ciudad</option>
-          {availableCities.map((city, index) => (
-            <option key={index} value={city}>{city}</option>
-          ))}
-        </select>
+            <option value="">Seleccione una ciudad</option>
+            {availableCities.map((city, index) => (
+              <option key={index} value={city}>{city}</option>
+            ))}
+          </select>
 
           <label>Ciudad de Destino:</label>
           <select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
-          <option value="">Seleccione una ciudad</option>
-          {availableCities.map((city, index) => (
-            <option key={index} value={city}>{city}</option>
-          ))}
-        </select>
+            <option value="">Seleccione una ciudad</option>
+            {availableCities
+              .filter(city => city !== selectedOrigin)
+              .map((city, index) => (
+                <option key={index} value={city}>{city}</option>
+              ))}
+          </select>
 
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
 
