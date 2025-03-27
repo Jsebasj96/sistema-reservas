@@ -46,21 +46,22 @@ const PagoBusqueda = () => {
     }
   
     try {
-      const token = localStorage.getItem("token"); // 🔹 Asegurar que el token está disponible
+      const token = localStorage.getItem("token"); // 🔹 Obtener token del localStorage
       if (!token) {
         toast.error("❌ No hay sesión activa. Inicia sesión.");
         return;
       }
   
-      const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
-        { flightIds: selectedFlights.map(flight => flight.id) }, // 🔹 Enviar IDs en el body
+      const flightIdsString = selectedFlights.map(flight => flight.id).join(","); // 🔹 Convertir IDs a string separado por comas
+  
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIdsString}`, 
         {
           headers: { 
-            Authorization: `Bearer ${token}`, // 🔹 Enviar token correctamente
+            Authorization: `Bearer ${token}`, // 🔹 Incluir el token en los headers
             "Content-Type": "application/json" 
           },
-          responseType: "blob",
+          responseType: "blob", // 🔹 Importante para recibir el PDF correctamente
         }
       );
   
@@ -68,11 +69,12 @@ const PagoBusqueda = () => {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `ticket_vuelos.pdf`);
+      link.setAttribute("download", "ticket_vuelos.pdf");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
+      console.error("❌ Error al descargar el ticket:", error);
       toast.error("❌ Error al descargar el ticket.");
     }
   };
