@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
+const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [availableCities, setAvailableCities] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
@@ -41,8 +41,9 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
 
-      // ✅ Verificamos que la respuesta tenga datos válidos
       console.log("👉 Respuesta de API:", res.data);
+
+      // ✅ Verificamos que la respuesta tenga datos válidos
       if (!res.data || !Array.isArray(res.data.flights)) {
         console.error("❌ Respuesta inesperada de la API:", res.data);
         toast.error("❌ Error al obtener vuelos. Inténtalo de nuevo.");
@@ -56,7 +57,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
 
       if (flights.length > 0) {
         console.log("✅ Vuelos directos encontrados:", flights);
-        setFilteredFlights(flights); // ✅ Siempre un array
+        setFilteredFlights(flights);
         setSegments([]); // ✅ Sin escalas
         toast.success("✅ Vuelos directos encontrados.");
       } else {
@@ -88,7 +89,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       // 🔄 Función para buscar rutas recursivamente
       const findRoutes = (current, path) => {
         if (current === destination) {
-          possibleRoutes.push([...path]);
+          possibleRoutes.push([...path]); // ✅ Guardamos TODA la ruta encontrada
           return;
         }
         visited.add(current);
@@ -109,8 +110,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
 
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
 
-        setFilteredFlights([bestRoute[0]]);
-        setSegments(bestRoute.slice(1));
+        setFilteredFlights([bestRoute[0]]); // ✅ Primer tramo
+        setSegments(bestRoute.slice(1)); // ✅ El resto de tramos
         toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
       } else {
         toast.error("❌ No se encontraron rutas con escalas.");
@@ -153,7 +154,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       </select>
 
       {/* ✅ Botón de búsqueda */}
-      <button onClick={() => fetchFlights()}> Buscar Vuelos</button>
+      <button onClick={fetchFlights}> Buscar Vuelos</button>
 
       {/* 📌 Mostrar resultados */}
       {filteredFlights.length > 0 && (
