@@ -11,7 +11,7 @@ const Pago = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // 🔥 Función para cargar la reserva
+  // Funcion para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
