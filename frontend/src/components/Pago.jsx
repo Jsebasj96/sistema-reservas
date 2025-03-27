@@ -51,12 +51,12 @@ const Pago = () => {
     if (token) {
       fetchBooking();
     } else {
-      toast.error("⚠️ No estás autenticado.");
+      toast.error(" No estás autenticado.");
       navigate("/login");
     }
   }, [id, token, navigate]);
 
-  // Simular pago
+
   const handlePayment = async () => {
     setIsPaying(true);
     try {
@@ -69,12 +69,12 @@ const Pago = () => {
       );
 
       if (res.status === 200) {
-        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
+        toast.success(" Pago realizado con éxito. Tu ticket está listo.");
         setPaymentSuccess(true);
         fetchBooking();
       }
     } catch (error) {
-      toast.error("❌ Error al procesar el pago.");
+      toast.error(" Error al procesar el pago.");
     } finally {
       setIsPaying(false);
     }
@@ -135,5 +135,5 @@ const Pago = () => {
     </div>
   );
 };
-
+// return
 export default Pago;
