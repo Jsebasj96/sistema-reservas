@@ -60,7 +60,7 @@ const Reservas = () => {
     <div>
       <h2>✈️ Vuelos disponibles</h2>
 
-      {/* 🔄 Botón que redirige a la búsqueda de vuelos en una nueva página */}
+      {/* Botón que redirige a la búsqueda de vuelos en una nueva página */}
       <button onClick={() => navigate("/busqueda-vuelos")}>Buscar Vuelo por Ciudad</button>
 
       <div>
@@ -79,7 +79,7 @@ const Reservas = () => {
         )}
       </div>
 
-      {/* 🔹 Selección de categoría y botón de reserva */}
+      {/* Selección de categoría y botón de reserva */}
       {selectedFlight && (
         <div>
           <h3>Selecciona la categoría de tu boleto:</h3>
@@ -91,7 +91,7 @@ const Reservas = () => {
         </div>
       )}
 
-      {/* 🚪 Botón de cerrar sesión */}
+      {/* Botón de cerrar sesión */}
       <button onClick={() => {
         localStorage.removeItem("token");
         window.location.href = "/";

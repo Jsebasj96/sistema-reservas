@@ -104,7 +104,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   
       toast.success("✅ Reserva exitosa. Redirigiendo a pago...");
   
-      // ⏳ Redirigir a la página de pagos después de reservar
+      // Redirigir a la página de pagos después de reservar
       setTimeout(() => {
         window.location.href = `/pago/${res.data.booking.id}`;
       }, 2000);
