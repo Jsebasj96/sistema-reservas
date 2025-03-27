@@ -69,12 +69,12 @@ const Pago = () => {
       );
 
       if (res.status === 200) {
-        toast.success(" Pago realizado con éxito. Tu ticket está listo.");
+        toast.success(" Pago realizado con exito. Tu ticket esta listo.");
         setPaymentSuccess(true);
         fetchBooking();
       }
     } catch (error) {
-      toast.error(" Error al procesar el pago. ");
+      toast.error(" Error al procesar el pago.");
     } finally {
       setIsPaying(false);
     }
@@ -119,7 +119,7 @@ const Pago = () => {
           {/* Botón de pago */}
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
-              {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
+              {isPaying ? "Procesando pago... " : `Pagar $${booking.totalPrice.toFixed(2)}`}
             </button>
           ) : (
             <button>
@@ -131,7 +131,7 @@ const Pago = () => {
         <p>Cargando reserva...</p>
       )}
 
-      <button onClick={() => navigate("/reservas")}>🔙 Volver</button>
+      <button onClick={() => navigate("/reservas ")}>🔙 Volver</button>
     </div>
   );
 };
