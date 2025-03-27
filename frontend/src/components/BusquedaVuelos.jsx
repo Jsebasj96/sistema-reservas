@@ -178,8 +178,6 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
         </div>
       )}
 
-      <p>{filteredFlights.length === 0 && "🔎 No se encontraron vuelos directos ni rutas con escalas."}</p>
-
       <button onClick={volverAReservas} style={{ marginTop: "20px", backgroundColor: "#f44336", color: "white" }}>
         ⬅️ Volver a Reservas
       </button>
