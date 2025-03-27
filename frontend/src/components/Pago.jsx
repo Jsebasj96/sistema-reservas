@@ -46,7 +46,7 @@ const Pago = () => {
     }
   };
 
-  // Cargar la reserva al montar el componente
+  
   useEffect(() => {
     if (token) {
       fetchBooking();
