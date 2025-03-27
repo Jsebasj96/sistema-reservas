@@ -34,22 +34,26 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       toast.warning("⚠️ Selecciona una ciudad de origen y destino.");
       return;
     }
-  
+
     try {
       console.log("🔍 Buscando vuelos de:", selectedOrigin, "a", selectedDestination);
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
-  
+
       // ✅ Verificamos que la respuesta tenga datos válidos
+      console.log("👉 Respuesta de API:", res.data);
       if (!res.data || !Array.isArray(res.data.flights)) {
         console.error("❌ Respuesta inesperada de la API:", res.data);
         toast.error("❌ Error al obtener vuelos. Inténtalo de nuevo.");
         return;
       }
-  
+
       const flights = res.data.flights;
-  
+      console.log("👉 Tipo de flights:", typeof flights, flights);
+      console.log("👉 setFilteredFlights:", typeof setFilteredFlights);
+      console.log("👉 setSegments:", typeof setSegments);
+
       if (flights.length > 0) {
         console.log("✅ Vuelos directos encontrados:", flights);
         setFilteredFlights(flights); // ✅ Siempre un array
@@ -57,7 +61,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         toast.success("✅ Vuelos directos encontrados.");
       } else {
         console.log("❌ No hay vuelos directos, buscando rutas con escalas...");
-        await findConnectingFlights(selectedOrigin, selectedDestination); // ✅ Aseguramos el uso de `await`
+        await findConnectingFlights(selectedOrigin, selectedDestination);
       }
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
@@ -70,43 +74,43 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
     try {
       console.log("🔍 Buscando rutas con escalas...");
       const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/flights`);
-      
+
       if (!Array.isArray(res.data)) {
         console.error("❌ Estructura incorrecta de datos en vuelos:", res.data);
         toast.error("❌ No se pudieron obtener los vuelos.");
         return;
       }
-  
+
       const allFlights = res.data;
       let possibleRoutes = [];
       let visited = new Set();
-  
+
       // 🔄 Función para buscar rutas recursivamente
       const findRoutes = (current, path) => {
         if (current === destination) {
-          possibleRoutes.push([...path]); // ✅ Guardamos TODA la ruta encontrada
+          possibleRoutes.push([...path]);
           return;
         }
         visited.add(current);
-  
+
         allFlights
           .filter((f) => f.origin === current && !visited.has(f.destination))
           .forEach((nextFlight) => {
             findRoutes(nextFlight.destination, [...path, nextFlight]);
           });
-  
+
         visited.delete(current);
       };
-  
+
       findRoutes(origin, []);
-  
+
       if (possibleRoutes.length > 0) {
         const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
-  
+
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
-  
-        setFilteredFlights([bestRoute[0]]); // ✅ Primer tramo
-        setSegments(bestRoute.slice(1)); // ✅ El resto de tramos
+
+        setFilteredFlights([bestRoute[0]]);
+        setSegments(bestRoute.slice(1));
         toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
       } else {
         toast.error("❌ No se encontraron rutas con escalas.");
@@ -116,11 +120,10 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       toast.error("❌ No se pudo encontrar una ruta.");
     }
   };
-  
 
   // 🔙 Volver a reservas
   const volverAReservas = () => {
-    window.location.href = "/reservas"; 
+    window.location.href = "/reservas";
   };
 
   return (
@@ -150,7 +153,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       </select>
 
       {/* ✅ Botón de búsqueda */}
-      <button onClick={fetchFlights}> Buscar Vuelos</button>
+      <button onClick={() => fetchFlights()}> Buscar Vuelos</button>
 
       {/* 📌 Mostrar resultados */}
       {filteredFlights.length > 0 && (
