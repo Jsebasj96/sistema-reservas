@@ -9,6 +9,7 @@ const PagoBusqueda = () => {
   const { selectedFlights, category, totalPrice } = location.state || {};
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [bookingId, setBookingId] = useState(null); // ✅ Guardar ID de reserva
   const token = localStorage.getItem("token"); 
 
   if (!selectedFlights || selectedFlights.length === 0) {
@@ -21,15 +22,14 @@ const PagoBusqueda = () => {
     try {
       const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
-        { selectedFlights, category, totalPrice }, // ✅ Enviar datos de los vuelos seleccionados
-        {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Autenticación
-        }
+        { selectedFlights, category, totalPrice }, 
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.status === 200) {
         toast.success("✅ Pago exitoso. Generando ticket...");
-        setPaymentSuccess(true); // ✅ Habilitar la descarga
+        setBookingId(res.data.bookingId); // ✅ Guardar ID de reserva para el PDF
+        setPaymentSuccess(true); 
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
@@ -38,24 +38,22 @@ const PagoBusqueda = () => {
     }
   };
 
-  // 📥 Descargar PDF después del pago
+  // 📥 Descargar PDF usando pdfkit
   const handleDownloadPDF = async () => {
-    if (!paymentSuccess) {
+    if (!paymentSuccess || !bookingId) {
       toast.error("⚠️ Primero debes pagar la reserva.");
       return;
     }
 
     try {
-      const flightIds = selectedFlights.map(flight => flight.id).join(",");
       const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIds}`, // ✅ Pasar los IDs en la URL
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?bookingId=${bookingId}`, 
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
         }
       );
 
-      // ✅ Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
