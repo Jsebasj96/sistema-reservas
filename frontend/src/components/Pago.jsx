@@ -88,7 +88,7 @@ const Pago = () => {
         <>
           <h3>Detalles del Vuelo:</h3>
 
-          {/* 🔥 Si es un vuelo con tramos, mostrar todos los segmentos */}
+          {/* Si es un vuelo con tramos, mostrar todos los segmentos */}
           {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
@@ -103,7 +103,7 @@ const Pago = () => {
             </>
           ) : (
             <>
-              {/* 🔥 Si es un vuelo directo, mostrar como en el código original */}
+              {/* Si es un vuelo directo, mostrar como en el código original */}
               <p><strong>Tipo:</strong> Vuelo directo</p>
               <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
               <p>🕐 Salida: {booking.flight?.departure_time ? new Date(booking.flight.departure_time).toLocaleString() : "Hora no disponible"}</p>
@@ -112,11 +112,11 @@ const Pago = () => {
             </>
           )}
 
-          {/* 🔥 Datos generales de la reserva */}
+          {/*  Datos generales de la reserva */}
           <p>🎟️ Categoría: {booking.category}</p>
           <p><strong>💰 Precio total:</strong> ${booking.totalPrice.toFixed(2)}</p>
 
-          {/* 🔥 Botón de pago */}
+          {/* Botón de pago */}
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
               {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
