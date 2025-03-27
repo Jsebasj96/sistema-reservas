@@ -145,7 +145,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
           ))}
       </select>
 
-      <button onClick={fetchFlights}> Buscar Vuelos</button>
+      <button onClick={fetchFlights}> Buscar Vuelos 2</button>
 
       {filteredFlights.length > 0 && (
         <div>
