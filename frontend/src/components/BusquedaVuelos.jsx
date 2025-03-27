@@ -71,15 +71,20 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   };
 
   const handleBooking = async () => {
-    if (selectedFlights.length === 0) {
-      toast.warning("⚠️ Debes seleccionar al menos un tramo.");
+    if (!selectedFlights.length) {
+      toast.warning("⚠️ Selecciona al menos un tramo para reservar.");
       return;
     }
-
+  
     try {
       const token = localStorage.getItem("token");
-
-      const flightData = {
+      
+      // 📌 Se determina la categoría y el precio total
+      const priceField = category === "turista" ? "price_turista" : "price_business";
+      const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
+  
+      const bookingData = {
+        flightId: selectedFlights[0].id, // ✅ Primer vuelo como ID principal
         category,
         segments: selectedFlights.map((segment) => ({
           flight_id: segment.id,
@@ -88,21 +93,24 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
           departure_time: segment.departure_time,
           arrival_time: segment.arrival_time,
         })),
-        price: selectedFlights.reduce(
-          (total, flight) => total + (category === "business" ? flight.price_business : flight.price_turista),
-          0
-        ), // ✅ Sumar precios según categoría
+        total_price: totalPrice, // ✅ Enviar el total
       };
-
+  
       const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/bookings",
-        flightData,
+        bookingData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      toast.success("✅ Reserva exitosa. ¡Vamos a pagar!");
-      setTimeout(() => (window.location.href = `/pago/${res.data.booking.id}`), 2000);
+  
+      toast.success("✅ Reserva exitosa. Redirigiendo a pago...");
+  
+      // ⏳ Redirigir a la página de pagos después de reservar
+      setTimeout(() => {
+        window.location.href = `/pago/${res.data.booking.id}`;
+      }, 2000);
+      
     } catch (error) {
+      console.error("❌ Error al reservar:", error);
       toast.error("❌ No se pudo realizar la reserva.");
     }
   };
