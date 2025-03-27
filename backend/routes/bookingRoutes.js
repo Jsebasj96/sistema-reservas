@@ -175,15 +175,17 @@ router.post("/pay-multiple", verifyToken, async (req, res) => {
 });
 
 // ✅ Generar el PDF de múltiples reservas pagadas
-router.get("/pdf-multiple", verifyToken, async (req, res) => {
+router.post("/pdf-multiple", verifyToken, async (req, res) => {  // 🔹 POST en lugar de GET
   try {
-    const { flightIds } = req.query;
-    if (!flightIds) {
+    const { flightIds } = req.body; // 🔹 Recibir datos desde el body
+
+    if (!flightIds || !flightIds.length) {
       return res.status(400).json({ error: "No se proporcionaron IDs de vuelos" });
     }
 
-    const flightIdArray = flightIds.split(",");
-    const bookings = await Booking.findAll({ where: { flight_id: flightIdArray, userId: req.user.userId } });
+    const bookings = await Booking.findAll({ 
+      where: { flight_id: flightIds, userId: req.user.userId } 
+    });
 
     if (!bookings.length) {
       return res.status(404).json({ message: "No se encontraron reservas" });
@@ -192,7 +194,7 @@ router.get("/pdf-multiple", verifyToken, async (req, res) => {
     const pdfDoc = new PDFDocument();
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=ticket_vuelos.pdf`);
-    
+
     pdfDoc.pipe(res);
     pdfDoc.text("✈️ Ticket de Vuelo\n\n");
 
