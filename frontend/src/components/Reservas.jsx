@@ -120,23 +120,23 @@ const Reservas = () => {
       {searchMode ? (
         <div>
           <h3>Buscar Vuelo por Ciudad</h3>
-          <label>Ciudad de Origen:</label>
+          {/*<label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
             {availableCities.length > 0 && availableCities.map((city, index) => (
               <option key={index} value={city}>{city}</option>
             ))}
-          </select>
+          </select>*/}
 
           <label>Ciudad de Destino:</label>
-          <select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
+          {/*<select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
             {availableCities.length > 0 && availableCities
               .filter(city => city !== selectedOrigin)
               .map((city, index) => (
                 <option key={index} value={city}>{city}</option>
               ))}
-          </select>
+          </select>*/}
 
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
 
