@@ -46,36 +46,52 @@ const PagoBusqueda = () => {
     }
   
     try {
-      const token = localStorage.getItem("token"); // 🔹 Obtener token del localStorage
+      const token = localStorage.getItem("token");
       if (!token) {
         toast.error("❌ No hay sesión activa. Inicia sesión.");
         return;
       }
   
-      const flightIdsString = selectedFlights.map(flight => flight.id).join(","); // 🔹 Convertir IDs a string separado por comas
+      // Aquí suponemos que solo hay una reserva activa y tomamos el primer vuelo
+      if (selectedFlights.length === 0) {
+        toast.error("⚠️ No hay vuelos seleccionados.");
+        return;
+      }
+  
+      const bookingId = selectedFlights[0].bookingId; // Suponiendo que cada vuelo tiene un ID de reserva asociado
+  
+      console.log("Solicitando PDF para bookingId:", bookingId);
   
       const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple?flightIds=${flightIdsString}`, 
+        `https://sistema-reservas-final.onrender.com/api/bookings/${bookingId}/pdf`,
         {
-          headers: { 
-            Authorization: `Bearer ${token}`, // 🔹 Incluir el token en los headers
-            "Content-Type": "application/json" 
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          responseType: "blob", // 🔹 Importante para recibir el PDF correctamente
+          responseType: "blob",
         }
       );
   
-      // ✅ Crear enlace de descarga
+      // Verificar que el PDF no esté vacío
+      if (!res.data || res.data.size === 0) {
+        throw new Error("El PDF recibido está vacío.");
+      }
+  
+      console.log("PDF recibido correctamente:", res);
+  
+      // Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "ticket_vuelos.pdf");
+      link.setAttribute("download", `ticket_${bookingId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      toast.success("📥 Ticket descargado con éxito.");
     } catch (error) {
       console.error("❌ Error al descargar el ticket:", error);
-      toast.error("❌ Error al descargar el ticket.");
+      toast.error("❌ No se pudo descargar el ticket.");
     }
   };
 
