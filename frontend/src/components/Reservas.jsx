@@ -140,7 +140,7 @@ const Reservas = () => {
 
           <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
 
-          {/* 📌 Resultados de búsqueda */}
+          {/* 📌 Resultados de búsqueda 
           {filteredFlights.length > 0 || segments.length > 0 ? (
             <div>
               {filteredFlights.map((flight, index) => (
@@ -165,7 +165,7 @@ const Reservas = () => {
             </div>
           ) : (
             <p>No se encontraron vuelos</p>
-          )}
+          )}*/}
         </div>
       ) : (
         <div>
