@@ -160,10 +160,10 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
           <h3>🎫 Selección de Categoría</h3>
           <select value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="turista">
-              Turista - ${selectedFlights.reduce((total, flight) => total + flight.price_turista, 0)}
+              Turista - ${selectedFlights.reduce((total, flight) => total + Number(flight.price_turista), 0).toLocaleString()}
             </option>
             <option value="business">
-              Business - ${selectedFlights.reduce((total, flight) => total + flight.price_business, 0)}
+              Business - ${selectedFlights.reduce((total, flight) => total + Number(flight.price_business), 0).toLocaleString()}
             </option>
           </select>
           <button onClick={handleBooking}>Reservar ahora</button>
