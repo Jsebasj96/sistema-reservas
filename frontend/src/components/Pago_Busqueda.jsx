@@ -52,13 +52,21 @@ const PagoBusqueda = () => {
         return;
       }
   
-      // Aquí suponemos que solo hay una reserva activa y tomamos el primer vuelo
+      // 📌 Verificar si hay vuelos seleccionados
       if (selectedFlights.length === 0) {
         toast.error("⚠️ No hay vuelos seleccionados.");
         return;
       }
   
-      const bookingId = selectedFlights[0].bookingId; // Suponiendo que cada vuelo tiene un ID de reserva asociado
+      console.log("selectedFlights:", selectedFlights); // Ver estructura de datos
+  
+      // 📌 Intentar obtener el bookingId
+      const bookingId = selectedFlights[0]?.bookingId || selectedFlights[0]?.id;
+  
+      if (!bookingId) {
+        toast.error("⚠️ No se encontró un ID de reserva válido.");
+        return;
+      }
   
       console.log("Solicitando PDF para bookingId:", bookingId);
   
@@ -72,7 +80,6 @@ const PagoBusqueda = () => {
         }
       );
   
-      // Verificar que el PDF no esté vacío
       if (!res.data || res.data.size === 0) {
         throw new Error("El PDF recibido está vacío.");
       }
@@ -87,7 +94,7 @@ const PagoBusqueda = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+  
       toast.success("📥 Ticket descargado con éxito.");
     } catch (error) {
       console.error("❌ Error al descargar el ticket:", error);
