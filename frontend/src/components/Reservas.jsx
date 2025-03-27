@@ -22,14 +22,13 @@ const Reservas = () => {
         console.log("📌 Respuesta API:", response.data);
   
         if (Array.isArray(response.data)) {
-          const citiesList = response.data.map(item => item.city); // Extraer solo el nombre de la ciudad
+          const citiesList = response.data.map(item => item.city); // 🔥 Extraer solo el nombre de la ciudad
           console.log("✅ Ciudades extraídas:", citiesList);
           setAvailableCities(citiesList);
         } else {
           console.error("❌ La API no devolvió un array válido.");
           toast.error("❌ Error al obtener ciudades.");
         }
-  
       } catch (error) {
         console.error("❌ Error al obtener ciudades:", error);
         toast.error("❌ Error al obtener ciudades.");
@@ -119,7 +118,7 @@ const Reservas = () => {
           <label>Ciudad de Origen:</label>
           <select value={selectedOrigin} onChange={(e) => setSelectedOrigin(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
-            {availableCities.map((city, index) => (
+            {availableCities.length > 0 && availableCities.map((city, index) => (
               <option key={index} value={city}>{city}</option>
             ))}
           </select>
@@ -127,7 +126,7 @@ const Reservas = () => {
           <label>Ciudad de Destino:</label>
           <select value={selectedDestination} onChange={(e) => setSelectedDestination(e.target.value)}>
             <option value="">Seleccione una ciudad</option>
-            {availableCities
+            {availableCities.length > 0 && availableCities
               .filter(city => city !== selectedOrigin)
               .map((city, index) => (
                 <option key={index} value={city}>{city}</option>
