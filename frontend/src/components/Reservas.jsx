@@ -91,7 +91,7 @@ const Reservas = () => {
         </div>
       )}
 
-      {/* Botón de cerrar sesión */}
+      {/* Botón de cerrar sesión  */}
       <button onClick={() => {
         localStorage.removeItem("token");
         window.location.href = "/";

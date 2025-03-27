@@ -182,7 +182,6 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
         ⬅️ Volver a Reservas
       </button>
 
-      
       <button
         onClick={() => {
           localStorage.removeItem("token");

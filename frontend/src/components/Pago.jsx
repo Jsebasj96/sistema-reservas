@@ -46,7 +46,7 @@ const Pago = () => {
     }
   };
 
-  // 🟢 Cargar la reserva al montar el componente
+  // Cargar la reserva al montar el componente
   useEffect(() => {
     if (token) {
       fetchBooking();
@@ -56,7 +56,7 @@ const Pago = () => {
     }
   }, [id, token, navigate]);
 
-  // 🎯 Simular pago
+  
   const handlePayment = async () => {
     setIsPaying(true);
     try {
