@@ -15,24 +15,32 @@ const PagoBusqueda = () => {
     return <h2>No hay tramos seleccionados.</h2>;
   }
 
-  // Simula el pago
+  // ✅ Simula el pago enviando una reserva al backend
   const handlePayment = async () => {
     setIsPaying(true);
     try {
       const res = await axios.post(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pay-multiple",
-        { selectedFlights, category, totalPrice }, // ✅ Enviar datos de los vuelos seleccionados
+        "https://sistema-reservas-final.onrender.com/api/bookings", // 🔄 Usa el mismo endpoint de `Reservas.jsx`
+        { 
+          flights: selectedFlights.map(flight => ({
+            flightId: flight.id,
+            category,
+            price: category === "business" ? flight.price_business : flight.price_turista
+          })),
+          totalPrice
+        },
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Autenticación
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      if (res.status === 200) {
+      if (res.status === 201) {
         toast.success("✅ Pago exitoso. Generando ticket...");
-        setPaymentSuccess(true); // ✅ Habilitar la descarga
+        setPaymentSuccess(true); 
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
+      console.error("Error en el pago:", error);
     } finally {
       setIsPaying(false);
     }
@@ -47,14 +55,13 @@ const PagoBusqueda = () => {
 
     try {
       const res = await axios.get(
-        "https://sistema-reservas-final.onrender.com/api/bookings/pdf-multiple",
+        `https://sistema-reservas-final.onrender.com/api/bookings/pdf/${selectedFlights[0]?.id}`, // ✅ Ajusta la URL si es necesario
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Autenticación
-          responseType: "blob", // 📂 Indicar que es un archivo PDF
+          headers: { Authorization: `Bearer ${token}` }, 
+          responseType: "blob", 
         }
       );
 
-      // Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
