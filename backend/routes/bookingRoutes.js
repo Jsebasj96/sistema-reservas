@@ -174,4 +174,40 @@ router.post("/pay-multiple", verifyToken, async (req, res) => {
   }
 });
 
+// ✅ Generar el PDF de múltiples reservas pagadas
+router.get("/pdf-multiple", verifyToken, async (req, res) => {
+  try {
+    const { flightIds } = req.query;
+    if (!flightIds) {
+      return res.status(400).json({ error: "No se proporcionaron IDs de vuelos" });
+    }
+
+    const flightIdArray = flightIds.split(",");
+    const bookings = await Booking.findAll({ where: { flight_id: flightIdArray, userId: req.user.userId } });
+
+    if (!bookings.length) {
+      return res.status(404).json({ message: "No se encontraron reservas" });
+    }
+
+    const pdfDoc = new PDFDocument();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=ticket_vuelos.pdf`);
+    
+    pdfDoc.pipe(res);
+    pdfDoc.text("✈️ Ticket de Vuelo\n\n");
+
+    bookings.forEach((booking, index) => {
+      pdfDoc.text(`Vuelo ${index + 1}: ${booking.origin} → ${booking.destination}`);
+      pdfDoc.text(`Fecha de salida: ${booking.departure_time}`);
+      pdfDoc.text(`Categoría: ${booking.category}`);
+      pdfDoc.text(`Precio: $${booking.price}\n\n`);
+    });
+
+    pdfDoc.end();
+  } catch (error) {
+    console.error("Error al generar PDF:", error);
+    res.status(500).json({ message: "Error al generar el ticket PDF" });
+  }
+});
+
 module.exports = router;
