@@ -4,14 +4,14 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); 
+  const { id } = useParams(); // 📌 Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  
+  // 🔥 Función para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
@@ -23,10 +23,10 @@ const Pago = () => {
 
       const { segments, flight, status } = res.data;
 
-      
+      // 📌 Verificar si es un vuelo directo o con tramos
       const isMultiSegment = segments && segments.length > 0;
 
-      
+      // 📌 Calcular el precio total sumando todos los tramos
       const totalPrice = isMultiSegment
         ? segments.reduce((sum, segment) => sum + segment.price, 0)
         : flight?.price || 0;
@@ -37,26 +37,26 @@ const Pago = () => {
         totalPrice,
       });
 
-      
+      // ✅ Si la reserva ya está pagada, marcarla como pagada
       if (status === "pagado") {
         setPaymentSuccess(true);
       }
     } catch (error) {
-      toast.error("❌ Error al cargar la reserva. ");
+      toast.error("❌ Error al cargar la reserva");
     }
   };
 
-  
+  // 🟢 Cargar la reserva al montar el componente
   useEffect(() => {
     if (token) {
       fetchBooking();
     } else {
-      toast.error(" No estás autenticado.");
+      toast.error("⚠️ No estás autenticado.");
       navigate("/login");
     }
   }, [id, token, navigate]);
 
-
+  // 🎯 Simular pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
@@ -69,12 +69,12 @@ const Pago = () => {
       );
 
       if (res.status === 200) {
-        toast.success(" Pago realizado con exito. Tu ticket esta listo.");
+        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
         setPaymentSuccess(true);
         fetchBooking();
       }
     } catch (error) {
-      toast.error(" Error al procesar el pago.");
+      toast.error("❌ Error al procesar el pago.");
     } finally {
       setIsPaying(false);
     }
@@ -88,7 +88,7 @@ const Pago = () => {
         <>
           <h3>Detalles del Vuelo:</h3>
 
-          {/* Si es un vuelo con tramos, mostrar todos los segmentos */}
+          {/* 🔥 Si es un vuelo con tramos, mostrar todos los segmentos */}
           {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
@@ -103,7 +103,7 @@ const Pago = () => {
             </>
           ) : (
             <>
-              {/* Si es un vuelo directo, mostrar como en el código original */}
+              {/* 🔥 Si es un vuelo directo, mostrar como en el código original */}
               <p><strong>Tipo:</strong> Vuelo directo</p>
               <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
               <p>🕐 Salida: {booking.flight?.departure_time ? new Date(booking.flight.departure_time).toLocaleString() : "Hora no disponible"}</p>
@@ -112,14 +112,14 @@ const Pago = () => {
             </>
           )}
 
-          {/* Datos generales de la reserva */}
+          {/* 🔥 Datos generales de la reserva */}
           <p>🎟️ Categoría: {booking.category}</p>
           <p><strong>💰 Precio total:</strong> ${booking.totalPrice.toFixed(2)}</p>
 
-          {/* Botón de pago */}
+          {/* 🔥 Botón de pago */}
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
-              {isPaying ? "Procesando pago... " : `Pagar $${booking.totalPrice.toFixed(2)}`}
+              {isPaying ? "Procesando pago..." : `Pagar $${booking.totalPrice.toFixed(2)}`}
             </button>
           ) : (
             <button>
@@ -131,7 +131,7 @@ const Pago = () => {
         <p>Cargando reserva...</p>
       )}
 
-      <button onClick={() => navigate("/reservas ")}>🔙 Volver</button>
+      <button onClick={() => navigate("/reservas")}>🔙 Volver</button>
     </div>
   );
 };
