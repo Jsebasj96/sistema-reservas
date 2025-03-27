@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
+const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [availableCities, setAvailableCities] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
@@ -40,6 +40,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
 
+      console.log("👉 Respuesta de API:", res.data);
+
       if (!res.data || !Array.isArray(res.data.flights)) {
         console.error("❌ Respuesta inesperada de la API:", res.data);
         toast.error("❌ Error al obtener vuelos. Inténtalo de nuevo.");
@@ -47,11 +49,11 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       }
 
       const flights = res.data.flights;
+      console.log("👉 Vuelos directos encontrados:", flights);
 
       if (flights.length > 0) {
-        console.log("✅ Vuelos directos encontrados:", flights);
         setFilteredFlights(flights);
-        setSegments([]);
+        setSegments([]); // Sin escalas
         toast.success("✅ Vuelos directos encontrados.");
       } else {
         console.log("❌ No hay vuelos directos, buscando rutas con escalas...");
@@ -80,7 +82,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
 
       const findRoutes = (current, path) => {
         if (current === destination) {
-          possibleRoutes.push([...path]);
+          possibleRoutes.push([...path]); // Guardamos toda la ruta encontrada
           return;
         }
         visited.add(current);
@@ -101,8 +103,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
 
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
 
-        setFilteredFlights(bestRoute); // ✅ Ahora mostramos todos los tramos
-        setSegments(bestRoute.slice(1));
+        setFilteredFlights([bestRoute[0]]); // Primer tramo
+        setSegments(bestRoute.slice(1)); // Resto de tramos como escalas
         toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
       } else {
         toast.error("❌ No se encontraron rutas con escalas.");
@@ -145,19 +147,21 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
 
       <button onClick={fetchFlights}> Buscar Vuelos</button>
 
-      {/* 📌 Mostrar vuelos encontrados */}
       {filteredFlights.length > 0 && (
         <div>
-          <h3>🛫 Resultados de la búsqueda:</h3>
           {filteredFlights.map((flight, index) => (
             <div key={index} className="flight-card">
-              <h4>{`${flight.origin} → ${flight.destination}`}</h4>
-              <p>✈️ Aerolínea: {flight.airline}</p>
-              <p>🕒 Salida: {new Date(flight.departure_time).toLocaleString()}</p>
+              <h3>{`${flight.airline} - ${flight.origin} → ${flight.destination}`}</h3>
+              <p>Salida: {new Date(flight.departure_time).toLocaleString()}</p>
               <p>💰 Precio: ${flight.price_turista}</p>
+              <button onClick={() => setSelectedFlight(flight)}>Seleccionar</button>
             </div>
           ))}
         </div>
+      )}
+
+      {filteredFlights.length === 0 && (
+        <p>🔎 No se encontraron vuelos directos ni rutas con escalas.</p>
       )}
 
       <button onClick={volverAReservas} style={{ marginTop: "20px", backgroundColor: "#f44336", color: "white" }}>
