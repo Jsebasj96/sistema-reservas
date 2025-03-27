@@ -7,8 +7,8 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
   const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
   const [filteredFlights, setFilteredFlights] = useState([]);
-  const [selectedFlights, setSelectedFlights] = useState([]); // 🛫 Tramos seleccionados
-  const [category, setCategory] = useState("turista"); // ✅ Estado para categoría de boleto
+  const [selectedFlights, setSelectedFlights] = useState([]); // 
+  const [category, setCategory] = useState("turista"); // 
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -84,7 +84,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments = () => {} }) => {
       const totalPrice = selectedFlights.reduce((total, flight) => total + Number(flight[priceField]), 0);
   
       const bookingData = {
-        flightId: selectedFlights[0].id, //  Primer vuelo como ID principal
+        flightId: selectedFlights[0].id, //
         category,
         segments: selectedFlights.map((segment) => ({
           flight_id: segment.id,
