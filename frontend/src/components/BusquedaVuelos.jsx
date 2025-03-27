@@ -41,18 +41,20 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         `https://sistema-reservas-final.onrender.com/api/flights/search?origin=${selectedOrigin}&destination=${selectedDestination}`
       );
   
+      // ✅ Validamos la estructura de la respuesta
       if (!res.data || !Array.isArray(res.data.flights)) {
-        throw new Error("Respuesta de la API inesperada.");
+        console.error("❌ Respuesta de la API inesperada:", res.data);
+        throw new Error("Estructura de datos incorrecta.");
       }
   
       if (res.data.flights.length > 0) {
         console.log("✅ Vuelos directos encontrados:", res.data.flights);
-        setFilteredFlights(res.data.flights);
-        setSegments([]); // ✅ No hay escalas, entonces segmentos vacíos
+        setFilteredFlights(res.data.flights); 
+        setSegments([]); 
         toast.success("✅ Vuelos directos encontrados.");
       } else {
         console.log("❌ No hay vuelos directos, buscando rutas con escalas...");
-        await findConnectingFlights(selectedOrigin, selectedDestination);
+        await findConnectingFlights(selectedOrigin, selectedDestination); // ✅ Aseguramos que se usa `await`
       }
     } catch (error) {
       console.error("❌ Error al buscar vuelos:", error);
@@ -63,8 +65,14 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
   // 🔄 Buscar rutas con escalas
   const findConnectingFlights = async (origin, destination) => {
     try {
+      console.log("🔍 Buscando rutas con escalas...");
       const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/flights`);
       const allFlights = res.data;
+  
+      if (!Array.isArray(allFlights)) {
+        throw new Error("Estructura incorrecta de datos en vuelos.");
+      }
+  
       let possibleRoutes = [];
       let visited = new Set();
   
@@ -90,7 +98,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
         const bestRoute = possibleRoutes.sort((a, b) => a.length - b.length)[0];
         console.log("🛫 Ruta con escalas encontrada:", bestRoute);
   
-        setFilteredFlights(bestRoute); // ✅ Agregamos todos los vuelos en la ruta
+        setFilteredFlights(bestRoute); // ✅ Guardamos todos los vuelos en la ruta
         setSegments(bestRoute.slice(1)); // ✅ Guardamos las escalas
         toast.success(`✅ Ruta con ${bestRoute.length} tramo(s) encontrada.`);
       } else {
@@ -134,7 +142,7 @@ const BusquedaVuelos = ({ setSelectedFlight, setSegments }) => {
       </select>
 
       {/* ✅ Botón de búsqueda */}
-      <button onClick={fetchFlights}>✈️ Buscar Vuelos</button>
+      <button onClick={fetchFlights}> Buscar Vuelos</button>
 
       {/* 📌 Mostrar resultados */}
       {filteredFlights.length > 0 && (
