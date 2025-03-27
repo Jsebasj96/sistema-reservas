@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); // 📌 Capturamos el ID de la reserva desde la URL
+  const { id } = useParams(); 
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -23,10 +23,10 @@ const Pago = () => {
 
       const { segments, flight, status } = res.data;
 
-      // 📌 Verificar si es un vuelo directo o con tramos
+      // Verificar si es un vuelo directo o con tramos
       const isMultiSegment = segments && segments.length > 0;
 
-      // 📌 Calcular el precio total sumando todos los tramos
+      // Calcular el precio total sumando todos los tramos
       const totalPrice = isMultiSegment
         ? segments.reduce((sum, segment) => sum + segment.price, 0)
         : flight?.price || 0;
@@ -88,7 +88,7 @@ const Pago = () => {
         <>
           <h3>Detalles del Vuelo:</h3>
 
-          {/* 🔥 Si es un vuelo con tramos, mostrar todos los segmentos */}
+          {/* Si es un vuelo con tramos, mostrar todos los segmentos */}
           {booking.isMultiSegment ? (
             <>
               <p><strong>Tipo:</strong> Vuelo con tramos</p>
