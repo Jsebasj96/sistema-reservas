@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
+  const { id } = useParams(); // 📌 Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false); // ✅ Estado para pago exitoso
@@ -20,9 +20,10 @@ const Pago = () => {
           headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
         }
       );
+
       setBooking(res.data);
 
-      // Si la reserva ya está pagada, activar `paymentSuccess`
+      // ✅ Si la reserva ya está pagada, activar `paymentSuccess`
       if (res.data.status === "pagado") {
         setPaymentSuccess(true);
       }
@@ -101,9 +102,29 @@ const Pago = () => {
 
       {booking ? (
         <>
-          <p>Vuelo: {booking.flight?.origin} → {booking.flight?.destination}</p>
-          <p>Categoría: {booking.category}</p>
-          <p>Precio total: ${booking.price ? Number(booking.price).toFixed(2) : "N/A"}</p>
+          <h3>Detalles del Vuelo:</h3>
+          {booking.segments && booking.segments.length > 0 ? (
+            <>
+              <p><strong>Tipo:</strong> Vuelo con tramos</p>
+              {booking.segments.map((segment, index) => (
+                <div key={index} className="segment">
+                  <p>✈️ Tramo {index + 1}: {segment.origin} → {segment.destination}</p>
+                  <p>🕐 Salida: {new Date(segment.departure_time).toLocaleString()}</p>
+                  <p>🛬 Llegada: {new Date(segment.arrival_time).toLocaleString()}</p>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <p><strong>Tipo:</strong> Vuelo directo</p>
+              <p>✈️ {booking.flight?.origin} → {booking.flight?.destination}</p>
+              <p>🕐 Salida: {new Date(booking.flight?.departure_time).toLocaleString()}</p>
+              <p>🛬 Llegada: {new Date(booking.flight?.arrival_time).toLocaleString()}</p>
+            </>
+          )}
+
+          <p>🎟️ Categoría: {booking.category}</p>
+          <p>💰 Precio total: ${booking.price ? Number(booking.price).toFixed(2) : "N/A"}</p>
 
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
