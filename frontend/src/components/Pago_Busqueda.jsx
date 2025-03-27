@@ -9,7 +9,7 @@ const PagoBusqueda = () => {
   const { selectedFlights, category, totalPrice } = location.state || {};
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [bookingId, setBookingId] = useState(null); // ✅ Guardar ID de reserva
+  const [bookingId, setBookingId] = useState(null); // ✅ Guardar ID de reserva correctamente
   const token = localStorage.getItem("token"); 
 
   if (!selectedFlights || selectedFlights.length === 0) {
@@ -26,10 +26,12 @@ const PagoBusqueda = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (res.status === 200) {
+      if (res.status === 200 && res.data.bookingId) { // ✅ Asegurar que devuelve el bookingId
         toast.success("✅ Pago exitoso. Generando ticket...");
-        setBookingId(res.data.bookingId); // ✅ Guardar ID de reserva para el PDF
+        setBookingId(res.data.bookingId); // ✅ Guardar ID de reserva
         setPaymentSuccess(true); 
+      } else {
+        toast.error("❌ Error: No se recibió el ID de la reserva.");
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
