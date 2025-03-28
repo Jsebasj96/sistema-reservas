@@ -37,7 +37,7 @@ const PagoBusqueda = () => {
     }
   };
 
-  // 📥 Descargar PDF después del pago
+  // Descargar PDF después del pago
   const handleDownloadPDF = async () => {
     if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
