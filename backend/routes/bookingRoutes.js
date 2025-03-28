@@ -177,16 +177,19 @@ router.post("/pay-multiple", verifyToken, async (req, res) => {
 // ✅ Generar el PDF de múltiples reservas pagadas
 router.post("/pdf-multiple", verifyToken, async (req, res) => {
   try {
-    const { flightIds } = req.body; // ✅ Recibe los IDs en el body
-
-    if (!flightIds || !flightIds.length) {
-      return res.status(400).json({ error: "No se proporcionaron IDs de vuelos" });
+    const booking = await getBookingById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Reserva no encontrada" });
     }
 
-    const bookings = await getBookingsByFlightIds(flightIds, req.user.userId);
+    const user = await getUserById(booking.user_id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
-    if (!bookings.length) {
-      return res.status(404).json({ message: "No se encontraron reservas" });
+    const flight = await getFlightById(booking.flight_id);
+    if (!flight) {
+      return res.status(404).json({ message: "Vuelo no encontrado" });
     }
 
     const doc = new PDFDocument();
@@ -196,25 +199,48 @@ router.post("/pdf-multiple", verifyToken, async (req, res) => {
     doc.on("end", () => {
       const pdfBuffer = Buffer.concat(buffers);
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=ticket_vuelos.pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="ticket_${booking.id}.pdf"`);
       res.send(pdfBuffer);
     });
 
-    doc.font("Helvetica-Bold").fontSize(24).text("Airline Express", { align: "center" });
+    // Encabezado con aerolínea
+    doc.font("Helvetica-Bold").fontSize(36).text(" Airline Express", { align: "center" });
+    doc.moveDown(1);
+    // Código de reserva
+    doc.fontSize(16).text(`Código de Reserva: ${booking.id}`, { align: "left" });
     doc.moveDown();
-
-    bookings.forEach((booking, index) => {
-      doc.fontSize(16).text(`Vuelo ${index + 1}: ${booking.origin} → ${booking.destination}`);
-      doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
-      doc.text(`Categoría: ${booking.category.toUpperCase()}`);
-      doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
-      doc.moveDown();
-    });
+    // Datos del pasajero
+    doc.fontSize(12).font("Helvetica").text(`Usuario ID: ${user.id}`);
+    doc.text(`Nombre: ${user.name}`);
+    doc.text(`Correo: ${user.email}`);
+    doc.moveDown();
+    // Código de Vuelo
+    doc.fontSize(26).text(`Vuelo: ${flight.code}`, { align: "left" });
+    doc.moveDown();
+    // Detalles del vuelo
+    doc.fontSize(14).font("Helvetica-Bold").text("Detalles del vuelo", { underline: true });
+    doc.moveDown(0.5);
+    doc.fontSize(12).font("Helvetica");
+    doc.text(`Origen: ${booking.origin || "No disponible"}`);
+    doc.text(`Destino: ${booking.destination || "No disponible"}`);
+    doc.text(`Fecha: ${new Date(booking.booking_date).toLocaleDateString()}`);
+    doc.text(`Categoría: ${booking.category.toUpperCase()}`);
+    doc.text(`Precio: $${Number(booking.price).toFixed(2)}`);
+    doc.moveDown();
+    // Línea divisoria
+    doc.moveDown();
+    doc.lineWidth(1).moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown();
+    // Mensaje final
+    doc.fontSize(12).font("Helvetica-Oblique").text(
+      "Este ticket es válido para abordar. Presentarlo en el aeropuerto junto con su documento de identidad.",
+      { align: "center" }
+    );
 
     doc.end();
   } catch (error) {
-    console.error("Error al generar el PDF:", error);
-    res.status(500).json({ message: "Error al generar el ticket PDF" });
+    console.error("❌ Error al generar el PDF:", error);
+    res.status(500).json({ error: "Error al generar el PDF" });
   }
 });
 
