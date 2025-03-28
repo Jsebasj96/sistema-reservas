@@ -37,32 +37,67 @@ const PagoBusqueda = () => {
     }
   };
 
-  // Descargar PDF después del pago
+  // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
     if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
       return;
     }
-
+  
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("❌ No hay sesión activa. Inicia sesión.");
+        return;
+      }
+  
+      // 📌 Verificar si hay vuelos seleccionados
+      if (selectedFlights.length === 0) {
+        toast.error("⚠️ No hay vuelos seleccionados.");
+        return;
+      }
+  
+      console.log("selectedFlights:", selectedFlights); // Ver estructura de datos
+  
+      // 📌 Intentar obtener el bookingId
+      const bookingId = selectedFlights[0]?.bookingId || selectedFlights[0]?.id;
+  
+      if (!bookingId) {
+        toast.error("⚠️ No se encontró un ID de reserva válido.");
+        return;
+      }
+  
+      console.log("Solicitando PDF para bookingId:", bookingId);
+  
       const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pdf`,
+        `https://sistema-reservas-final.onrender.com/api/bookings/${bookingId}/pdf`,
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Enviar token
-          responseType: "blob", // 📂 Indicar que es un archivo PDF
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
         }
       );
-
+  
+      if (!res.data || res.data.size === 0) {
+        throw new Error("El PDF recibido está vacío.");
+      }
+  
+      console.log("PDF recibido correctamente:", res);
+  
       // Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `ticket_${id}.pdf`);
+      link.setAttribute("download", `ticket_${bookingId}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+  
+      toast.success("📥 Ticket descargado con éxito.");
     } catch (error) {
-      toast.error("❌ Error al descargar el ticket.");
+      console.error("❌ Error al descargar el ticket:", error);
+      toast.error("❌ No se pudo descargar el ticket.");
     }
   };
 
