@@ -10,8 +10,6 @@ const PagoBusqueda = () => {
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const token = localStorage.getItem("token");
-  const [bookingId, setBookingId] = useState(null); // Nuevo estado para el bookingId
-
   if (!selectedFlights || selectedFlights.length === 0) {
     return <h2>No hay tramos seleccionados.</h2>;
   }
@@ -27,26 +25,12 @@ const PagoBusqueda = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
-      console.log("🔍 Respuesta de la API:", res.data); // Verifica qué datos devuelve
-  
+
       if (res.status === 200) {
         toast.success("✅ Pago exitoso. Generando ticket...");
-  
-        // 📌 Asegúrate de que la API devuelve un bookingId válido
-        const newBookingId = res.data.bookingId || res.data.id; 
-        console.log("📌 Booking ID recibido:", newBookingId);
-  
-        if (!newBookingId) {
-          toast.error("⚠️ No se recibió un bookingId válido.");
-          return;
-        }
-  
-        setBookingId(newBookingId); // Guardar el ID de la nueva reserva
-        setPaymentSuccess(true);
+        setPaymentSuccess(true); // ✅ Habilitar la descarga
       }
     } catch (error) {
-      console.error("❌ Error en la petición:", error);
       toast.error("❌ Error al procesar el pago.");
     } finally {
       setIsPaying(false);
@@ -67,6 +51,17 @@ const PagoBusqueda = () => {
         return;
       }
   
+      // 📌 Verificar si hay vuelos seleccionados
+      if (selectedFlights.length === 0) {
+        toast.error("⚠️ No hay vuelos seleccionados.");
+        return;
+      }
+  
+      console.log("selectedFlights:", selectedFlights); // Ver estructura de datos
+  
+      // 📌 Intentar obtener el bookingId
+      const bookingId = selectedFlights[0]?.bookingId || selectedFlights[0]?.id;
+  
       if (!bookingId) {
         toast.error("⚠️ No se encontró un ID de reserva válido.");
         return;
@@ -77,7 +72,9 @@ const PagoBusqueda = () => {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${bookingId}/pdf`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           responseType: "blob",
         }
       );
@@ -85,6 +82,8 @@ const PagoBusqueda = () => {
       if (!res.data || res.data.size === 0) {
         throw new Error("El PDF recibido está vacío.");
       }
+  
+      console.log("PDF recibido correctamente:", res);
   
       // Crear enlace de descarga
       const url = window.URL.createObjectURL(new Blob([res.data]));
