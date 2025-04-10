@@ -112,7 +112,7 @@ const Pago = () => {
     fetchHotels();
   }, [paymentSuccess, booking]);
 
-  // ✅ Reservar hotel
+
   const handleHotelBooking = async (hotelId) => {
     try {
       await axios.post(
