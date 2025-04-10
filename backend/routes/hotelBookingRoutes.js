@@ -69,7 +69,7 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
       doc.text(`Correo: ${user.email}`);
       doc.moveDown();
 
-      // ✅ Mensaje final
+      
       doc.fontSize(12).font("Helvetica-Oblique").text(
         "Gracias por reservar con nosotros. Presenta este ticket al momento de hacer check-in.",
         { align: "center" }
