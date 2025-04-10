@@ -9,38 +9,25 @@ const Pago = () => {
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [hotels, setHotels] = useState([]);
-  const [selectedHotelId, setSelectedHotelId] = useState("");
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [hotelBooked, setHotelBooked] = useState(null);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [hotelBookingSuccess, setHotelBookingSuccess] = useState(false);
-  const [hotelBookingId, setHotelBookingId] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const fetchBooking = async () => {
     try {
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/bookings/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setBooking(res.data);
       if (res.data.status === "PAID") {
         setPaymentSuccess(true);
-        fetchHotels(res.data.destination);
+        fetchHotels(res.data.destination); // 🔥 Cargar hoteles si el vuelo ya está pagado
       }
     } catch (error) {
       toast.error("❌ Error al cargar la reserva");
-    }
-  };
-
-  const fetchHotels = async (city) => {
-    try {
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/hotels?city=${city}`
-      );
-      setHotels(res.data);
-    } catch (error) {
-      toast.error("❌ Error al cargar los hoteles");
     }
   };
 
@@ -51,7 +38,7 @@ const Pago = () => {
       toast.error("⚠️ No estás autenticado.");
       navigate("/login");
     }
-  }, [id]);
+  }, [id, token, navigate]);
 
   const handlePayment = async () => {
     setIsPaying(true);
@@ -62,10 +49,10 @@ const Pago = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.status === 200) {
-        toast.success("✅ Pago realizado con éxito.");
+        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
         setPaymentSuccess(true);
-        fetchBooking(); // Vuelve a cargar booking con estado actualizado
-        fetchHotels(res.data.booking.destination);
+        fetchBooking();
+        fetchHotels(booking.destination);
       }
     } catch {
       toast.error("❌ Error al procesar el pago.");
@@ -75,14 +62,12 @@ const Pago = () => {
   };
 
   const handleDownloadPDF = async () => {
+    if (!paymentSuccess) return toast.error("⚠️ Primero debes pagar la reserva.");
     try {
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pdf`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob",
-        }
-      );
+      const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/bookings/${id}/pdf`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -95,32 +80,39 @@ const Pago = () => {
     }
   };
 
+  const fetchHotels = async (city) => {
+    try {
+      const res = await axios.get(`https://sistema-reservas-final.onrender.com/api/hotels?city=${city}`);
+      setHotels(res.data);
+    } catch {
+      toast.error("❌ Error al cargar hoteles");
+    }
+  };
+
   const handleHotelBooking = async () => {
-    if (!selectedHotelId || !checkIn || !checkOut) {
-      toast.warning("Por favor completa todos los datos del hotel");
+    if (!selectedHotel || !checkIn || !checkOut) {
+      toast.error("⚠️ Completa todos los campos para reservar el hotel");
       return;
     }
 
     try {
       const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/hotel-bookings",
-        { hotelId: selectedHotelId, checkIn, checkOut },
+        { hotelId: selectedHotel.id, checkIn, checkOut },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("🏨 Hotel reservado con éxito");
-      setHotelBookingSuccess(true);
-      setHotelBookingId(res.data.booking.id);
+      toast.success("✅ Hotel reservado con éxito");
+      setHotelBooked(res.data.booking);
     } catch (error) {
-      toast.error("❌ Error al reservar hotel");
+      toast.error("❌ Error al reservar hotel: " + error.response?.data?.error || "Error desconocido");
     }
   };
 
   const handleDownloadHotelPDF = async () => {
-    if (!hotelBookingId) return;
-
+    if (!hotelBooked) return toast.error("⚠️ Primero debes reservar un hotel");
     try {
       const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/hotel-bookings/${hotelBookingId}/pdf`,
+        `https://sistema-reservas-final.onrender.com/api/hotel-bookings/${hotelBooked.id}/pdf`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "blob",
@@ -129,19 +121,18 @@ const Pago = () => {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `hotel_ticket_${hotelBookingId}.pdf`);
+      link.setAttribute("download", `reserva_hotel_${hotelBooked.id}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch {
-      toast.error("❌ Error al descargar el PDF del hotel.");
+      toast.error("❌ Error al descargar PDF del hotel");
     }
   };
 
   return (
     <div className="payment-container">
       <h2>💳 Pago de tu Reserva</h2>
-
       {booking ? (
         <>
           <p>Vuelo: {booking.origin} → {booking.destination}</p>
@@ -150,43 +141,46 @@ const Pago = () => {
 
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
-              {isPaying ? "Procesando..." : `Pagar $${booking.price}`}
+              {isPaying ? "Procesando pago..." : `Pagar $${booking.price}`}
             </button>
           ) : (
-            <>
-              <button onClick={handleDownloadPDF}>📥 Descargar Ticket Vuelo</button>
+            <button onClick={handleDownloadPDF}>📥 Descargar Ticket PDF</button>
+          )}
 
-              {/* 🏨 Sección de hoteles disponibles */}
-              {hotels.length > 0 && (
+          {/* 🔥 Mostrar hoteles solo si ya se pagó */}
+          {paymentSuccess && (
+            <div className="hotel-reservation">
+              <h3>🏨 Hoteles disponibles en {booking.destination}</h3>
+              {hotels.length > 0 ? (
                 <>
-                  <h3>🏨 Hoteles disponibles en {booking.destination}</h3>
-                  <select value={selectedHotelId} onChange={(e) => setSelectedHotelId(e.target.value)}>
+                  <select onChange={(e) => {
+                    const hotel = hotels.find(h => h.id === parseInt(e.target.value));
+                    setSelectedHotel(hotel);
+                  }}>
                     <option value="">Selecciona un hotel</option>
-                    {hotels.map((hotel) => (
+                    {hotels.map(hotel => (
                       <option key={hotel.id} value={hotel.id}>
                         {hotel.name} - ${hotel.price_per_night} por noche
                       </option>
                     ))}
                   </select>
-
-                  <div>
-                    <label>Check-in:</label>
-                    <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
-                    <label>Check-out:</label>
-                    <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
-                  </div>
-
-                  <button onClick={handleHotelBooking}>Reservar hotel</button>
+                  <label>Check-in:</label>
+                  <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
+                  <label>Check-out:</label>
+                  <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
+                  <button onClick={handleHotelBooking}>Reservar Hotel</button>
                 </>
+              ) : (
+                <p>No hay hoteles disponibles.</p>
               )}
 
-              {/* ✅ Mostrar botón de descarga de hotel si ya se reservó */}
-              {hotelBookingSuccess && (
+              {/* ✅ Mostrar opción de descarga de PDF del hotel */}
+              {hotelBooked && (
                 <button onClick={handleDownloadHotelPDF}>
-                  📥 Descargar Ticket Hotel
+                  📥 Descargar PDF del Hotel
                 </button>
               )}
-            </>
+            </div>
           )}
         </>
       ) : (
