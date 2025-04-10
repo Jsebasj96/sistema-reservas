@@ -8,6 +8,9 @@ const flightRoutes = require('./routes/flightRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const userRoutes = require('./routes/userRoutes');
 
+const hotelRoutes = require("./routes/hotelRoutes");
+const hotelBookingRoutes = require("./routes/hotelBookingRoutes");
+
 const app = express();
 
 // ✅ Configurar CORS actualizado
@@ -31,6 +34,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/users', userRoutes);
+app.use("/api/hotels", hotelRoutes);
+app.use("/api/hotel-bookings", hotelBookingRoutes);
 
 // ✅ Puerto configurado desde variables de entorno o por defecto 5000
 const PORT = process.env.PORT || 5000;
