@@ -4,15 +4,16 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [hotels, setHotels] = useState([]); // 🏨 Hoteles disponibles
-  const [selectedHotel, setSelectedHotel] = useState(null); // Hotel seleccionado
-  const token = localStorage.getItem("token");
+  const [hotels, setHotels] = useState([]);
+  const [showHotels, setShowHotels] = useState(false);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
+  // 🔥 Función para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
@@ -22,26 +23,15 @@ const Pago = () => {
         }
       );
       setBooking(res.data);
-      if (res.data.status === "pagado" || res.data.status === "PAID") {
+      if (res.data.status === "PAID") {
         setPaymentSuccess(true);
-        fetchHotels(res.data.destination); // 🔥 Cargar hoteles si ya está pagado
       }
     } catch (error) {
       toast.error("❌ Error al cargar la reserva");
     }
   };
 
-  const fetchHotels = async (city) => {
-    try {
-      const res = await axios.get(
-        `https://sistema-reservas-final.onrender.com/api/hotels?city=${city}`
-      );
-      setHotels(res.data);
-    } catch (error) {
-      toast.error("❌ Error al cargar hoteles");
-    }
-  };
-
+  // 🟢 Cargar la reserva al montar el componente
   useEffect(() => {
     if (token) {
       fetchBooking();
@@ -51,6 +41,7 @@ const Pago = () => {
     }
   }, [id, token, navigate]);
 
+  // 🎯 Simular pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
@@ -65,8 +56,7 @@ const Pago = () => {
       if (res.status === 200) {
         toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
         setPaymentSuccess(true);
-        fetchBooking(); // Recargar datos
-        fetchHotels(res.data.booking.destination); // 🔥 Cargar hoteles después del pago
+        fetchBooking();
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago.");
@@ -75,6 +65,7 @@ const Pago = () => {
     }
   };
 
+  // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
     if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
@@ -102,27 +93,41 @@ const Pago = () => {
     }
   };
 
-  const handleHotelBooking = async () => {
-    if (!selectedHotel) {
-      toast.warning("Selecciona un hotel para reservar.");
-      return;
-    }
+  // 🔄 Cargar hoteles después del pago exitoso
+  useEffect(() => {
+    const fetchHotels = async () => {
+      if (paymentSuccess && booking?.destination) {
+        try {
+          const res = await axios.get(
+            `https://sistema-reservas-final.onrender.com/api/hotels?city=${booking.destination}`
+          );
+          setHotels(res.data);
+          setShowHotels(true);
+        } catch (error) {
+          toast.error("❌ No se pudieron cargar los hoteles.");
+        }
+      }
+    };
 
+    fetchHotels();
+  }, [paymentSuccess, booking]);
+
+  // ✅ Reservar hotel
+  const handleHotelBooking = async (hotelId) => {
     try {
       await axios.post(
         "https://sistema-reservas-final.onrender.com/api/hotel-bookings",
         {
-          bookingId: id,
-          hotelId: selectedHotel,
+          hotel_id: hotelId,
+          booking_id: booking.id,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      toast.success("✅ Reserva de hotel realizada con éxito.");
+      toast.success("✅ Hotel reservado con éxito");
     } catch (error) {
-      toast.error("❌ Error al reservar el hotel.");
+      toast.error("❌ Error al reservar el hotel");
     }
   };
 
@@ -141,25 +146,31 @@ const Pago = () => {
               {isPaying ? "Procesando pago..." : `Pagar $${booking.price}`}
             </button>
           ) : (
-            <button onClick={handleDownloadPDF}>
-              📥 Descargar Ticket PDF
-            </button>
-          )}
+            <>
+              <button onClick={handleDownloadPDF}>
+                📥 Descargar Ticket PDF
+              </button>
 
-          {/* 🏨 Mostrar hoteles disponibles después del pago */}
-          {paymentSuccess && hotels.length > 0 && (
-            <div className="hotel-section">
-              <h3>🏨 Hoteles disponibles en {booking.destination}</h3>
-              <select value={selectedHotel || ""} onChange={(e) => setSelectedHotel(e.target.value)}>
-                <option value="">Selecciona un hotel</option>
-                {hotels.map((hotel) => (
-                  <option key={hotel.id} value={hotel.id}>
-                    {hotel.name} ({hotel.category}⭐) - {hotel.city}, {hotel.country}
-                  </option>
-                ))}
-              </select>
-              <button onClick={handleHotelBooking}>Reservar Hotel</button>
-            </div>
+              {/* 🔥 Mostrar hoteles después del pago */}
+              {showHotels && hotels.length > 0 && (
+                <div className="hotels-section">
+                  <h3>🏨 Hoteles disponibles en {booking.destination}</h3>
+                  {hotels.map((hotel) => (
+                    <div key={hotel.id} className="hotel-card">
+                      <h4>{hotel.name}</h4>
+                      <p>🌟 Categoría: {hotel.category}</p>
+                      <p>📍 Ciudad: {hotel.city}, {hotel.country}</p>
+                      <a href={hotel.website} target="_blank" rel="noopener noreferrer">
+                        🌐 Ver sitio web
+                      </a>
+                      <button onClick={() => handleHotelBooking(hotel.id)}>
+                        Reservar Hotel
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </>
       ) : (
