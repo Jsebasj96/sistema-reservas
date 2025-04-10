@@ -16,7 +16,8 @@ router.post("/", verifyToken, async (req, res) => {
     const newBooking = await createHotelBooking(req.user.userId, hotelId, checkIn, checkOut);
     res.status(201).json({ message: "Reserva de hotel creada con éxito", booking: newBooking });
   } catch (error) {
-    res.status(500).json({ error: "Error al reservar hotel" });
+    console.error("❌ Error al reservar hotel:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
