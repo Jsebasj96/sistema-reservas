@@ -4,34 +4,44 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 
 const Pago = () => {
-  const { id } = useParams(); // Capturamos el ID de la reserva desde la URL
+  const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [hotels, setHotels] = useState([]);
-  const [showHotels, setShowHotels] = useState(false);
-  const navigate = useNavigate();
+  const [selectedHotel, setSelectedHotel] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  // 🔥 Función para cargar la reserva
   const fetchBooking = async () => {
     try {
       const res = await axios.get(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setBooking(res.data);
       if (res.data.status === "PAID") {
         setPaymentSuccess(true);
+        fetchHotels(res.data.destination);
       }
     } catch (error) {
       toast.error("❌ Error al cargar la reserva");
     }
   };
 
-  // 🟢 Cargar la reserva al montar el componente
+  const fetchHotels = async (city) => {
+    try {
+      const res = await axios.get(
+        `https://sistema-reservas-final.onrender.com/api/hotels?city=${city}`
+      );
+      setHotels(res.data);
+    } catch (error) {
+      toast.error("❌ Error al cargar hoteles");
+    }
+  };
+
   useEffect(() => {
     if (token) {
       fetchBooking();
@@ -41,31 +51,26 @@ const Pago = () => {
     }
   }, [id, token, navigate]);
 
-  // 🎯 Simular pago
   const handlePayment = async () => {
     setIsPaying(true);
     try {
       const res = await axios.post(
         `https://sistema-reservas-final.onrender.com/api/bookings/${id}/pay`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (res.status === 200) {
-        toast.success("✅ Pago realizado con éxito. Tu ticket está listo.");
+        toast.success("✅ Pago realizado con éxito");
         setPaymentSuccess(true);
-        fetchBooking();
+        fetchBooking(); // recargar para obtener destino y mostrar hoteles
       }
     } catch (error) {
-      toast.error("❌ Error al procesar el pago.");
+      toast.error("❌ Error al procesar el pago");
     } finally {
       setIsPaying(false);
     }
   };
 
-  // 📥 Descargar PDF después del pago
   const handleDownloadPDF = async () => {
     if (!paymentSuccess) {
       toast.error("⚠️ Primero debes pagar la reserva.");
@@ -93,53 +98,26 @@ const Pago = () => {
     }
   };
 
-  // 🔄 Cargar hoteles después del pago exitoso
-  useEffect(() => {
-    const fetchHotels = async () => {
-      if (paymentSuccess && booking?.destination) {
-        try {
-          const res = await axios.get(
-            `https://sistema-reservas-final.onrender.com/api/hotels?city=${booking.destination}`
-          );
-          setHotels(res.data);
-          setShowHotels(true);
-        } catch (error) {
-          toast.error("❌ No se pudieron cargar los hoteles.");
-        }
-      }
-    };
-
-    fetchHotels();
-  }, [paymentSuccess, booking]);
-
-
-  // 🏨 Función para reservar hotel
-  const handleHotelBooking = async (hotelId) => {
-    if (!booking || !booking.id) {
-      toast.error("Reserva de vuelo no disponible");
+  const handleHotelBooking = async () => {
+    if (!selectedHotel || !checkIn || !checkOut) {
+      toast.warning("Completa todos los campos para reservar el hotel.");
       return;
     }
-
-    const payload = {
-      hotel_id: hotelId,
-      booking_id: booking.id,
-    };
-
-    // 🔍 Ver qué datos se están enviando al backend
-    console.log("Enviando reserva de hotel con:", payload);
 
     try {
       const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/hotel-bookings",
-        payload,
+        {
+          hotelId: selectedHotel,
+          checkIn,
+          checkOut,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      toast.success("✅ Hotel reservado con éxito");
+      toast.success("🏨 Hotel reservado con éxito");
     } catch (error) {
-      console.error("❌ Error al reservar hotel:", error);
       toast.error("❌ Error al reservar hotel");
     }
   };
@@ -150,9 +128,9 @@ const Pago = () => {
 
       {booking ? (
         <>
-          <p>Vuelo: {booking.flight?.origin} → {booking.flight?.destination}</p>
+          <p>Vuelo: {booking.origin} → {booking.destination}</p>
           <p>Categoría: {booking.category}</p>
-          <p>Precio total: ${booking.price ? Number(booking.price).toFixed(2) : "N/A"}</p>
+          <p>Precio total: ${Number(booking.price).toFixed(2)}</p>
 
           {!paymentSuccess ? (
             <button onClick={handlePayment} disabled={isPaying}>
@@ -164,25 +142,27 @@ const Pago = () => {
                 📥 Descargar Ticket PDF
               </button>
 
-              {/* 🔥 Mostrar hoteles después del pago */}
-              {showHotels && hotels.length > 0 && (
-                <div className="hotels-section">
-                  <h3>🏨 Hoteles disponibles en {booking.destination}</h3>
-                  {hotels.map((hotel) => (
-                    <div key={hotel.id} className="hotel-card">
-                      <h4>{hotel.name}</h4>
-                      <p>🌟 Categoría: {hotel.category}</p>
-                      <p>📍 Ciudad: {hotel.city}, {hotel.country}</p>
-                      <a href={hotel.website} target="_blank" rel="noopener noreferrer">
-                        🌐 Ver sitio web
-                      </a>
-                      <button onClick={() => handleHotelBooking(hotel.id)}>
-                        Reservar Hotel
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* 🔥 Sección de hoteles */}
+              <h3>🏨 Reserva un hotel en {booking.destination}</h3>
+              <label>Hotel:</label>
+              <select
+                value={selectedHotel}
+                onChange={(e) => setSelectedHotel(e.target.value)}
+              >
+                <option value="">Selecciona un hotel</option>
+                {hotels.map((hotel) => (
+                  <option key={hotel.id} value={hotel.id}>
+                    {hotel.name} - {hotel.city}
+                  </option>
+                ))}
+              </select>
+
+              <label>Check-in:</label>
+              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
+              <label>Check-out:</label>
+              <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
+
+              <button onClick={handleHotelBooking}>🛏️ Reservar Hotel</button>
             </>
           )}
         </>
