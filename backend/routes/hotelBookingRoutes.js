@@ -52,7 +52,7 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
 
     // Contenido del PDF
     // ✨ Encabezado
-      doc.fontSize(20).text("🏨 Ticket de Reserva de Hotel", { align: "center" });
+      doc.fontSize(20).text("Ticket de Reserva de Hotel", { align: "center" });
       doc.moveDown();
 
       // 📍 Información del hotel
@@ -67,8 +67,6 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
       doc.fontSize(12);
       doc.text(`Nombre: ${user.name}`);
       doc.text(`Correo: ${user.email}`);
-      doc.text(`Teléfono: ${user.phone}`);
-      doc.text(`Dirección: ${user.address}`);
       doc.moveDown();
 
       // ✅ Mensaje final
