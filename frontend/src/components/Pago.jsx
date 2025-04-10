@@ -113,21 +113,34 @@ const Pago = () => {
   }, [paymentSuccess, booking]);
 
 
+  // 🏨 Función para reservar hotel
   const handleHotelBooking = async (hotelId) => {
+    if (!booking || !booking.id) {
+      toast.error("Reserva de vuelo no disponible");
+      return;
+    }
+
+    const payload = {
+      hotel_id: hotelId,
+      booking_id: booking.id,
+    };
+
+    // 🔍 Ver qué datos se están enviando al backend
+    console.log("Enviando reserva de hotel con:", payload);
+
     try {
-      await axios.post(
+      const res = await axios.post(
         "https://sistema-reservas-final.onrender.com/api/hotel-bookings",
-        {
-          hotel_id: hotelId,
-          booking_id: booking.id,
-        },
+        payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       toast.success("✅ Hotel reservado con éxito");
     } catch (error) {
-      toast.error("❌ Error al reservar el hotel");
+      console.error("❌ Error al reservar hotel:", error);
+      toast.error("❌ Error al reservar hotel");
     }
   };
 
