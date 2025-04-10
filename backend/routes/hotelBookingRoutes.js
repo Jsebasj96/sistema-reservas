@@ -1,6 +1,7 @@
 const express = require("express");
 const verifyToken = require("../middlewares/authMiddleware");
 const PDFDocument = require("pdfkit");
+const { getUserById } = require("../models/User");
 const {
   createHotelBooking,
   generateHotelBookingPDF,
@@ -33,6 +34,11 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
 
+    const user = await getUserById(booking.user_id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
     const doc = new PDFDocument();
     let buffers = [];
 
@@ -45,17 +51,31 @@ router.get("/:id/pdf", verifyToken, async (req, res) => {
     });
 
     // Contenido del PDF
-    doc.fontSize(20).text("🏨 Reserva de Hotel", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(14).text(`Hotel: ${booking.hotel_name}`);
-    doc.text(`Dirección: ${booking.address}`);
-    doc.text(`Ciudad: ${booking.city}`);
-    doc.text(`Precio por noche: $${booking.price_per_night}`);
-    doc.moveDown();
-    doc.text(`Check-in: ${booking.check_in}`);
-    doc.text(`Check-out: ${booking.check_out}`);
-    doc.text(`ID de Usuario: ${booking.user_id}`);
+    // ✨ Encabezado
+      doc.fontSize(20).text("🏨 Ticket de Reserva de Hotel", { align: "center" });
+      doc.moveDown();
 
+      // 📍 Información del hotel
+      doc.fontSize(14).text(`Hotel: ${booking.hotel_name}`);
+      doc.text(`Ciudad: ${booking.city}`);
+      doc.text(`Check-In: ${booking.check_in}`);
+      doc.text(`Check-Out: ${booking.check_out}`);
+      doc.moveDown();
+
+      // 👤 Información del usuario
+      doc.fontSize(14).text("Información del usuario:");
+      doc.fontSize(12);
+      doc.text(`Nombre: ${user.name}`);
+      doc.text(`Correo: ${user.email}`);
+      doc.text(`Teléfono: ${user.phone}`);
+      doc.text(`Dirección: ${user.address}`);
+      doc.moveDown();
+
+      // ✅ Mensaje final
+      doc.fontSize(12).font("Helvetica-Oblique").text(
+        "Gracias por reservar con nosotros. Presenta este ticket al momento de hacer check-in.",
+        { align: "center" }
+      );
     doc.end();
   } catch (error) {
     console.error("❌ Error al generar PDF:", error);
