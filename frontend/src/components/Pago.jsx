@@ -62,7 +62,7 @@ const Pago = () => {
       if (res.status === 200) {
         toast.success("✅ Pago realizado con éxito");
         setPaymentSuccess(true);
-        fetchBooking(); // recargar para obtener destino y mostrar hoteles
+        fetchBooking(); 
       }
     } catch (error) {
       toast.error("❌ Error al procesar el pago");
