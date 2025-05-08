@@ -1,4 +1,6 @@
+// backend/config/db.js
 require('dotenv').config();
+
 const { Pool } = require('pg');
 
 if (!process.env.DATABASE_URL) {
@@ -6,13 +8,11 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-const sslConfig = process.env.DATABASE_URL.includes("railway")
-  ? false
-  : { rejectUnauthorized: false };
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: sslConfig
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 pool.connect()
