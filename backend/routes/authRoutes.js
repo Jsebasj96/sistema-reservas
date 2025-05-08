@@ -10,6 +10,6 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // Ruta de obtener perfil (requiere autenticación)
-router.get('/profile', authMiddleware.verifyToken, authController.getProfile);
+router.get('/profile', authMiddleware, authController.getProfile);
 
 module.exports = router;
