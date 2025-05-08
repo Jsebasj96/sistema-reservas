@@ -34,7 +34,7 @@ const Home = () => {
 
       <h2 className="text-2xl font-semibold text-green-900 mb-6">¿Qué deseas hacer?</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-5xl px-4">
+      <div className="flex flex-wrap justify-center gap-8 w-full max-w-5xl px-4">
         <Opcion icon={<FaHotel size={50} />} texto="Reservar Cabaña" ruta="/habitaciones" />
         <Opcion icon={<FaSwimmingPool size={50} />} texto="Servicios del Club" ruta="/servicios" />
         <Opcion icon={<FaUmbrellaBeach size={50} />} texto="Pasadía" ruta="/pasadia" />
