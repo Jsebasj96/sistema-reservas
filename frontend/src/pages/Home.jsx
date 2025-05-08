@@ -1,36 +1,34 @@
 import React from 'react';
-import { Button, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
 
   return (
-    <div className="App">
-      <h1>Bienvenido al Club Campestre "La Buena Vida"</h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-300 flex flex-col items-center justify-center px-6 py-10">
+      <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 mb-10 drop-shadow-md text-center">
+        Bienvenido al Club Campestre <br />"La Buena Vida"
+      </h1>
 
-      {/* Botón con Chakra UI */}
-      <Button onClick={onOpen} colorScheme="teal" size="lg" width="80%" borderRadius="30px">
-        Ver Más Información
-      </Button>
-
-      {/* Modal de Chakra UI */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Información del Club</ModalHeader>
-          <ModalBody>
-            <p>El Club Campestre "La Buena Vida" ofrece un ambiente relajante con múltiples servicios y actividades para disfrutar con la familia y amigos.</p>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="teal" onClick={onClose} borderRadius="30px">
-              Cerrar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <div className="flex flex-wrap justify-center gap-6">
+        <button
+          onClick={() => navigate('/login')}
+          className="px-8 py-4 bg-green-700 text-white rounded-full text-xl font-semibold shadow-lg transform hover:bg-green-800 hover:scale-105 transition-all duration-300"
+        >
+          Iniciar Sesión
+        </button>
+        <button
+          onClick={() => navigate('/register')}
+          className="px-8 py-4 bg-white text-green-700 border-2 border-green-700 rounded-full text-xl font-semibold shadow-lg transform hover:bg-green-100 hover:scale-105 transition-all duration-300"
+        >
+          Registrarse
+        </button>
+      </div>
     </div>
   );
 };
 
 export default Home;
+
+
 
