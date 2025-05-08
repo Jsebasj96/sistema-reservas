@@ -1,6 +1,5 @@
 // backend/config/db.js
 require('dotenv').config();
-
 const { Pool } = require('pg');
 
 if (!process.env.DATABASE_URL) {
@@ -11,11 +10,13 @@ if (!process.env.DATABASE_URL) {
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
+    require: true,
     rejectUnauthorized: false
   }
 });
 
-pool.connect()
+pool
+  .connect()
   .then(() => console.log("✅ Conexión exitosa a PostgreSQL"))
   .catch(err => console.error("❌ Error de conexión:", err));
 
