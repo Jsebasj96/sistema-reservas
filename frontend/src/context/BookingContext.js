@@ -1,47 +1,32 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const BookingContext = createContext();
 
-export const BookingProvider = ({ children }) => {
-  const [reservas, setReservas] = useState([]);
-  const [selectedReserva, setSelectedReserva] = useState(null);
+const BookingProvider = ({ children }) => {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addReserva = (reserva) => {
-    setReservas((prevReservas) => [...prevReservas, reserva]);
-  };
-
-  const updateReserva = (updatedReserva) => {
-    setReservas((prevReservas) =>
-      prevReservas.map((reserva) => (reserva.id === updatedReserva.id ? updatedReserva : reserva))
-    );
-  };
-
-  const deleteReserva = (reservaId) => {
-    setReservas((prevReservas) => prevReservas.filter((reserva) => reserva.id !== reservaId));
-  };
-
-  const selectReserva = (reserva) => {
-    setSelectedReserva(reserva);
-  };
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await axios.get('/api/bookings');
+        setBookings(response.data);
+      } catch (err) {
+        setError('No se pudieron cargar las reservas');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
 
   return (
-    <BookingContext.Provider
-      value={{
-        reservas,
-        selectedReserva,
-        addReserva,
-        updateReserva,
-        deleteReserva,
-        selectReserva,
-      }}
-    >
+    <BookingContext.Provider value={{ bookings, loading, error }}>
       {children}
     </BookingContext.Provider>
   );
 };
 
-export const useBooking = () => {
-  return useContext(BookingContext);
-};
-
-export default BookingContext;
+export { BookingContext, BookingProvider };

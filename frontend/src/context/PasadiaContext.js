@@ -1,47 +1,33 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const PasadiaContext = createContext();
 
-export const PasadiaProvider = ({ children }) => {
+const PasadiaProvider = ({ children }) => {
   const [pasadias, setPasadias] = useState([]);
-  const [selectedPasadia, setSelectedPasadia] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addPasadia = (pasadia) => {
-    setPasadias((prevPasadias) => [...prevPasadias, pasadia]);
-  };
-
-  const updatePasadia = (updatedPasadia) => {
-    setPasadias((prevPasadias) =>
-      prevPasadias.map((pasadia) => (pasadia.id === updatedPasadia.id ? updatedPasadia : pasadia))
-    );
-  };
-
-  const deletePasadia = (pasadiaId) => {
-    setPasadias((prevPasadias) => prevPasadias.filter((pasadia) => pasadia.id !== pasadiaId));
-  };
-
-  const selectPasadia = (pasadia) => {
-    setSelectedPasadia(pasadia);
-  };
+  useEffect(() => {
+    const fetchPasadias = async () => {
+      try {
+        const response = await axios.get('/api/pasadias');
+        setPasadias(response.data);
+      } catch (err) {
+        setError('No se pudieron cargar los pasadías');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPasadias();
+  }, []);
 
   return (
-    <PasadiaContext.Provider
-      value={{
-        pasadias,
-        selectedPasadia,
-        addPasadia,
-        updatePasadia,
-        deletePasadia,
-        selectPasadia,
-      }}
-    >
+    <PasadiaContext.Provider value={{ pasadias, loading, error }}>
       {children}
     </PasadiaContext.Provider>
   );
 };
 
-export const usePasadia = () => {
-  return useContext(PasadiaContext);
-};
+export { PasadiaContext, PasadiaProvider };
 
-export default PasadiaContext;
