@@ -1,80 +1,51 @@
 require('dotenv').config();
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
 
-// Registro de usuario
 const register = async (req, res) => {
   const { email, password, name } = req.body;
-
   try {
-    const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (userExists.rows.length > 0) {
-      return res.status(400).json({ error: 'El usuario ya existe' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await pool.query(
-      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, role',
-      [email, hashedPassword, name]
+    const exists = await pool.query('SELECT 1 FROM users WHERE email=$1', [email]);
+    if (exists.rows.length) return res.status(400).json({ error: 'Usuario ya existe' });
+    const hash = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      'INSERT INTO users(email,password,name,role) VALUES($1,$2,$3,$4) RETURNING id,email,name,role',
+      [email, hash, name, 'user']
     );
-
-    res.status(201).json({ message: 'Usuario registrado exitosamente', user: newUser.rows[0] });
-  } catch (error) {
-    console.error('Error en el registro:', error);
+    res.status(201).json({ user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
 
-// Inicio de sesión
 const login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (user.rows.length === 0) {
-      return res.status(400).json({ error: 'Credenciales incorrectas' });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.rows[0].password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Credenciales incorrectas' });
-    }
-
-    const token = jwt.sign(
-      { id: user.rows[0].id, role: user.rows[0].role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '1h' }
-    );
-
-    res.json({ message: 'Inicio de sesión exitoso', token });
-  } catch (error) {
-    console.error('Error en login:', error);
+    const result = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
+    if (!result.rows.length) return res.status(400).json({ error: 'Credenciales incorrectas' });
+    const user = result.rows[0];
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return res.status(400).json({ error: 'Credenciales incorrectas' });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
 
-// Obtener perfil
 const getProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
-
-    const user = await pool.query('SELECT id, email, name, role FROM users WHERE id = $1', [userId]);
-
-    if (user.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    res.status(200).json({ user: user.rows[0] });
-  } catch (error) {
-    console.error('Error al obtener perfil:', error);
+    const { id } = req.user;
+    const result = await pool.query('SELECT id,email,name,role FROM users WHERE id=$1', [id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json({ user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
 
-module.exports = {
-  register,
-  login,
-  getProfile, // << Asegúrate de exportarlo
-};
+module.exports = { register, login, getProfile };

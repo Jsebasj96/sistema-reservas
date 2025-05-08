@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const pagoController = require('../controllers/pagoController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Ruta para procesar un pago
-router.post('/', authMiddleware.verifyToken, pagoController.processPago);
-
-// Ruta para obtener los pagos realizados
-router.get('/', authMiddleware.verifyToken, pagoController.getAllPagos);
+router.post('/',      verifyToken, pagoController.createPago);
+router.get('/',       verifyToken, pagoController.getAllPagos);
+router.get('/:id',    verifyToken, pagoController.getPagoById);
 
 module.exports = router;

@@ -1,23 +1,40 @@
 const pool = require('../config/db');
 
-const procesarPago = async (req, res) => {
-  const { reservaId, cantidad } = req.body;
-
-  // Verificar si la reserva existe
-  const reserva = await pool.query('SELECT * FROM reservas WHERE id = $1', [reservaId]);
-  if (reserva.rows.length === 0) {
-    return res.status(400).json({ error: 'Reserva no encontrada' });
+const createPago = async (req, res) => {
+  const { reservaId, pasadiaId, monto, metodo } = req.body;
+  const userId = req.user.id;
+  try {
+    const result = await pool.query(
+      `INSERT INTO pagos (user_id,reserva_id,pasadia_id,monto,metodo,fecha)
+       VALUES ($1,$2,$3,$4,$5,NOW()) RETURNING *`,
+      [userId, reservaId||null, pasadiaId||null, monto, metodo]
+    );
+    res.status(201).json({ pago: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
   }
-
-  // Registrar pago
-  const pago = await pool.query(
-    'INSERT INTO pagos (reserva_id, cantidad) VALUES ($1, $2) RETURNING *',
-    [reservaId, cantidad]
-  );
-
-  res.status(201).json({ message: 'Pago procesado exitosamente', pago: pago.rows[0] });
 };
 
-module.exports = {
-  procesarPago,
+const getAllPagos = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM pagos ORDER BY fecha DESC');
+    res.json({ pagos: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 };
+
+const getPagoById = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM pagos WHERE id=$1', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Pago no encontrado' });
+    res.json({ pago: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+module.exports = { createPago, getAllPagos, getPagoById };

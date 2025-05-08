@@ -1,27 +1,28 @@
 const pool = require('../config/db');
 
-const crearPedido = async (req, res) => {
-  const { userId, platos, total } = req.body;
-
-  // Insertar el pedido en la base de datos
-  const nuevoPedido = await pool.query(
-    'INSERT INTO pedidos (user_id, platos, total) VALUES ($1, $2, $3) RETURNING *',
-    [userId, platos, total]
-  );
-
-  res.status(201).json({ message: 'Pedido creado exitosamente', pedido: nuevoPedido.rows[0] });
+const createOrder = async (req, res) => {
+  const { clienteId, platoId, extras } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO consumiciones (user_id,plato_id,extras,fecha)
+       VALUES ($1,$2,$3,NOW()) RETURNING *`,
+      [clienteId, platoId, extras]
+    );
+    res.status(201).json({ order: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 };
 
-const getPedidosByUser = async (req, res) => {
-  const { userId } = req.params;
-
-  const pedidos = await pool.query('SELECT * FROM pedidos WHERE user_id = $1', [userId]);
-
-  res.json({ pedidos: pedidos.rows });
+const getAllOrders = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM consumiciones ORDER BY fecha DESC');
+    res.json({ orders: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 };
 
-module.exports = {
-  crearPedido,
-  getPedidosByUser,
-};
-
+module.exports = { createOrder, getAllOrders };

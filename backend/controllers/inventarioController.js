@@ -1,28 +1,23 @@
 const pool = require('../config/db');
 
-const agregarProductoInventario = async (req, res) => {
-  const { nombre, cantidad, precio } = req.body;
-
-  const nuevoProducto = await pool.query(
-    'INSERT INTO inventario_productos (nombre, cantidad, precio) VALUES ($1, $2, $3) RETURNING *',
-    [nombre, cantidad, precio]
-  );
-
-  res.status(201).json({ message: 'Producto agregado al inventario', producto: nuevoProducto.rows[0] });
+const getProductos = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM inventario_productos');
+    res.json({ productos: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 };
 
-const actualizarInventarioProducto = async (req, res) => {
-  const { productoId, cantidad } = req.body;
-
-  const productoActualizado = await pool.query(
-    'UPDATE inventario_productos SET cantidad = $1 WHERE id = $2 RETURNING *',
-    [cantidad, productoId]
-  );
-
-  res.json({ message: 'Producto actualizado en el inventario', producto: productoActualizado.rows[0] });
+const getServicios = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM inventario_servicios_mesa');
+    res.json({ servicios: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 };
 
-module.exports = {
-  agregarProductoInventario,
-  actualizarInventarioProducto,
-};
+module.exports = { getProductos, getServicios };

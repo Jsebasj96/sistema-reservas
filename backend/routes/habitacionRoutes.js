@@ -1,15 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const habitacionController = require('../controllers/habitacionController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Ruta para reservar una habitación
-router.post('/', authMiddleware.verifyToken, habitacionController.createReserva);
-
-// Ruta para obtener todas las habitaciones
-router.get('/', authMiddleware.verifyToken, habitacionController.getAllHabitaciones);
-
-// Ruta para obtener una habitación por ID
-router.get('/:id', authMiddleware.verifyToken, habitacionController.getHabitacionById);
+router.get('/',    verifyToken, habitacionController.getAllHabitaciones);
+router.post('/',   verifyToken, habitacionController.createHabitacion);
 
 module.exports = router;
