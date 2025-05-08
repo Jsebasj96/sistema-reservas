@@ -3,14 +3,14 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 const authMiddleware = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Acceso denegado. Token no proporcionado.' });
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;  // El payload del token (datos del usuario) se coloca en req.user
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ error: 'Acceso denegado. Token inválido.' });
