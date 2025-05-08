@@ -158,3 +158,81 @@ button {
 button:hover {
   background-color: #45a049;
 }
+
+/* Estilo para la página de inicio */
+.inicio-container {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(to bottom, #e8f5e9, #ffffff);
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+.inicio-container h1 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+.auth-buttons {
+  margin-bottom: 30px;
+}
+
+.auth-buttons .btn {
+  background-color: #43a047;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  margin: 0 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-buttons .btn:hover {
+  background-color: #2e7d32;
+}
+
+.inicio-container h2 {
+  font-size: 1.5rem;
+  color: #388e3c;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.acciones-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.accion {
+  width: 120px;
+  height: 120px;
+  background-color: #f1f8e9;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.accion:hover {
+  transform: scale(1.05);
+}
+
+.accion i {
+  font-size: 28px;
+  color: #2e7d32;
+  margin-bottom: 5px;
+}
+
+.accion span {
+  font-size: 0.9rem;
+  color: #424242;
+}
