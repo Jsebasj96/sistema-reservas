@@ -1,7 +1,7 @@
 const adminMiddleware = (req, res, next) => {
   const user = req.user;
 
-  // Verificar si el usuario es un administrador
+  // Verificar si el usuario tiene rol 'admin'
   if (user.role !== 'admin') {
     return res.status(403).json({ error: 'Acceso denegado. No eres administrador.' });
   }
@@ -10,3 +10,4 @@ const adminMiddleware = (req, res, next) => {
 };
 
 module.exports = adminMiddleware;
+
