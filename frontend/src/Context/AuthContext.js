@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Verificar si el usuario ya está autenticado
   useEffect(() => {
     const checkAuth = async () => {
       try {
