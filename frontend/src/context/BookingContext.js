@@ -30,3 +30,4 @@ const BookingProvider = ({ children }) => {
 };
 
 export { BookingContext, BookingProvider };
+

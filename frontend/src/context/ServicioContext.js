@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 const ServicioContext = createContext();
@@ -29,5 +29,9 @@ const ServicioProvider = ({ children }) => {
   );
 };
 
-export { ServicioContext, ServicioProvider };
+// Exportar el hook para consumir el contexto
+export const useServicioContext = () => useContext(ServicioContext);
+export { ServicioProvider };
+
+
 

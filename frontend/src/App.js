@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthContext } from './context/AuthContext';
-import { ReservaContext } from './context/ReservaContext';
-import { ServicioContext } from './context/ServicioContext';
-import { PagoContext } from './context/PagoContext';
-import { authService } from './services/authService';
+import { AuthProvider } from './context/AuthContext'; // Contexto para la autenticación
+import { ReservaProvider } from './context/ReservaContext'; // Contexto para las reservas
+import { ServicioProvider } from './context/ServicioContext'; // Contexto para los servicios
+import { PagoProvider } from './context/PagoContext'; // Contexto para los pagos
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -18,16 +17,11 @@ import NotFound from './pages/NotFound';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [reservas, setReservas] = useState([]);
-  const [servicios, setServicios] = useState([]);
-  const [pago, setPago] = useState({});
 
-  // Cargar datos del usuario logueado al iniciar la aplicación
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await authService.me();
-        setUser(userData);
+        // Lógica para cargar el usuario
       } catch (error) {
         console.error('Error al obtener el usuario', error);
       } finally {
@@ -38,15 +32,13 @@ function App() {
     fetchUser();
   }, []);
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
+  if (loading) return <div>Cargando...</div>;
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      <ReservaContext.Provider value={{ reservas, setReservas }}>
-        <ServicioContext.Provider value={{ servicios, setServicios }}>
-          <PagoContext.Provider value={{ pago, setPago }}>
+    <AuthProvider value={{ user, setUser }}>
+      <ReservaProvider>  {/* Aquí envolvemos con el provider de Reserva */}
+        <ServicioProvider> {/* Aquí envolvemos con el provider de Servicios */}
+          <PagoProvider> {/* Aquí envolvemos con el provider de Pagos */}
             <Router>
               <Navbar />
               <Routes>
@@ -60,10 +52,10 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Router>
-          </PagoContext.Provider>
-        </ServicioContext.Provider>
-      </ReservaContext.Provider>
-    </AuthContext.Provider>
+          </PagoProvider>
+        </ServicioProvider>
+      </ReservaProvider>
+    </AuthProvider>
   );
 }
 

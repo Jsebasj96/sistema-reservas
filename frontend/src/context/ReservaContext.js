@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 const ReservaContext = createContext();
@@ -29,6 +29,8 @@ const ReservaProvider = ({ children }) => {
   );
 };
 
-export { ReservaContext, ReservaProvider };
+// Exportar el hook para consumir el contexto
+export const useReservaContext = () => useContext(ReservaContext);
+export { ReservaProvider };
 
 

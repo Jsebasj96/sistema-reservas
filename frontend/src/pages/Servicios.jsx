@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useServicioContext } from '../context/ServicioContext';
 
-function Servicios() {
-  const { servicios, agregarServicio } = useServicioContext();
+const Servicios = () => {
+  const { servicios, loading, error } = useServicioContext();
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div>
-      <h2>Servicios Disponibles</h2>
+      <h1>Servicios del Club</h1>
       <ul>
-        {servicios.map((servicio) => (
-          <li key={servicio.id}>
-            {servicio.nombre} - ${servicio.precio}
-            <button onClick={() => agregarServicio(servicio)}>Agregar a cuenta</button>
-          </li>
+        {servicios.map(servicio => (
+          <li key={servicio.id}>{servicio.nombre}</li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default Servicios;
