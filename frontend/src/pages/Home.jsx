@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-300 flex flex-col items-center justify-center px-6 py-10">
       <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 mb-10 drop-shadow-md text-center">
-        Bienvenido al Club Campestre <br />"La Buena Vida"
+        Bienvenido al Club Campestre <br />"La Buena Vida."
       </h1>
 
       <div className="flex flex-wrap justify-center gap-6">

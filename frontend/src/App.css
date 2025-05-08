@@ -1,52 +1,66 @@
-/* Global Styles */
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  text-align: center;
+/* Contenedor del login y registro (comparten diseño) */
+.login-container,
+.register-container {
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Centra todos los elementos internos */
   justify-content: center;
-  min-height: 100vh;
+  gap: 10px; /* Agrega espacio entre elementos */
 }
 
-.App {
-  text-align: center;
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #7ee8b8, #80e0a7, #8ad0a5);
-  width: 100%;
-  padding: 20px;
-}
-
+/* Títulos centrados */
 h1,
 h2 {
-  font-size: 2rem;
   color: #333;
-  margin-bottom: 20px;
+  text-align: center; /* Centra el texto */
+  margin-bottom: 15px;
 }
 
+/* Inputs */
+input {
+  width: calc(100% - 16px);
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  box-sizing: border-box; /* Evita que el padding agrande el input */
+}
+
+/* Botones */
 button {
   background-color: #4caf50;
   color: #fff;
-  padding: 15px 20px;
-  font-size: 1rem;
   border: none;
-  border-radius: 30px;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  width: 80%;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
+/* Efecto hover y animación ligera */
 button:hover {
   background-color: #45a049;
   transform: scale(1.05);
 }
 
-button:active {
-  background-color: #388e3c;
+/* Etiquetas */
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #555;
+  text-align: left; /* Mantiene las etiquetas alineadas a la izquierda */
 }
 
+/* Link para iniciar sesión o registro */
 a {
   color: #4caf50;
   text-decoration: none;
@@ -54,7 +68,93 @@ a {
   transition: color 0.3s ease;
 }
 
+/* Efecto hover en el link */
 a:hover {
   text-decoration: underline;
   color: #388e3c;
+}
+
+/* Ajuste para centrar todo el contenido de la página */
+.App {
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+}
+.flight-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.flight-card h3 {
+  color: #4caf50;
+}
+
+.booking-options {
+  margin-top: 20px;
+}
+
+button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  width: auto;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+select {
+  padding: 8px;
+  margin-left: 10px;
+}
+
+.payment-container {
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  margin: auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+h2 {
+  color: #4caf50;
+}
+
+p {
+  margin: 10px 0;
+  color: #333;
+}
+
+button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #45a049;
 }
