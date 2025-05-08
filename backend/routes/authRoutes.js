@@ -1,15 +1,17 @@
+// backend/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');  // <-- destructura aquí
 
-// Ruta de registro
+// Registro
 router.post('/register', authController.register);
 
-// Ruta de login
+// Login
 router.post('/login', authController.login);
 
-// Ruta de obtener perfil (requiere autenticación)
-router.get('/profile', authMiddleware, authController.getProfile);
+// Perfil (protección con verifyToken)
+router.get('/profile', verifyToken, authController.getProfile);
 
 module.exports = router;
+

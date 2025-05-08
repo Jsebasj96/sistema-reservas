@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const reservaController = require('../controllers/reservaController');
-const authMiddleware = require('../middleware/authMiddleware');
-const adminMiddleware = require('../middleware/adminMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
-// Ruta para crear una nueva reserva, sólo accesible para administradores
-router.post('/', authMiddleware.verifyToken, adminMiddleware, reservaController.createReserva);
+router.post('/', verifyToken, reservaController.createReserva);
+router.get('/', verifyToken, reservaController.getAllReservas);
+router.get('/:id', verifyToken, reservaController.getReservaById);
+router.delete('/:id', verifyToken, reservaController.cancelReserva);
 
-// Otras rutas...
 module.exports = router;
+
 
