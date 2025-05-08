@@ -1,0 +1,3 @@
+psql -h dpg-d0ecac95pdvs73avub6g-a.oregon-postgres.render.com -U sistema_reservas_db_c438_user -d sistema_reservas_db_c438 -p 5432
+
+o92j9UGBx253xE9bkE5DH8pLFqgd9IDG

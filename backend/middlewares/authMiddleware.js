@@ -1,25 +1,20 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { JWT_SECRET } = require('../config/constants');
 
-const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization');
-
-  if (!token) return res.status(401).json({ message: 'Acceso denegado. No hay token.' });
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({ error: 'Acceso denegado. Token no proporcionado.' });
+  }
 
   try {
-    // Si el token tiene formato "Bearer TOKEN", hay que extraer solo el token
-    const tokenParts = token.split(' ');
-    const authToken = tokenParts.length === 2 ? tokenParts[1] : token;
-
-    const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
-    req.user = decoded; // Ahora req.user tendrá userId y role
-
-    console.log('Usuario autenticado:', req.user); // Debugging
-
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;  // El payload del token (datos del usuario) se coloca en req.user
     next();
   } catch (error) {
-    res.status(403).json({ message: 'Token inválido.' });
+    return res.status(401).json({ error: 'Acceso denegado. Token inválido.' });
   }
 };
 
-module.exports = verifyToken;
+module.exports = authMiddleware;

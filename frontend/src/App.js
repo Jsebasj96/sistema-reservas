@@ -1,110 +1,69 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Reservas from "./components/Reservas";
-import BusquedaVuelos from "./components/BusquedaVuelos";
-import Pago from "./components/Pago";
-import PagoBusqueda from "./components/Pago_Busqueda";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "./App.css";
-
-// Componente para proteger rutas privadas
-const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/" />;
-};
-
-// Componente para redirigir si ya está autenticado
-const PublicRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  return token ? <Navigate to="/reservas" /> : children;
-};
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthContext } from './context/AuthContext';
+import { ReservaContext } from './context/ReservaContext';
+import { ServicioContext } from './context/ServicioContext';
+import { PagoContext } from './context/PagoContext';
+import { authService } from './services/authService';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Reserva from './pages/Reserva';
+import Pasadias from './pages/Pasadias';
+import Servicios from './pages/Servicios';
+import NotFound from './pages/NotFound';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [reservas, setReservas] = useState([]);
+  const [servicios, setServicios] = useState([]);
+  const [pago, setPago] = useState({});
+
+  // Cargar datos del usuario logueado al iniciar la aplicación
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await authService.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error al obtener el usuario', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
   return (
-    <Router>
-      <div className="App">
-        <h1>Sistema de Reservas</h1>
-
-        {/* Contenedor de notificaciones */}
-        <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-          theme="light"
-        />
-
-        <Routes>
-          {/* Si ya está logueado, redirige directamente a reservas */}
-          <Route
-            path="/"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-
-          {/* Página de registro, también redirige si ya tiene sesión */}
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-
-          {/* Página de reservas protegida */}
-          <Route
-            path="/reservas"
-            element={
-              <PrivateRoute>
-                <Reservas />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Nueva ruta para búsqueda de vuelos protegida */}
-          <Route
-            path="/busqueda-vuelos"
-            element={
-              <PrivateRoute>
-                <BusquedaVuelos />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Página de pago protegida */}
-          <Route
-            path="/pago/:id"
-            element={
-              <PrivateRoute>
-                <Pago />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Página de pago protegida para la búsqueda de vuelos */}
-          <Route
-            path="/pago-busqueda"
-            element={
-              <PrivateRoute>
-                <PagoBusqueda />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Redirige cualquier ruta no existente al login */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </Router>
+    <AuthContext.Provider value={{ user, setUser }}>
+      <ReservaContext.Provider value={{ reservas, setReservas }}>
+        <ServicioContext.Provider value={{ servicios, setServicios }}>
+          <PagoContext.Provider value={{ pago, setPago }}>
+            <Router>
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/reserva" element={<Reserva />} />
+                <Route path="/pasadias" element={<Pasadias />} />
+                <Route path="/servicios" element={<Servicios />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Router>
+          </PagoContext.Provider>
+        </ServicioContext.Provider>
+      </ReservaContext.Provider>
+    </AuthContext.Provider>
   );
 }
 

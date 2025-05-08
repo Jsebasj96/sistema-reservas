@@ -1,0 +1,7 @@
+Credenciales Admin:
+Email:admin@correo.com
+Contraseña:Admin1234
+
+Enlace: https://sistema-reservas-frontend-pied.vercel.app/
+
+psql -h postgresql://sistema_reservas_db_user:P6noV5ZSTXkDoNkX5G3upC7A4GUbVSsx@dpg-cvdr53t2ng1s73c9pp70-a.render.com:5432/sistema_reservas_db
