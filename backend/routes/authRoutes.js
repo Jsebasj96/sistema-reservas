@@ -8,7 +8,7 @@ require('dotenv').config();
 
 // Generar JWT
 const generateToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [email]);
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
     if (!user) return res.status(400).json({ message: 'Credenciales inválidas' });
 
@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.json({ id: user.id, username: user.username, role: user.role });
+    res.json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error del servidor' });
