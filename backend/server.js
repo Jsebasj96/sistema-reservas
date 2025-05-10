@@ -1,6 +1,7 @@
 require('dotenv').config();  // Cargar variables de entorno desde el archivo .env
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser'); // ✅ Necesario para leer cookies
 
 // Importar rutas
 const authRoutes = require('./routes/authRoutes');
@@ -22,11 +23,12 @@ app.use(cors({
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true  // ✅ Necesario para permitir el envío de cookies desde el frontend
 }));
 
 // Middleware para procesar cuerpos de solicitudes en formato JSON
 app.use(express.json());
+app.use(cookieParser()); // ✅ Permite leer cookies (para JWT)
 
 // Definir las rutas
 app.use('/api/auth', authRoutes);
@@ -37,6 +39,11 @@ app.use('/api/bar', barRoutes);
 app.use('/api/pasadias', pasadiaRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
 app.use('/api/inventario', inventarioRoutes);
+
+// Ruta raíz opcional
+app.get('/', (req, res) => {
+  res.send('API del sistema de reservas del Club Campestre La Buena Vida');
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
