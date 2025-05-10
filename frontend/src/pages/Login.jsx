@@ -1,31 +1,33 @@
-// src/pages/Login.js
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const Login = () => {
   const { user, loading, error, login } = useContext(AuthContext);
-  const [email, setEmail] = useState('');          // aquí tomamos "email" en lugar de "username"
-  const [password, setPassword] = useState('');
-  const [localError, setLocalError] = useState(null);
+  const [email, setEmail]               = useState('');
+  const [password, setPassword]         = useState('');
+  const [localError, setLocalError]     = useState(null);
   const navigate = useNavigate();
 
-  // Si user cambia y ya está logueado, redirige
+  // Redirigir si ya está logueado
   useEffect(() => {
     if (!loading && user) {
-      navigate('/');    // o '/dashboard' si prefieres
+      console.log('✅ [Login] Usuario logueado, redirigiendo a /');
+      navigate('/');
     }
   }, [user, loading, navigate]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLocalError(null);
-
+    console.log('⏳ [Login] Enviando credenciales:', { email, password });
     try {
-      await login(email, password);  // esto seteará user o error en el contexto
-      // la redirección la hace el useEffect cuando user cambia
-    } catch {
-      setLocalError('Error en el inicio de sesión');
+      await login(email, password);
+      console.log('🔐 [Login] login() completado');
+      // La redirección la hace el useEffect
+    } catch (err) {
+      console.log('❌ [Login] login() lanzó error', err);
+      setLocalError('Credenciales inválidas');
     }
   };
 
@@ -56,10 +58,9 @@ const Login = () => {
         >
           {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </button>
-        {/* Muestra errores del contexto o locales */}
         {(error || localError) && (
           <p className="text-red-600 mt-2 text-center">
-            {localError || error || 'Credenciales inválidas'}
+            {localError || error}
           </p>
         )}
       </form>
@@ -68,3 +69,4 @@ const Login = () => {
 };
 
 export default Login;
+
