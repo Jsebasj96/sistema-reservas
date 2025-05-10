@@ -48,10 +48,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Exportación nombrada
 export { AuthContext };
 
-// Exportación por defecto para que tus imports actuales funcionen sin cambio
 export default AuthContext;
-
-

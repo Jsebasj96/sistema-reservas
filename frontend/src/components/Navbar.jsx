@@ -9,7 +9,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    // Redirigir a la página de inicio y pasar el mensaje
+    navigate('/', { state: { message: 'Sesión cerrada exitosamente' } });
   };
 
   return (
