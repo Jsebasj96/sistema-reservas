@@ -1,37 +1,43 @@
 // src/pages/Login.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import AuthContext from '../context/AuthContext';
 
 const Login = () => {
-  const { setUser } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
+  const { user, loading, error, login } = useContext(AuthContext);
+  const [email, setEmail] = useState('');          // aquí tomamos "email" en lugar de "username"
   const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  // Si user cambia y ya está logueado, redirige
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/');    // o '/dashboard' si prefieres
+    }
+  }, [user, loading, navigate]);
 
-    // Reemplaza con tu lógica real
-    if (username === 'admin' && password === 'admin123') {
-      const fakeToken = '1234567890abcdef';
-      localStorage.setItem('token', fakeToken);
-      setUser({ username }); // Simula el usuario
-      navigate('/dashboard');
-    } else {
-      alert('Credenciales inválidas');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLocalError(null);
+
+    try {
+      await login(email, password);  // esto seteará user o error en el contexto
+      // la redirección la hace el useEffect cuando user cambia
+    } catch {
+      setLocalError('Error en el inicio de sesión');
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-green-100">
       <h2 className="text-3xl font-bold mb-6 text-green-800">Iniciar Sesión</h2>
-      <form onSubmit={handleLogin} className="flex flex-col gap-4 w-80">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
         <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          placeholder="Correo electrónico"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
           className="p-3 border border-green-400 rounded"
           required
         />
@@ -39,16 +45,23 @@ const Login = () => {
           type="password"
           placeholder="Contraseña"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           className="p-3 border border-green-400 rounded"
           required
         />
         <button
           type="submit"
-          className="bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
+          disabled={loading}
+          className="bg-green-600 text-white py-3 rounded hover:bg-green-700 transition disabled:opacity-50"
         >
-          Iniciar Sesión
+          {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </button>
+        {/* Muestra errores del contexto o locales */}
+        {(error || localError) && (
+          <p className="text-red-600 mt-2 text-center">
+            {localError || error || 'Credenciales inválidas'}
+          </p>
+        )}
       </form>
     </div>
   );
