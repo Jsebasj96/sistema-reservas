@@ -43,56 +43,56 @@ const Home = () => {
       </section>
 
       <section id="servicios" className="bg-white py-16">
-  <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
-  <div className="overflow-x-auto px-4">
-    <div className="flex gap-6 min-w-max">
-      {[
-        {
-          title: 'Piscina',
-          desc: 'Acceso a piscinas para adultos y niños.',
-          icon: <FaSwimmingPool className="text-22xl text-green-700 mb-4" />,
-        },
-        {
-          title: 'Cabañas y habitaciones',
-          desc: 'Hospedaje cómodo con naturaleza.',
-          icon: <FaHotel className="text-22xl text-green-700 mb-4" />,
-        },
-        {
-          title: 'Restaurante y bar',
-          desc: 'Comida tradicional y bebidas refrescantes.',
-          icon: <FaUtensils className="text-22xl text-green-700 mb-4" />,
-        },
-        {
-          title: 'Pasadías',
-          desc: 'Disfruta un día completo con piscina y almuerzo.',
-          icon: <FaSun className="text-22xl text-green-700 mb-4" />,
-        },
-        {
-          title: 'Actividades recreativas',
-          desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
-          icon: <FaHiking className="text-22xl text-green-700 mb-4" />,
-        },
-        {
-          title: 'Eventos',
-          desc: 'Alquiler de instalaciones para eventos.',
-          icon: <FaCalendarAlt className="text-22xl text-green-700 mb-4" />,
-        },
-      ].map(({ title, desc, icon }, idx) => (
-        <div key={idx} className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
-          {icon}
-          <h4 className="text-xl font-semibold mb-2">{title}</h4>
-          <p>{desc}</p>
-          <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+      <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+      <div className="overflow-x-auto px-4">
+        <div className="flex gap-6 min-w-max">
+          {[
+            {
+              title: 'Piscina',
+              desc: 'Acceso a piscinas para adultos y niños.',
+              icon: <FaSwimmingPool className="text-22xl text-green-700 mb-4" />,
+            },
+            {
+              title: 'Cabañas y habitaciones',
+              desc: 'Hospedaje cómodo con naturaleza.',
+              icon: <FaHotel className="text-22xl text-green-700 mb-4" />,
+            },
+            {
+              title: 'Restaurante y bar',
+              desc: 'Comida tradicional y bebidas refrescantes.',
+              icon: <FaUtensils className="text-22xl text-green-700 mb-4" />,
+            },
+            {
+              title: 'Pasadías',
+              desc: 'Disfruta un día completo con piscina y almuerzo.',
+              icon: <FaSun className="text-22xl text-green-700 mb-4" />,
+            },
+            {
+              title: 'Actividades recreativas',
+              desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
+              icon: <FaHiking className="text-22xl text-green-700 mb-4" />,
+            },
+            {
+              title: 'Eventos',
+              desc: 'Alquiler de instalaciones para eventos.',
+              icon: <FaCalendarAlt className="text-22xl text-green-700 mb-4" />,
+            },
+          ].map(({ title, desc, icon }, idx) => (
+            <div key={idx} className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
+              {icon}
+              <h4 className="text-xl font-semibold mb-2">{title}</h4>
+              <p>{desc}</p>
+              <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </div>  
-</section>
+      </div>  
+    </section>
 
-      <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+      <section className="bg-white py-16 px-4">
       <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
       <div className="overflow-x-auto">
-        <div className="flex gap-6 justify-center px-4 min-w-max">
+        <div className="flex gap-6 min-w-max">
           {[
             "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
@@ -101,17 +101,18 @@ const Home = () => {
             "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
           ].map((src, index) => (
-            <div key={index} className="min-w-[320px] rounded-lg shadow-md overflow-hidden">
+            <div key={index} className="rounded-lg shadow-md overflow-hidden min-w-[320px]">
               <img
                 src={src}
                 alt={`Galeria ${index + 1}`}
-                className="w-[320px] h-[208px] object-cover rounded-md"
+                className="w-full h-[208px] object-cover"
               />
             </div>
           ))}
         </div>
       </div>
     </section>
+
 
 
 
