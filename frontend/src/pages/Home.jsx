@@ -95,7 +95,7 @@ const Home = () => {
       <h3 className="text-3xl font-bold text-center mb-12">Galería</h3>
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {[
-          "https://source.unsplash.com/400x300/?resort,hotel",
+          "https://img.freepik.com/foto-gratis/tipo-complejo-entretenimiento-popular-complejo-piscinas-parques-acuaticos-turquia-mas-5-millones-visitantes-al-ano-amara-dolce-vita-hotel-lujo-recurso-tekirova-kemer_146671-18728.jpg?semt=ais_hybrid&w=740",
           "https://source.unsplash.com/400x300/?pool,summer",
           "https://source.unsplash.com/400x300/?nature,family",
           "https://source.unsplash.com/400x300/?restaurant,food",
