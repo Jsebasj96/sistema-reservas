@@ -97,7 +97,6 @@ const Reserva = () => {
         }
       );
 
-      // Subir comprobante si existe
       if (imagenComprobante) {
         const formData = new FormData();
         formData.append('imagen', imagenComprobante);
