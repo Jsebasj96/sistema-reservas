@@ -91,24 +91,22 @@ const Home = () => {
 </section>
 
       {/* Galería */}
-      <section className="bg-green-50 py-16">
-      <h3 className="text-3xl font-bold text-center mb-10">Galería</h3>
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <section id="galeria" className="bg-white py-16">
+      <h3 className="text-3xl font-bold text-center mb-12">Galería</h3>
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {[
-          'resort',
-          'pool',
-          'nature',
-          'restaurant',
-          'mountains',
-          'spa',
-          'vacation',
-          'relax',
-        ].map((topic, idx) => (
+          "https://source.unsplash.com/400x300/?resort,hotel",
+          "https://source.unsplash.com/400x300/?pool,summer",
+          "https://source.unsplash.com/400x300/?nature,family",
+          "https://source.unsplash.com/400x300/?restaurant,food",
+          "https://source.unsplash.com/400x300/?bar,drinks",
+          "https://source.unsplash.com/400x300/?cabin,mountain"
+        ].map((src, idx) => (
           <img
             key={idx}
-            src={`https://source.unsplash.com/400x300/?${topic}`}
+            src={src}
             alt={`Galería ${idx + 1}`}
-            className="w-full h-64 object-cover rounded shadow-md"
+            className="w-full h-64 object-cover rounded shadow"
           />
         ))}
       </div>
