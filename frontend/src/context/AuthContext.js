@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
 const AuthContext = createContext();
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 

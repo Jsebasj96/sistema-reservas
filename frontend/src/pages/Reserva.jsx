@@ -28,30 +28,28 @@ const Reserva = () => {
         ? `${process.env.REACT_APP_API_URL}/api/habitaciones/disponibles`
         : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
 
-    axios.get(url, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    .then(res => {
-      if (tipoAlojamiento === 'habitacion') {
-        const datos = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data.habitaciones)
-            ? res.data.habitaciones
-            : [];
-        setHabitaciones(datos);
-      } else {
-        const datos = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data.cabanas)
-            ? res.data.cabanas
-            : [];
-        setCabanas(datos);
-      }
-    })
-    .catch(err => {
-      if (err.response?.status === 401) navigate('/login');
-      else console.error(err);
-    });
+    axios.get(url)
+      .then(res => {
+        if (tipoAlojamiento === 'habitacion') {
+          const datos = Array.isArray(res.data)
+            ? res.data
+            : Array.isArray(res.data.habitaciones)
+              ? res.data.habitaciones
+              : [];
+          setHabitaciones(datos);
+        } else {
+          const datos = Array.isArray(res.data)
+            ? res.data
+            : Array.isArray(res.data.cabanas)
+              ? res.data.cabanas
+              : [];
+          setCabanas(datos);
+        }
+      })
+      .catch(err => {
+        if (err.response?.status === 401) navigate('/login');
+        else console.error(err);
+      });
   }, [tipoAlojamiento, user, navigate]);
 
   // 💾 esquema Formik
