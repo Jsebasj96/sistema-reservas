@@ -33,9 +33,21 @@ const Reserva = () => {
     })
     .then(res => {
       if (tipoAlojamiento === 'habitacion') {
-        setHabitaciones(Array.isArray(res.data) ? res.data : []);
+        // 🔧 Ajuste B: extraer array de res.data.habitaciones o fallback a array plano
+        const datos = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.habitaciones)
+            ? res.data.habitaciones
+            : [];
+        setHabitaciones(datos);
       } else {
-        setCabanas(Array.isArray(res.data) ? res.data : []);
+        // 🔧 Ajuste B: extraer array de res.data.cabanas o fallback a array plano
+        const datos = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.cabanas)
+            ? res.data.cabanas
+            : [];
+        setCabanas(datos);
       }
     })
     .catch(err => {
@@ -61,7 +73,6 @@ const Reserva = () => {
   // 📤 envío de reserva + pago
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // tomar datos correctos según tipo
       const lista = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
       const item  = lista.find(x => x.id === +values.habitacionId);
       if (!item) throw new Error('Selección inválida');
@@ -164,7 +175,6 @@ const Reserva = () => {
           >
             {({ isSubmitting, setFieldValue }) => (
               <Form className="space-y-4">
-
                 {/* selector tipo */}
                 <div>
                   <label className="block mb-1">Tipo Alojamiento</label>
@@ -275,4 +285,5 @@ const Reserva = () => {
 };
 
 export default Reserva;
+
 
