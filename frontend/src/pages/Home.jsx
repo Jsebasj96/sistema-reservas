@@ -42,23 +42,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Servicios */}
+      {/* Servicios con íconos en horizontal */}
       <section id="servicios" className="bg-white py-16">
         <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-8 px-4">
           {[
-            ['Piscina', 'Acceso a piscinas para adultos y niños.'],
-            ['Cabañas y habitaciones', 'Hospedaje cómodo con naturaleza.'],
-            ['Restaurante y Bar', 'Comida tradicional y bebidas refrescantes.'],
-            ['Pasadías', 'Disfruta un día completo con piscina y almuerzo.'],
-            ['Actividades recreativas', 'Tejo, ciclas, caminatas, tenis de mesa.'],
-            ['Eventos', 'Alquiler de instalaciones para eventos.']
-          ].map(([title, desc], idx) => (
-            <div key={idx} className="bg-green-50 p-6 rounded shadow hover:shadow-lg transition">
-              <img src={`https://source.unsplash.com/400x200/?${title}`} alt={title} className="rounded mb-4" />
-              <h4 className="text-xl font-semibold mb-2">{title}</h4>
-              <p>{desc}</p>
-              <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+            ['🏊', 'Piscina'],
+            ['🏡', 'Cabañas y habitaciones'],
+            ['🍽️', 'Restaurante y Bar'],
+            ['🌞', 'Pasadías'],
+            ['⚽', 'Actividades recreativas'],
+            ['🎉', 'Eventos'],
+          ].map(([icon, label], idx) => (
+            <div key={idx} className="flex flex-col items-center w-28 sm:w-32 text-center hover:scale-105 transition-transform duration-300">
+              <div className="text-5xl mb-3">{icon}</div>
+              <span className="text-sm font-medium text-gray-700">{label}</span>
             </div>
           ))}
         </div>
@@ -161,3 +159,4 @@ const Home = () => {
 };
 
 export default Home;
+
