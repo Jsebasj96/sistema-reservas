@@ -1,14 +1,14 @@
+// src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser]     = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -16,7 +16,9 @@ export const AuthProvider = ({ children }) => {
         const response = await axios.get(`${API}/api/auth/me`, { withCredentials: true });
         setUser(response.data);
       } catch (err) {
-        setError('No se pudo verificar la sesión');
+        if (err.response?.status !== 401) {
+          setError('Error al verificar la sesión');
+        }
       } finally {
         setLoading(false);
       }
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    setError(null);
     try {
       const response = await axios.post(
         `${API}/api/auth/login`,
@@ -32,8 +35,15 @@ export const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
       setUser(response.data);
+      return response.data;
     } catch (err) {
-      setError('Error en el inicio de sesión');
+      // Aquí "entendemos" el 400 de credenciales inválidas
+      if (err.response?.status === 400) {
+        setError('Credenciales inválidas');
+      } else {
+        setError('Error en el inicio de sesión');
+      }
+      throw err;   // <-- importante: lanzamos para que el componente lo capture
     }
   };
 

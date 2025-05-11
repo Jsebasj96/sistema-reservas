@@ -1,33 +1,32 @@
+// src/pages/Login.js
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const Login = () => {
   const { user, loading, error, login } = useContext(AuthContext);
-  const [email, setEmail]               = useState('');
-  const [password, setPassword]         = useState('');
-  const [localError, setLocalError]     = useState(null);
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
 
-  // Redirigir si ya está logueado
+  // Si user cambia a algo distinto de null, redirige
   useEffect(() => {
     if (!loading && user) {
-      console.log('✅ [Login] Usuario logueado, redirigiendo a /');
-      navigate('/');
+      navigate('/'); // o '/dashboard'
     }
   }, [user, loading, navigate]);
 
   const handleSubmit = async e => {
     e.preventDefault();
     setLocalError(null);
-    console.log('⏳ [Login] Enviando credenciales:', { email, password });
+
     try {
       await login(email, password);
-      console.log('🔐 [Login] login() completado');
-      // La redirección la hace el useEffect
+      // Si login arroja error, no llegamos aquí
     } catch (err) {
-      console.log('❌ [Login] login() lanzó error', err);
-      setLocalError('Credenciales inválidas');
+      // Aquí capturamos el 400 ó cualquier otro error
+      setLocalError(error || 'Error en el inicio de sesión');
     }
   };
 
@@ -58,10 +57,9 @@ const Login = () => {
         >
           {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </button>
-        {(error || localError) && (
-          <p className="text-red-600 mt-2 text-center">
-            {localError || error}
-          </p>
+        {/* Mostramos errores del contexto o locales */}
+        {(localError) && (
+          <p className="text-red-600 mt-2 text-center">{localError}</p>
         )}
       </form>
     </div>
@@ -69,4 +67,3 @@ const Login = () => {
 };
 
 export default Login;
-
