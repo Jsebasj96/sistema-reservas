@@ -1,8 +1,12 @@
-// src/context/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
+
+// Obtener la URL base del backend desde el .env
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'; // Vite
+// Si usas Create React App (CRA), cambia a:
+// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -12,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get('/api/auth/me', { withCredentials: true });
+        const response = await axios.get(`${API}/api/auth/me`, { withCredentials: true });
         setUser(response.data);
       } catch (err) {
         setError('No se pudo verificar la sesión');
@@ -25,7 +29,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password }, { withCredentials: true });
+      const response = await axios.post(
+        `${API}/api/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
       setUser(response.data);
     } catch (err) {
       setError('Error en el inicio de sesión');
@@ -34,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout', {}, { withCredentials: true });
+      await axios.post(`${API}/api/auth/logout`, {}, { withCredentials: true });
       setUser(null);
     } catch (err) {
       setError('Error al cerrar sesión');
@@ -49,5 +57,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export { AuthContext };
-
 export default AuthContext;
