@@ -78,12 +78,16 @@ a:hover {
 .App {
   text-align: center;
   font-family: 'Arial', sans-serif;
-  margin-top: 50px;
+
+  /* Añade o reemplaza estos dos */
+  margin: 5px;          /* Margen 5px en todos los lados */
+  padding: 0;           /* Si quieres evitar padding extra */
+  
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+  min-height: calc(100vh - 10px); /* Opcional: resta los 2*5px de margen */
 }
 .flight-card {
   border: 1px solid #ddd;
@@ -157,10 +161,4 @@ button {
 
 button:hover {
   background-color: #45a049;
-}
-
-html, body, #root {
-  margin: 5px;
-  padding: 0;
-  box-sizing: border-box;
 }
