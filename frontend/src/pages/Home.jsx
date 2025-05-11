@@ -91,28 +91,30 @@ const Home = () => {
 </section>
 
       {/* Galería */}
-      <section className="py-16 px-6 bg-white">
-      <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
-        Galería
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {[
-          "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1565120130290-dfbd7c8f5b6e?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1590959651323-84d26b69a014?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1555992336-cf9fc9e27c62?auto=format&fit=crop&w=800&q=80"
-        ].map((src, idx) => (
-          <img
-            key={idx}
-            src={src}
-            alt={`Galería ${idx + 1}`}
-            className="w-full h-[250px] object-cover rounded-xl shadow-lg"
-          />
-        ))}
-      </div>
-    </section>
+      {/* Sección: Galería de Fotos */}
+      <section className="py-14 px-6 bg-white">
+        <h2 className="text-3xl font-bold text-center text-green-700 mb-8">
+          Galería
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {[
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1565120130290-dfbd7c8f5b6e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1590959651323-84d26b69a014?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1555992336-cf9fc9e27c62?auto=format&fit=crop&w=800&q=80"
+          ].map((src, idx) => (
+            <img
+              key={idx}
+              src={src}
+              alt={`Galería ${idx + 1}`}
+              className="w-full h-[180px] object-cover rounded-lg shadow-md"
+            />
+          ))}
+        </div>
+      </section>
+
 
       {/* Testimonios */}
       <section className="bg-white py-16">
