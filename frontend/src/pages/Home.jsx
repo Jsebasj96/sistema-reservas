@@ -117,46 +117,44 @@ const Home = () => {
 
 
       {/* Testimonios */}
-      <section className="bg-white py-16">
+      <section className="bg-white py-16 mb-20">
       <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
-      <div className="overflow-x-auto px-4">
-        <div className="flex gap-6 justify-center min-w-max">
-          {[
-            ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
-            ['Carlos M.', 'La atención fue excelente, volveremos.'],
-            ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
-          ].map(([name, quote], idx) => (
-            <div key={idx} className="min-w-[250px] bg-green-100 p-6 rounded shadow text-center">
-              <p className="italic mb-4">"{quote}"</p>
-              <h5 className="font-bold">{name}</h5>
-              <p>⭐⭐⭐⭐⭐</p>
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-wrap justify-evenly gap-6 px-4">
+        {[
+          ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
+          ['Carlos M.', 'La atención fue excelente, volveremos.'],
+          ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
+        ].map(([name, quote], idx) => (
+          <div key={idx} className="w-full sm:w-[280px] bg-green-100 p-6 rounded shadow text-center">
+            <p className="italic mb-4">"{quote}"</p>
+            <h5 className="font-bold">{name}</h5>
+            <p>⭐⭐⭐⭐⭐</p>
+          </div>
+        ))}
       </div>
     </section>
+
 
 
 
       {/* Promociones */}
       <section className="bg-green-700 text-white py-16">
       <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
-      <div className="overflow-x-auto px-4">
-        <div className="flex gap-6 justify-center min-w-max">
-          {[
-            ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
-            ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
-            ['Entre Semana', '20% de descuento de lunes a jueves.']
-          ].map(([title, desc], idx) => (
-            <div key={idx} className="min-w-[250px] bg-white text-green-800 p-6 rounded shadow text-center">
-              <h4 className="text-xl font-bold mb-2">{title}</h4>
-              <p>{desc}</p>
-              <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
-            </div>
-          ))}
-        </div>
+      <div className="flex flex-wrap justify-evenly gap-6 px-4">
+        {[
+          ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
+          ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
+          ['Entre Semana', '20% de descuento de lunes a jueves.']
+        ].map(([title, desc], idx) => (
+          <div key={idx} className="w-full sm:w-[280px] bg-white text-green-800 p-6 rounded shadow text-center">
+            <h4 className="text-xl font-bold mb-2">{title}</h4>
+            <p>{desc}</p>
+            <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
+          </div>
+        ))}
       </div>
     </section>
+
 
 
       {/* Formulario de contacto */}
