@@ -12,6 +12,7 @@ const barRoutes = require('./routes/barRoutes');
 const pasadiaRoutes = require('./routes/pasadiaRoutes');
 const habitacionRoutes = require('./routes/habitacionRoutes');
 const inventarioRoutes = require('./routes/inventarioRoutes');
+const cabanaRoutes = require('./routes/cabanaRoutes');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/bar', barRoutes);
 app.use('/api/pasadias', pasadiaRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
 app.use('/api/inventario', inventarioRoutes);
+app.use('/api/cabanas', cabanaRoutes);
 
 // Ruta raíz opcional
 app.get('/', (req, res) => {
