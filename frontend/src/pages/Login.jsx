@@ -1,19 +1,19 @@
-// src/pages/Login.js
+// src/pages/Login.jsx
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const Login = () => {
-  const { user, loading, error, login } = useContext(AuthContext);
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
+  const { user, loading, login } = useContext(AuthContext);
+  const [email, setEmail]           = useState('');
+  const [password, setPassword]     = useState('');
   const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
 
-  // Si user cambia a algo distinto de null, redirige
+  // Si el usuario ya está autenticado, redirige al home
   useEffect(() => {
     if (!loading && user) {
-      navigate('/'); // o '/dashboard'
+      navigate('/');
     }
   }, [user, loading, navigate]);
 
@@ -23,10 +23,12 @@ const Login = () => {
 
     try {
       await login(email, password);
-      // Si login arroja error, no llegamos aquí
+      // La redirección la hará el useEffect al actualizar `user`
     } catch (err) {
-      // Aquí capturamos el 400 ó cualquier otro error
-      setLocalError(error || 'Error en el inicio de sesión');
+      console.error('Login error detalle:', err.response || err);
+      // Extrae el mensaje del backend, o usa un genérico
+      const msg = err.response?.data?.message || 'Error en el inicio de sesión';
+      setLocalError(msg);
     }
   };
 
@@ -57,8 +59,8 @@ const Login = () => {
         >
           {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </button>
-        {/* Mostramos errores del contexto o locales */}
-        {(localError) && (
+        {/* Muestra el mensaje de error del backend */}
+        {localError && (
           <p className="text-red-600 mt-2 text-center">{localError}</p>
         )}
       </form>
