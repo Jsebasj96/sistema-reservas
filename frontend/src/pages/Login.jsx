@@ -1,41 +1,119 @@
-// controllers/authController.js
-require('dotenv').config();
-const pool = require('../config/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const axios = require('axios');
+// src/pages/Login.jsx
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { AuthContext } from '../context/AuthContext';
+import { HiMail, HiLockClosed } from 'react-icons/hi';
 
-const login = async (req, res) => {
-  const { email, password, recaptchaToken } = req.body;
+const Login = () => {
+  const { user, loading, login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [submitError, setSubmitError] = useState('');
 
-  try {
-    // Validar reCAPTCHA con Google
-    const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-      params: {
-        secret: process.env.RECAPTCHA_SECRET_KEY,
-        response: recaptchaToken,
-      },
-    });
-
-    if (!data.success) {
-      return res.status(400).json({ message: 'reCAPTCHA inválido' });
+  // Redirige según rol
+  useEffect(() => {
+    if (!loading && user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
     }
+  }, [user, loading, navigate]);
 
-    // Validar usuario
-    const result = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
-    if (!result.rows.length) return res.status(400).json({ message: 'Credenciales incorrectas' });
+  // Esquema de validación con Yup
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Correo inválido').required('Requerido'),
+    password: Yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
+  });
 
-    const user = result.rows[0];
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(400).json({ message: 'Credenciales incorrectas' });
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setSubmitError('');
+    if (!captchaValue) {
+      setSubmitError('Por favor completa el reCAPTCHA');
+      setSubmitting(false);
+      return;
+    }
+    try {
+      await login(values.email, values.password, captchaValue);
+      // La redirección la hace el useEffect
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Error en el inicio de sesión';
+      setSubmitError(msg);
+      setSubmitting(false);
+    }
+  };
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (err) {
-    console.error('Error login:', err);
-    res.status(500).json({ message: 'Error del servidor' });
-  }
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 className="text-3xl font-extrabold text-green-800 mb-6 text-center">
+          Iniciar Sesión
+        </h2>
+
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          validationSchema={LoginSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting }) => (
+            <Form className="space-y-6">
+              {/* Email */}
+              <div className="relative">
+                <HiMail className="absolute left-3 top-3 text-green-500" />
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="Correo electrónico"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-600 text-sm mt-1"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="relative">
+                <HiLockClosed className="absolute left-3 top-3 text-green-500" />
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="Contraseña"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-600 text-sm mt-1"
+                />
+              </div>
+
+              {/* reCAPTCHA */}
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                  onChange={value => setCaptchaValue(value)}
+                />
+              </div>
+              {submitError && (
+                <p className="text-red-600 text-center text-sm">{submitError}</p>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full flex justify-center items-center gap-2 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+              >
+                {isSubmitting ? 'Cargando...' : 'Iniciar Sesión'}
+              </button>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </div>
+  );
 };
 
-module.exports = { login };
-
+export default Login;
