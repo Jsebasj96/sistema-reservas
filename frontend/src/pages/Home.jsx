@@ -92,24 +92,22 @@ const Home = () => {
 
       {/* Galería */}
       <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
-          {[
-            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=180&q=180",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=180&q=180",
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=180&q=180",
-            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=180&q=180",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=180&q=180",
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=180&q=180",
-          ].map((src, idx) => (
-            <div
-              key={idx}
-              className="w-80 h-52 overflow-hidden rounded-lg shadow-md"
-            >
+      <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+        {[
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          ].map((src, index) => (
+            <div key={index} className="rounded-lg shadow-md overflow-hidden">
               <img
                 src={src}
-                alt={`Galería ${idx + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                alt={`Galeria ${index + 1}`}
+                style={{ width: '320px', height: '208px', objectFit: 'cover' }}
+                className="rounded-md"
               />
             </div>
           ))}
