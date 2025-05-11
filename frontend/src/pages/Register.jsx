@@ -26,7 +26,6 @@ const Register = () => {
       });
       const data = await res.json();
       if (!res.ok) {
-        // muestra mensaje de error del backend
         setFieldError('general', data.error || 'Error en el registro');
       } else {
         navigate('/login', { state: { message: 'Registro exitoso, por favor inicia sesión.' } });
