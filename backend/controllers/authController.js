@@ -16,7 +16,7 @@ const register = async (req, res) => {
     );
     res.status(201).json({ user: result.rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error('Error en register:', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
