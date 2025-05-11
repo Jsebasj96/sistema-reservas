@@ -1,311 +1,271 @@
 // src/pages/Reserva.jsx
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
+import { useNavigate }              from 'react-router-dom';
+import axios                        from 'axios';
+import { AuthContext }             from '../context/AuthContext';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
+import * as Yup                    from 'yup';
 
 const Reserva = () => {
   const { user, loading } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  // Estado para tipo de alojamiento y opciones
+  const navigate          = useNavigate();
   const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
-  const [opcionesAlojamiento, setOpcionesAlojamiento] = useState([]);
-
-  const [resumenReserva, setResumenReserva] = useState(null);
+  const [habitaciones, setHabitaciones]       = useState([]);
+  const [cabanas, setCabanas]                 = useState([]);
+  const [resumenReserva, setResumenReserva]   = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
-  // Redirigir si no está autenticado
+  // 🔒 redirigir si no logueado
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    }
+    if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-  // Cargar alojamientos disponibles según el tipo seleccionado
+  // 🚚 cargar datos al cambiar tipo
   useEffect(() => {
     if (!user) return;
-    const endpoint =
+    const url =
       tipoAlojamiento === 'habitacion'
-        ? 'habitaciones/disponibles'
-        : 'cabanas/disponibles';
+        ? `${process.env.REACT_APP_API_URL}/habitaciones/disponibles`
+        : `${process.env.REACT_APP_API_URL}/cabanas`;
 
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/${endpoint}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-      .then((res) => {
-        setOpcionesAlojamiento(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch((err) => {
-        console.error(err);
-        setOpcionesAlojamiento([]);
-        if (err.response?.status === 401) {
-          navigate('/login', { replace: true });
-        }
-      });
-  }, [user, tipoAlojamiento, navigate]);
+    axios.get(url, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => {
+      if (tipoAlojamiento === 'habitacion') {
+        setHabitaciones(Array.isArray(res.data) ? res.data : []);
+      } else {
+        setCabanas(Array.isArray(res.data) ? res.data : []);
+      }
+    })
+    .catch(err => {
+      if (err.response?.status === 401) navigate('/login');
+      else console.error(err);
+    });
+  }, [tipoAlojamiento, user, navigate]);
 
-  // Esquema de validación
+  // 💾 esquema Formik
   const ReservaSchema = Yup.object().shape({
-    nombreCompleto: Yup.string().required('Requerido'),
-    numeroDocumento: Yup.string().required('Requerido'),
-    correoElectronico: Yup.string().email('Correo inválido').required('Requerido'),
-    adultos: Yup.number().min(1).required('Requerido'),
-    ninos: Yup.number().min(0).required('Requerido'),
-    numeroDias: Yup.number().min(1).required('Requerido'),
-    fechaEntrada: Yup.date().required('Requerido'),
-    alojamientoId: Yup.string().required('Requerido'),
-    medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
+    nombreCompleto:    Yup.string().required('Requerido'),
+    numeroDocumento:   Yup.string().required('Requerido'),
+    correoElectronico: Yup.string().email('Inválido').required('Requerido'),
+    adultos:           Yup.number().min(1).required('Requerido'),
+    ninos:             Yup.number().min(0).required('Requerido'),
+    numeroDias:        Yup.number().min(1).required('Requerido'),
+    fechaEntrada:      Yup.date().required('Requerido'),
+    habitacionId:      Yup.string().required('Requerido'),
+    medioPago:         Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
     numeroTransaccion: Yup.string().required('Requerido'),
   });
 
-  // Manejo de envío de formulario
+  // 📤 envío de reserva + pago
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const alojamiento = opcionesAlojamiento.find(
-        (a) => a.id === +values.alojamientoId
-      );
-      if (!alojamiento) {
-        throw new Error('Alojamiento no válido');
-      }
+      // tomar datos correctos según tipo
+      const lista = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
+      const item  = lista.find(x => x.id === +values.habitacionId);
+      if (!item) throw new Error('Selección inválida');
 
-      const montoTotal = alojamiento.precioPorNoche * values.numeroDias;
-      const montoAnticipado = montoTotal * 0.3;
+      const precio = item.precio_por_noche || item.precioPorNoche;
+      const total  = precio * values.numeroDias;
+      const antic  = total * 0.3;
 
-      // Crear reserva
+      // 1) crear reserva
       const { data: reserva } = await axios.post(
         `${process.env.REACT_APP_API_URL}/reservas`,
         {
-          cliente_id: user.id,
-          fecha_inicio: values.fechaEntrada,
-          fecha_fin: new Date(
-            new Date(values.fechaEntrada).setDate(
-              new Date(values.fechaEntrada).getDate() + +values.numeroDias
-            )
-          ),
-          total_pago: montoTotal,
+          cliente_id:      user.id,
+          fecha_inicio:    values.fechaEntrada,
+          fecha_fin:       new Date(
+                             new Date(values.fechaEntrada)
+                               .setDate(new Date(values.fechaEntrada).getDate() + +values.numeroDias)
+                           ),
+          total_pago:      total,
           porcentaje_pagado: 0.3,
-          estado: 'Pendiente',
-          tipo_alojamiento: tipoAlojamiento,
-          alojamiento_id: values.alojamientoId,
+          estado:          'Pendiente'
         },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
 
+      // 2) comprobante opcional
       if (imagenComprobante) {
-        const formData = new FormData();
-        formData.append('imagen', imagenComprobante);
+        const form = new FormData();
+        form.append('imagen', imagenComprobante);
         await axios.post(
           `${process.env.REACT_APP_API_URL}/reservas/${reserva.id}/comprobante`,
-          formData,
+          form,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
-              'Content-Type': 'multipart/form-data',
-            },
+              'Content-Type': 'multipart/form-data'
+            }
           }
         );
       }
 
-      // Crear pago anticipado
+      // 3) pago anticipado
       await axios.post(
         `${process.env.REACT_APP_API_URL}/pagos`,
         {
-          reserva_id: reserva.id,
-          monto: montoAnticipado,
-          medio_pago: values.medioPago,
-          numero_transaccion: values.numeroTransaccion,
+          reserva_id:       reserva.id,
+          monto:            antic,
+          medio_pago:       values.medioPago,
+          numero_transaccion: values.numeroTransaccion
         },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
 
-      // Mostrar resumen
+      // 4) resumen en UI
       setResumenReserva({
-        codigoReserva: reserva.id,
-        nombre: values.nombreCompleto,
-        correo: values.correoElectronico,
-        fechaEntrada: values.fechaEntrada,
-        numeroDias: values.numeroDias,
-        alojamiento: alojamiento.nombre,
-        montoAnticipado,
-        montoRestante: montoTotal - montoAnticipado,
-        estadoPago: '30% pagado / 70% pendiente',
+        código:   reserva.id,
+        nombre:   values.nombreCompleto,
+        correo:   values.correoElectronico,
+        entrada:  values.fechaEntrada,
+        noches:   values.numeroDias,
+        alojamiento: tipoAlojamiento === 'habitacion'
+                         ? `Habitación #${item.numero}`
+                         : item.nombre,
+        anticipo: antic,
+        pendiente: total - antic
       });
 
       resetForm();
       setImagenComprobante(null);
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.error || err.message);
+
+    } catch (e) {
+      console.error(e);
+      alert(e.response?.data?.error || e.message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-8 px-4">
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Formulario de Reserva</h1>
 
-      <div className="flex justify-center w-full">
+      <div className="w-full flex justify-center">
         <div className="w-1/3 min-w-[320px] bg-white p-6 rounded-lg shadow">
           <Formik
             initialValues={{
               nombreCompleto: '',
-              numeroDocumento: '',
-              correoElectronico: '',
+              numeroDocumento:'',
+              correoElectronico:'',
               adultos: 1,
-              ninos: 0,
-              numeroDias: 1,
-              fechaEntrada: '',
-              alojamientoId: '',
-              medioPago: '',
-              numeroTransaccion: '',
+              ninos:   0,
+              numeroDias:1,
+              fechaEntrada:'',
+              habitacionId:'',
+              medioPago:'',
+              numeroTransaccion:''
             }}
             validationSchema={ReservaSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, setFieldValue }) => (
               <Form className="space-y-4">
-                {/* Campos básicos */}
-                {[
-                  { name: 'nombreCompleto', label: 'Nombre Completo', type: 'text' },
-                  { name: 'numeroDocumento', label: 'Número de Documento', type: 'text' },
-                  { name: 'correoElectronico', label: 'Correo Electrónico', type: 'email' },
-                  { name: 'adultos', label: 'Adultos', type: 'number' },
-                  { name: 'ninos', label: 'Niños', type: 'number' },
-                  { name: 'numeroDias', label: 'Número de Días', type: 'number' },
-                  { name: 'fechaEntrada', label: 'Fecha de Entrada', type: 'date' },
-                ].map((f) => (
-                  <div key={f.name}>
-                    <label className="block mb-1">{f.label}</label>
-                    <Field
-                      name={f.name}
-                      type={f.type}
-                      className="w-full border border-gray-300 p-2 rounded"
-                    />
-                    <ErrorMessage
-                      name={f.name}
-                      component="div"
-                      className="text-red-600 text-sm mt-1"
-                    />
-                  </div>
-                ))}
 
-                {/* Selector de tipo de alojamiento */}
+                {/* selector tipo */}
                 <div>
-                  <label className="block mb-1">Tipo de Alojamiento</label>
+                  <label className="block mb-1">Tipo Alojamiento</label>
                   <select
                     value={tipoAlojamiento}
-                    onChange={(e) => setTipoAlojamiento(e.target.value)}
-                    className="w-full border border-gray-300 p-2 rounded"
+                    onChange={e => {
+                      setTipoAlojamiento(e.target.value);
+                      setFieldValue('habitacionId', '');
+                    }}
+                    className="w-full border p-2 rounded"
                   >
                     <option value="habitacion">Habitación</option>
                     <option value="cabana">Cabaña</option>
                   </select>
                 </div>
 
-                {/* Selector de alojamiento específico */}
+                {/* resto campos */}
+                {[
+                  { name:'nombreCompleto', label:'Nombre Completo', type:'text'},
+                  { name:'numeroDocumento',label:'Número Documento', type:'text'},
+                  { name:'correoElectronico',label:'Correo Electrónico',type:'email'},
+                  { name:'adultos',label:'Adultos',type:'number'},
+                  { name:'ninos',label:'Niños',type:'number'},
+                  { name:'numeroDias',label:'Noches',type:'number'},
+                  { name:'fechaEntrada',label:'Fecha Entrada',type:'date'}
+                ].map(f => (
+                  <div key={f.name}>
+                    <label className="block mb-1">{f.label}</label>
+                    <Field name={f.name} type={f.type}
+                      className="w-full border p-2 rounded" />
+                    <ErrorMessage name={f.name}
+                      component="div"
+                      className="text-red-600 text-sm mt-1" />
+                  </div>
+                ))}
+
+                {/* select dinámico */}
                 <div>
-                  <label className="block mb-1">
-                    {tipoAlojamiento === 'habitacion' ? 'Habitación' : 'Cabaña'}
-                  </label>
-                  <Field
-                    as="select"
-                    name="alojamientoId"
-                    className="w-full border border-gray-300 p-2 rounded"
-                  >
+                  <label className="block mb-1">Alojamiento</label>
+                  <Field as="select" name="habitacionId"
+                    className="w-full border p-2 rounded">
                     <option value="">-- Seleccione --</option>
-                    {opcionesAlojamiento.length > 0 ? (
-                      opcionesAlojamiento.map((a) => (
-                        <option key={a.id} value={a.id}>
-                          {a.nombre} - ${a.precioPorNoche}/noche
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>No hay disponibles</option>
-                    )}
+                    {tipoAlojamiento==='habitacion'
+                      ? habitaciones.map(h => (
+                          <option key={h.id} value={h.id}>
+                            #{h.numero} – cap:{h.capacidad} – ${h.precio_por_noche}
+                          </option>
+                        ))
+                      : cabanas.map(c => (
+                          <option key={c.id} value={c.id}>
+                            {c.nombre} – cap:{c.capacidad} – ${c.precio_por_noche}
+                          </option>
+                        ))
+                    }
                   </Field>
-                  <ErrorMessage
-                    name="alojamientoId"
+                  <ErrorMessage name="habitacionId"
                     component="div"
-                    className="text-red-600 text-sm mt-1"
-                  />
+                    className="text-red-600 text-sm mt-1" />
                 </div>
 
-                {/* Medio de pago */}
+                {/* medio, comprobante, transacción */}
                 <div>
-                  <label className="block mb-1">Medio de Pago</label>
-                  <Field
-                    as="select"
-                    name="medioPago"
-                    className="w-full border border-gray-300 p-2 rounded"
-                  >
+                  <label className="block mb-1">Medio Pago</label>
+                  <Field as="select" name="medioPago" className="w-full border p-2 rounded">
                     <option value="">-- Seleccione --</option>
                     <option value="Nequi">Nequi</option>
-                    <option value="Transferencia">Transferencia Bancaria</option>
+                    <option value="Transferencia">Transferencia</option>
                   </Field>
-                  <ErrorMessage
-                    name="medioPago"
-                    component="div"
-                    className="text-red-600 text-sm mt-1"
-                  />
+                  <ErrorMessage name="medioPago" component="div" className="text-red-600" />
                 </div>
-
-                {/* Comprobante */}
                 <div>
                   <label className="block mb-1">Comprobante (imagen)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImagenComprobante(e.currentTarget.files[0])}
-                    className="w-full"
-                  />
+                  <input type="file" accept="image/*"
+                    onChange={e => setImagenComprobante(e.currentTarget.files[0])}
+                    className="w-full" />
                 </div>
-
-                {/* Número de transacción */}
                 <div>
-                  <label className="block mb-1">Número de Transacción</label>
-                  <Field
-                    name="numeroTransaccion"
-                    className="w-full border border-gray-300 p-2 rounded"
-                  />
-                  <ErrorMessage
-                    name="numeroTransaccion"
+                  <label className="block mb-1"># Transacción</label>
+                  <Field name="numeroTransaccion" className="w-full border p-2 rounded" />
+                  <ErrorMessage name="numeroTransaccion"
                     component="div"
-                    className="text-red-600 text-sm mt-1"
-                  />
+                    className="text-red-600 text-sm mt-1" />
                 </div>
 
-                {/* Botón de submit */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                >
-                  {isSubmitting ? 'Procesando...' : 'Realizar Reserva'}
+                <button type="submit" disabled={isSubmitting}
+                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">
+                  {isSubmitting ? 'Procesando…' : 'Realizar Reserva'}
                 </button>
+
               </Form>
             )}
           </Formik>
         </div>
       </div>
 
-      {/* Resumen de reserva */}
       {resumenReserva && (
         <div className="mt-8 w-full flex justify-center">
           <div className="w-2/3 bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Resumen de Reserva</h2>
-            {Object.entries(resumenReserva).map(([k, v]) => (
-              <p key={k} className="mb-1">
-                <strong>{k.replace(/([A-Z])/g, ' $1')}:</strong> {v}
-              </p>
+            <h2 className="text-xl font-bold mb-4">Resumen</h2>
+            {Object.entries(resumenReserva).map(([k,v])=>(
+              <p key={k}><strong>{k}:</strong> {v}</p>
             ))}
           </div>
         </div>
