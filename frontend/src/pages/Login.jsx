@@ -10,10 +10,14 @@ const Login = () => {
   const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
 
-  // Si el usuario ya está autenticado, redirige al home
+  // Redirige según rol al detectar user
   useEffect(() => {
     if (!loading && user) {
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     }
   }, [user, loading, navigate]);
 
@@ -23,10 +27,9 @@ const Login = () => {
 
     try {
       await login(email, password);
-      // La redirección la hará el useEffect al actualizar `user`
+      // redirección en useEffect
     } catch (err) {
       console.error('Login error detalle:', err.response || err);
-      // Extrae el mensaje del backend, o usa un genérico
       const msg = err.response?.data?.message || 'Error en el inicio de sesión';
       setLocalError(msg);
     }
@@ -59,7 +62,6 @@ const Login = () => {
         >
           {loading ? 'Cargando...' : 'Iniciar Sesión'}
         </button>
-        {/* Muestra el mensaje de error del backend */}
         {localError && (
           <p className="text-red-600 mt-2 text-center">{localError}</p>
         )}
@@ -69,3 +71,4 @@ const Login = () => {
 };
 
 export default Login;
+

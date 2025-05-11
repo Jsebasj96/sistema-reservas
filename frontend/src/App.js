@@ -1,3 +1,4 @@
+// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -9,6 +10,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Reserva from './pages/Reserva';
 import Pasadias from './pages/Pasadias';
 import Servicios from './pages/Servicios';
@@ -29,7 +31,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* Protegidas */}
+                {/* Protegidas para usuario normal */}
                 <Route
                   path="/dashboard"
                   element={
@@ -63,6 +65,16 @@ function App() {
                   }
                 />
 
+                {/* Protegida para admin */}
+                <Route
+                  path="/admin"
+                  element={
+                    <PrivateRoute>
+                      <AdminDashboard />
+                    </PrivateRoute>
+                  }
+                />
+
                 {/* Ruta 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -75,4 +87,3 @@ function App() {
 }
 
 export default App;
-
