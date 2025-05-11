@@ -31,19 +31,11 @@ const Reserva = () => {
     axios.get(url)
       .then(res => {
         if (tipoAlojamiento === 'habitacion') {
-          const datos = Array.isArray(res.data)
-            ? res.data
-            : Array.isArray(res.data.habitaciones)
-              ? res.data.habitaciones
-              : [];
-          setHabitaciones(datos);
+          // Opción 1: Ajustar solo el frontend para trabajar con arrays planos
+          setHabitaciones(Array.isArray(res.data) ? res.data : []);
         } else {
-          const datos = Array.isArray(res.data)
-            ? res.data
-            : Array.isArray(res.data.cabanas)
-              ? res.data.cabanas
-              : [];
-          setCabanas(datos);
+          // Opción 1: Ajustar solo el frontend para trabajar con arrays planos
+          setCabanas(Array.isArray(res.data) ? res.data : []);
         }
       })
       .catch(err => {
@@ -231,5 +223,6 @@ const Reserva = () => {
 };
 
 export default Reserva;
+
 
 
