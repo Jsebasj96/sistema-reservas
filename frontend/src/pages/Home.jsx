@@ -25,7 +25,7 @@ const Home = () => {
           </nav>
           <div className="space-x-3">
             <button onClick={() => navigate('/login')} className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">Iniciar Sesión</button>
-            <button onClick={() => navigate('/register')} className="px-4 py-2 border border-green-700 text-green-700 rounded hover:bg-green-100 transition">Registrarse</button>
+            <button onClick={() => navigate('/register')} className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">Registrarse</button>
           </div>
         </div>
       </header>
