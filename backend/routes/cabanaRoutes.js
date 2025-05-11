@@ -1,23 +1,17 @@
-// routes/cabanaRoutes.js
 const express = require('express');
-const router  = express.Router();
-const pool    = require('../config/db');
+const router = express.Router();
+const {
+  getAllCabanas,
+  getAvailableCabanas,
+  createCabana
+} = require('../controllers/cabanaController');
 
-// LISTAR sólo DISPONIBLES
-router.get('/disponibles', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, nombre, capacidad, estado, precio_por_noche
-       FROM "cabañas"
-       WHERE estado = 'Disponible'`
-    );
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al obtener cabañas' });
-  }
-});
+const { verifyToken } = require('../middleware/authMiddleware');
+
+// Puedes quitar `verifyToken` si quieres acceso público a estas rutas
+router.get('/',              getAllCabanas);
+router.get('/disponibles',   getAvailableCabanas);
+router.post('/',             createCabana);
 
 module.exports = router;
-
 
