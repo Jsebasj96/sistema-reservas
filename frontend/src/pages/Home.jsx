@@ -92,25 +92,27 @@ const Home = () => {
 
       {/* Galería */}
       <section className="bg-green-50 py-16">
-        <h3 className="text-3xl font-bold text-center mb-10">Galería</h3>
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            'resort',
-            'pool',
-            'nature',
-            'restaurant',
-            'mountains',
-            'spa'
-          ].map((topic, idx) => (
-            <img
-              key={idx}
-              src={`https://source.unsplash.com/400x300/?${topic}`}
-              alt={`Galería ${idx + 1}`}
-              className="w-full h-64 object-cover rounded shadow-md"
-            />
-          ))}
-        </div>
-      </section>
+      <h3 className="text-3xl font-bold text-center mb-10">Galería</h3>
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {[
+          'resort',
+          'pool',
+          'nature',
+          'restaurant',
+          'mountains',
+          'spa',
+          'vacation',
+          'relax',
+        ].map((topic, idx) => (
+          <img
+            key={idx}
+            src={`https://source.unsplash.com/400x300/?${topic}`}
+            alt={`Galería ${idx + 1}`}
+            className="w-full h-64 object-cover rounded shadow-md"
+          />
+        ))}
+      </div>
+    </section>
 
       {/* Testimonios */}
       <section className="bg-white py-16">
