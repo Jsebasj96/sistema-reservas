@@ -3,7 +3,8 @@ const express = require('express');
 const router  = express.Router();
 const pool    = require('../config/db');
 
-router.get('/', async (req, res) => {
+// LISTAR sólo DISPONIBLES
+router.get('/disponibles', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, nombre, capacidad, estado, precio_por_noche
