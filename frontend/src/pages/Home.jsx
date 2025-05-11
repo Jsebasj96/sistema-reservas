@@ -52,32 +52,32 @@ const Home = () => {
         {
           title: 'Piscina',
           desc: 'Acceso a piscinas para adultos y niños.',
-          icon: <FaSwimmingPool className="text-6xl text-green-700 mb-4" />,
+          icon: <FaSwimmingPool className="text-8xl text-green-700 mb-4" />,
         },
         {
           title: 'Cabañas y habitaciones',
           desc: 'Hospedaje cómodo con naturaleza.',
-          icon: <FaHotel className="text-6xl text-green-700 mb-4" />,
+          icon: <FaHotel className="text-8xl text-green-700 mb-4" />,
         },
         {
           title: 'Restaurante y bar',
           desc: 'Comida tradicional y bebidas refrescantes.',
-          icon: <FaUtensils className="text-6xl text-green-700 mb-4" />,
+          icon: <FaUtensils className="text-8xl text-green-700 mb-4" />,
         },
         {
           title: 'Pasadías',
           desc: 'Disfruta un día completo con piscina y almuerzo.',
-          icon: <FaSun className="text-6xl text-green-700 mb-4" />,
+          icon: <FaSun className="text-8xl text-green-700 mb-4" />,
         },
         {
           title: 'Actividades recreativas',
           desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
-          icon: <FaHiking className="text-6xl text-green-700 mb-4" />,
+          icon: <FaHiking className="text-8xl text-green-700 mb-4" />,
         },
         {
           title: 'Eventos',
           desc: 'Alquiler de instalaciones para eventos.',
-          icon: <FaCalendarAlt className="text-6xl text-green-700 mb-4" />,
+          icon: <FaCalendarAlt className="text-8xl text-green-700 mb-4" />,
         },
       ].map(({ title, desc, icon }, idx) => (
         <div key={idx} className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
