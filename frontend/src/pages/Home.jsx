@@ -160,42 +160,44 @@ const Home = () => {
 
 
       {/* Formulario de contacto */}
-      <section id="contacto" className="bg-white py-16">
-        <h3 className="text-3xl font-bold text-center mb-10">Contáctanos</h3>
-        {/* Contenedor flex que centra horizontalmente */}
-        <div className="flex justify-center">
-          {/* Contenedor con ancho máximo (p.ej. md = 28rem = 448px) */}
-          <div className="w-full max-w-md px-4">
-            <form className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre"
-                className="w-full border border-gray-300 rounded p-3"
-              />
-              <input
-                type="email"
-                placeholder="Correo"
-                className="w-full border border-gray-300 rounded p-3"
-              />
-              <input
-                type="tel"
-                placeholder="Teléfono"
-                className="w-full border border-gray-300 rounded p-3"
-              />
-              <textarea
-                placeholder="¿En qué podemos ayudarte?"
-                className="w-full border border-gray-300 rounded p-3 h-32"
-              />
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-green-700 text-white rounded hover:bg-green-800 transition"
-              >
-                Enviar mensaje
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
+  <section id="contacto" className="bg-white py-16">
+  <h3 className="text-3xl font-bold text-center mb-10">Contáctanos</h3>
+  {/* Contenedor flex que centra en la pantalla */}
+  <div className="flex justify-center">
+    {/* Aquí fijamos ancho al 33% de la pantalla, pero con mínimo de 300px */}
+    <div className="w-1/3 min-w-[300px] px-4">
+      <form className="space-y-4">
+        <input
+          type="text"
+          placeholder="Nombre"
+          className="w-full border border-gray-300 rounded p-3"
+        />
+        <input
+          type="email"
+          placeholder="Correo"
+          className="w-full border border-gray-300 rounded p-3"
+        />
+        <input
+          type="tel"
+          placeholder="Teléfono"
+          className="w-full border border-gray-300 rounded p-3"
+        />
+        <textarea
+          placeholder="¿En qué podemos ayudarte?"
+          className="w-full border border-gray-300 rounded p-3 h-32"
+        />
+        {/* Quitamos w-full para el botón y lo dejamos centrado con inline-block */}
+        <button
+          type="submit"
+          className="inline-block px-6 py-3 bg-green-700 text-white rounded hover:bg-green-800 transition"
+        >
+          Enviar mensaje
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
 
 
 
