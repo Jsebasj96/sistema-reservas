@@ -1,7 +1,7 @@
 // src/pages/Reserva.jsx
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance'; // instancia con interceptor de token
+import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -13,26 +13,25 @@ const Reserva = () => {
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
-  // 1) Redirect si no está autenticado
   useEffect(() => {
     if (!loading && !user) {
       navigate('/login');
     }
   }, [user, loading, navigate]);
 
-  // 2) Cargar habitaciones disponibles
   useEffect(() => {
     if (!user) return;
-    axiosInstance
-      .get('/habitaciones/disponibles')
+    axios.get(`${process.env.REACT_APP_API_URL}/habitaciones/disponibles`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
       .then(res => {
-        // Aseguramos que sea array
         const data = Array.isArray(res.data) ? res.data : [];
         setHabitaciones(data);
       })
       .catch(err => {
         if (err.response?.status === 401) {
-          // token inválido o expirado
           navigate('/login', { replace: true });
         } else {
           console.error('Error cargando habitaciones:', err);
@@ -41,7 +40,6 @@ const Reserva = () => {
       });
   }, [user, navigate]);
 
-  // 3) Esquema Formik
   const ReservaSchema = Yup.object().shape({
     nombreCompleto: Yup.string().required('Requerido'),
     numeroDocumento: Yup.string().required('Requerido'),
@@ -51,20 +49,19 @@ const Reserva = () => {
     numeroDias: Yup.number().min(1).required('Requerido'),
     fechaEntrada: Yup.date().required('Requerido'),
     habitacionId: Yup.string().required('Requerido'),
-    medioPago: Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
+    medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
     numeroTransaccion: Yup.string().required('Requerido'),
   });
 
-  // 4) Submit reserva
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // Calcular montos
       const habit = habitaciones.find(h => h.id === +values.habitacionId);
       if (!habit) throw new Error('Habitación no válida');
+
       const montoTotal = habit.precioPorNoche * values.numeroDias;
       const montoAnticipado = montoTotal * 0.3;
-      // Crear reserva
-      const resReserva = await axiosInstance.post('/reservas', {
+
+      const resReserva = await axios.post(`${process.env.REACT_APP_API_URL}/reservas`, {
         cliente_id: user.id,
         fecha_inicio: values.fechaEntrada,
         fecha_fin: new Date(new Date(values.fechaEntrada).setDate(
@@ -73,22 +70,37 @@ const Reserva = () => {
         total_pago: montoTotal,
         porcentaje_pagado: 0.3,
         estado: 'Pendiente',
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
+
       const reservaId = resReserva.data.id;
-      // Subir comprobante si existe
+
       if (imagenComprobante) {
         const formData = new FormData();
         formData.append('imagen', imagenComprobante);
-        await axiosInstance.post(`/reservas/${reservaId}/comprobante`, formData);
+
+        await axios.post(`${process.env.REACT_APP_API_URL}/reservas/${reservaId}/comprobante`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       }
-      // Crear pago anticipado
-      await axiosInstance.post('/pagos', {
+
+      await axios.post(`${process.env.REACT_APP_API_URL}/pagos`, {
         reserva_id: reservaId,
         monto: montoAnticipado,
         medio_pago: values.medioPago,
         numero_transaccion: values.numeroTransaccion,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       });
-      // Mostrar resumen
+
       setResumenReserva({
         codigoReserva: reservaId,
         nombre: values.nombreCompleto,
@@ -100,6 +112,7 @@ const Reserva = () => {
         montoRestante: montoTotal - montoAnticipado,
         estadoPago: '30% pagado / 70% pendiente',
       });
+
       resetForm();
       setImagenComprobante(null);
     } catch (err) {
@@ -110,7 +123,6 @@ const Reserva = () => {
     }
   };
 
-  // 5) Render
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Formulario de Reserva</h1>
@@ -133,15 +145,14 @@ const Reserva = () => {
       >
         {({ isSubmitting, setFieldValue }) => (
           <Form className="space-y-4">
-            {/* Campos */}
             {[
-              { name: 'nombreCompleto', label: 'Nombre Completo', type:'text' },
-              { name: 'numeroDocumento', label: 'Número de Documento', type:'text' },
-              { name: 'correoElectronico', label: 'Correo Electrónico', type:'email' },
-              { name: 'adultos', label: 'Adultos', type:'number' },
-              { name: 'ninos', label: 'Niños', type:'number' },
-              { name: 'numeroDias', label: 'Número de Días', type:'number' },
-              { name: 'fechaEntrada', label: 'Fecha de Entrada', type:'date' },
+              { name: 'nombreCompleto', label: 'Nombre Completo', type: 'text' },
+              { name: 'numeroDocumento', label: 'Número de Documento', type: 'text' },
+              { name: 'correoElectronico', label: 'Correo Electrónico', type: 'email' },
+              { name: 'adultos', label: 'Adultos', type: 'number' },
+              { name: 'ninos', label: 'Niños', type: 'number' },
+              { name: 'numeroDias', label: 'Número de Días', type: 'number' },
+              { name: 'fechaEntrada', label: 'Fecha de Entrada', type: 'date' },
             ].map(field => (
               <div key={field.name}>
                 <label className="block">{field.label}</label>
@@ -154,14 +165,9 @@ const Reserva = () => {
               </div>
             ))}
 
-            {/* Select habitaciones */}
             <div>
               <label className="block">Habitación/Cabaña</label>
-              <Field
-                as="select"
-                name="habitacionId"
-                className="w-full border p-2 rounded"
-              >
+              <Field as="select" name="habitacionId" className="w-full border p-2 rounded">
                 <option value="">-- Seleccione --</option>
                 {Array.isArray(habitaciones) && habitaciones.length > 0 ? (
                   habitaciones.map(h => (
@@ -176,7 +182,6 @@ const Reserva = () => {
               <ErrorMessage name="habitacionId" component="div" className="text-red-500" />
             </div>
 
-            {/* Medio de pago */}
             <div>
               <label className="block">Medio de Pago</label>
               <Field as="select" name="medioPago" className="w-full border p-2 rounded">
@@ -187,7 +192,6 @@ const Reserva = () => {
               <ErrorMessage name="medioPago" component="div" className="text-red-500" />
             </div>
 
-            {/* Comprobante */}
             <div>
               <label className="block">Comprobante (imagen)</label>
               <input
@@ -215,7 +219,6 @@ const Reserva = () => {
         )}
       </Formik>
 
-      {/* Resumen */}
       {resumenReserva && (
         <div className="mt-8 p-4 border rounded">
           <h2 className="text-xl font-bold mb-2">Resumen de Reserva</h2>
