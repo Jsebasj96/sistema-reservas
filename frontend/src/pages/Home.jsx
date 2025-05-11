@@ -39,7 +39,6 @@ const Home = () => {
           <p className="text-lg mb-8">Naturaleza, descanso y diversión en un solo lugar.</p>
           <div className="flex justify-center gap-6 flex-wrap">
             <button onClick={() => navigate('/reservas')} className="px-8 py-4 bg-green-700 text-white rounded-full text-xl hover:bg-green-800 transition">Reservar ahora</button>
-            <a href="#servicios" className="px-8 py-4 bg-white border-2 border-green-700 text-green-700 rounded-full text-xl hover:bg-green-100 transition">Conoce nuestros servicios</a>
           </div>
         </div>
       </section>
@@ -52,32 +51,32 @@ const Home = () => {
         {
           title: 'Piscina',
           desc: 'Acceso a piscinas para adultos y niños.',
-          icon: <FaSwimmingPool className="text-8xl text-green-700 mb-4" />,
+          icon: <FaSwimmingPool className="text-22xl text-green-700 mb-4" />,
         },
         {
           title: 'Cabañas y habitaciones',
           desc: 'Hospedaje cómodo con naturaleza.',
-          icon: <FaHotel className="text-8xl text-green-700 mb-4" />,
+          icon: <FaHotel className="text-22xl text-green-700 mb-4" />,
         },
         {
           title: 'Restaurante y bar',
           desc: 'Comida tradicional y bebidas refrescantes.',
-          icon: <FaUtensils className="text-8xl text-green-700 mb-4" />,
+          icon: <FaUtensils className="text-22xl text-green-700 mb-4" />,
         },
         {
           title: 'Pasadías',
           desc: 'Disfruta un día completo con piscina y almuerzo.',
-          icon: <FaSun className="text-8xl text-green-700 mb-4" />,
+          icon: <FaSun className="text-22xl text-green-700 mb-4" />,
         },
         {
           title: 'Actividades recreativas',
           desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
-          icon: <FaHiking className="text-8xl text-green-700 mb-4" />,
+          icon: <FaHiking className="text-22xl text-green-700 mb-4" />,
         },
         {
           title: 'Eventos',
           desc: 'Alquiler de instalaciones para eventos.',
-          icon: <FaCalendarAlt className="text-8xl text-green-700 mb-4" />,
+          icon: <FaCalendarAlt className="text-22xl text-green-700 mb-4" />,
         },
       ].map(({ title, desc, icon }, idx) => (
         <div key={idx} className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
@@ -95,8 +94,20 @@ const Home = () => {
       <section className="bg-green-50 py-16">
         <h3 className="text-3xl font-bold text-center mb-10">Galería</h3>
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-            <img key={num} src={`https://source.unsplash.com/400x300/?nature,resort,${num}`} alt="Galería" className="rounded shadow-md" />
+          {[
+            'resort',
+            'pool',
+            'nature',
+            'restaurant',
+            'mountains',
+            'spa'
+          ].map((topic, idx) => (
+            <img
+              key={idx}
+              src={`https://source.unsplash.com/400x300/?${topic}`}
+              alt={`Galería ${idx + 1}`}
+              className="w-full h-64 object-cover rounded shadow-md"
+            />
           ))}
         </div>
       </section>
