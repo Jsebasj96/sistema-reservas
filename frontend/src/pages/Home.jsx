@@ -9,7 +9,6 @@ const Home = () => {
   const message = location.state?.message;
 
   return (
-    <div className="m-[5px]">
     <div className="font-sans text-gray-800">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-white shadow z-50">
@@ -232,7 +231,6 @@ const Home = () => {
           </div>
         </div>
       </footer>
-    </div>
     </div>
   );
 };
