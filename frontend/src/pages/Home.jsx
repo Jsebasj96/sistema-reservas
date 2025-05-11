@@ -91,22 +91,20 @@ const Home = () => {
 </section>
 
       {/* Galería */}
-      <section className="py-14 px-6 bg-white">
-        <h2 className="text-3xl font-bold text-center text-green-700 mb-8">
-          Galería
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
           {[
-            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1565120130290-dfbd7c8f5b6e?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1590959651323-84d26b69a014?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1555992336-cf9fc9e27c62?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=180&q=180",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=180&q=180",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=180&q=180",
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=180&q=180",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=180&q=180",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=180&q=180",
           ].map((src, idx) => (
             <div
               key={idx}
-              className="w-full h-40 overflow-hidden rounded-lg shadow-md"
+              className="w-80 h-52 overflow-hidden rounded-lg shadow-md"
             >
               <img
                 src={src}
