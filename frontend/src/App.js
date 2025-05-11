@@ -16,6 +16,7 @@ import Pasadias from './pages/Pasadias';
 import Servicios from './pages/Servicios';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
+import './styles/tailwind.css';
 
 function App() {
   return (

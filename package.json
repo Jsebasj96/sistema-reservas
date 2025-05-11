@@ -1,12 +1,14 @@
 {
   "name": "sistema-reservas",
   "version": "1.0.0",
-  "description": "Backend para el sistema de reservas de vuelos",
+  "description": "Sistema de reservas para el Club Campestre La Buena Vida",
   "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "build:css": "postcss src/styles/tailwind.css -o public/styles/tailwind.css"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.6",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -22,6 +24,10 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "autoprefixer": "^10.4.21",
+    "nodemon": "^3.1.9",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.1.6"
   }
 }
