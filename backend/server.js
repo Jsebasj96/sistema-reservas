@@ -18,8 +18,10 @@ const app = express();
 // Configurar CORS
 app.use(cors({
   origin: [
-    "http://localhost:3000",  // Dominio local para desarrollo
-    "https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app" // Dominio desplegado en Vercel
+    'http://localhost:3000',
+    'https://sistema-reservas-eight.vercel.app',
+    'https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app', 
+    'https://sistema-reservas-final.onrender.com'
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

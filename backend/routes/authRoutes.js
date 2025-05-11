@@ -53,6 +53,21 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/register', async (req, res) => {
+  const { email, password, role = 'cliente' } = req.body;
+  try {
+    const hashed = await bcrypt.hash(password, 10);
+    await pool.query(
+      'INSERT INTO users (email, password, role) VALUES ($1, $2, $3)',
+      [email, hashed, role]
+    );
+    return res.status(201).json({ message: 'Usuario registrado' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Error al registrar usuario' });
+  }
+});
+
 // GET /me
 router.get('/me', authenticate, (req, res) => {
   res.json(req.user);
