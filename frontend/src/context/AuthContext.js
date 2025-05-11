@@ -6,9 +6,9 @@ const AuthContext = createContext();
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]     = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,24 +26,24 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  // 🔁 Modificada para aceptar el recaptchaToken
+  const login = async (email, password, recaptchaToken) => {
     setError(null);
     try {
       const response = await axios.post(
         `${API}/api/auth/login`,
-        { email, password },
+        { email, password, recaptchaToken },
         { withCredentials: true }
       );
       setUser(response.data);
       return response.data;
     } catch (err) {
-      // Aquí "entendemos" el 400 de credenciales inválidas
       if (err.response?.status === 400) {
         setError('Credenciales inválidas');
       } else {
         setError('Error en el inicio de sesión');
       }
-      throw err;   // <-- importante: lanzamos para que el componente lo capture
+      throw err;
     }
   };
 
