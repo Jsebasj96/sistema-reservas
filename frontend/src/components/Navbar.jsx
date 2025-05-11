@@ -33,8 +33,8 @@ const Navbar = () => {
   return (
     <nav className="bg-green-700 p-4 text-white flex items-center">
       {/* Ícono-home */}
-      <Link to="/" className="text-6xl">
-        <HiHome />
+      <Link to="/">
+        <HiHome size={40}/>
       </Link>
 
       {/* Fecha y hora centradas */}
