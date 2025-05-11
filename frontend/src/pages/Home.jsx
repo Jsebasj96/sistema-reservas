@@ -1,6 +1,8 @@
 // src/pages/Home.js
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FaSwimmingPool, FaHotel, FaUtensils, FaSun, FaHiking, FaCalendarAlt } from 'react-icons/fa';
+
 
 const Home = () => {
   const location = useLocation();
@@ -44,23 +46,49 @@ const Home = () => {
 
       {/* Servicios con íconos en horizontal */}
       <section id="servicios" className="bg-white py-16">
-        <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
-        <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-8 px-4">
-          {[
-            ['🏊', 'Piscina'],
-            ['🏡', 'Cabañas y habitaciones'],
-            ['🍽️', 'Restaurante y Bar'],
-            ['🌞', 'Pasadías'],
-            ['⚽', 'Actividades recreativas'],
-            ['🎉', 'Eventos'],
-          ].map(([icon, label], idx) => (
-            <div key={idx} className="flex flex-col items-center w-28 sm:w-32 text-center hover:scale-105 transition-transform duration-300">
-              <div className="text-5xl mb-3">{icon}</div>
-              <span className="text-sm font-medium text-gray-700">{label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-8">
+        {[
+          {
+            title: 'Piscina',
+            desc: 'Acceso a piscinas para adultos y niños.',
+            icon: <FaSwimmingPool className="text-6xl text-green-700 mb-4" />,
+          },
+          {
+            title: 'Cabañas y habitaciones',
+            desc: 'Hospedaje cómodo con naturaleza.',
+            icon: <FaHotel className="text-6xl text-green-700 mb-4" />,
+          },
+          {
+            title: 'Restaurante y bar',
+            desc: 'Comida tradicional y bebidas refrescantes.',
+            icon: <FaUtensils className="text-6xl text-green-700 mb-4" />,
+          },
+          {
+            title: 'Pasadías',
+            desc: 'Disfruta un día completo con piscina y almuerzo.',
+            icon: <FaSun className="text-6xl text-green-700 mb-4" />,
+          },
+          {
+            title: 'Actividades recreativas',
+            desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
+            icon: <FaHiking className="text-6xl text-green-700 mb-4" />,
+          },
+          {
+            title: 'Eventos',
+            desc: 'Alquiler de instalaciones para eventos.',
+            icon: <FaCalendarAlt className="text-6xl text-green-700 mb-4" />,
+          },
+        ].map(({ title, desc, icon }, idx) => (
+          <div key={idx} className="bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
+            {icon}
+            <h4 className="text-xl font-semibold mb-2">{title}</h4>
+            <p>{desc}</p>
+            <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+          </div>
+        ))}
+      </div>
+    </section>
 
       {/* Galería */}
       <section className="bg-green-50 py-16">
