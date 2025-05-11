@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -42,9 +42,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 px-4">
-      {/* Flex container para centrar el formulario */}
       <div className="flex justify-center w-full">
-        {/* Aquí el ancho: un tercio de la pantalla (mínimo 300px) */}
         <div className="w-1/3 min-w-[300px] bg-white p-8 rounded-2xl shadow-xl">
           <h2 className="text-3xl font-extrabold text-green-800 mb-6 text-center">
             Iniciar Sesión
@@ -85,6 +83,7 @@ const Login = () => {
                     onChange={value => setCaptchaValue(value)}
                   />
                 </div>
+
                 {submitError && (
                   <p className="text-red-600 text-center text-sm">{submitError}</p>
                 )}
@@ -96,6 +95,17 @@ const Login = () => {
                 >
                   {isSubmitting ? 'Cargando...' : 'Iniciar Sesión'}
                 </button>
+
+                {/* Enlace para registro */}
+                <p className="text-center text-sm text-gray-600">
+                  ¿No tienes cuenta?{' '}
+                  <Link
+                    to="/register"
+                    className="text-green-700 font-medium hover:underline"
+                  >
+                    Regístrate
+                  </Link>
+                </p>
               </Form>
             )}
           </Formik>
