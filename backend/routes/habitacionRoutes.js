@@ -7,8 +7,8 @@ const {
 } = require('../controllers/habitacionController');
 const { verifyToken } = require('../middleware/authMiddleware');
 
-router.get('/',              verifyToken, getAllHabitaciones);
-router.get('/disponibles',   verifyToken, getAvailableHabitaciones);  // 🔹
-router.post('/',             verifyToken, createHabitacion);
+router.get('/',              getAllHabitaciones);
+router.get('/disponibles',   getAvailableHabitaciones);  // 🔹
+router.post('/',             createHabitacion);
 
 module.exports = router;
