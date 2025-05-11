@@ -91,22 +91,24 @@ const Home = () => {
 </section>
 
       {/* Galería */}
-      <section id="galeria" className="bg-white py-16">
-      <h3 className="text-3xl font-bold text-center mb-12">Galería</h3>
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <section className="py-16 px-6 bg-white">
+      <h2 className="text-3xl font-bold text-center text-green-700 mb-10">
+        Galería
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {[
-          "https://img.freepik.com/foto-gratis/tipo-complejo-entretenimiento-popular-complejo-piscinas-parques-acuaticos-turquia-mas-5-millones-visitantes-al-ano-amara-dolce-vita-hotel-lujo-recurso-tekirova-kemer_146671-18728.jpg?semt=ais_hybrid&w=740",
-          "https://source.unsplash.com/400x300/?pool,summer",
-          "https://source.unsplash.com/400x300/?nature,family",
-          "https://source.unsplash.com/400x300/?restaurant,food",
-          "https://source.unsplash.com/400x300/?bar,drinks",
-          "https://source.unsplash.com/400x300/?cabin,mountain"
+          "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1565120130290-dfbd7c8f5b6e?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1590959651323-84d26b69a014?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1555992336-cf9fc9e27c62?auto=format&fit=crop&w=800&q=80"
         ].map((src, idx) => (
           <img
             key={idx}
             src={src}
             alt={`Galería ${idx + 1}`}
-            className="w-full h-64 object-cover rounded shadow"
+            className="w-full h-[250px] object-cover rounded-xl shadow-lg"
           />
         ))}
       </div>
