@@ -1,74 +1,119 @@
 // src/pages/Login.jsx
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { AuthContext } from '../context/AuthContext';
+import { HiMail, HiLockClosed } from 'react-icons/hi';
 
 const Login = () => {
   const { user, loading, login } = useContext(AuthContext);
-  const [email, setEmail]           = useState('');
-  const [password, setPassword]     = useState('');
-  const [localError, setLocalError] = useState(null);
   const navigate = useNavigate();
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [submitError, setSubmitError] = useState('');
 
-  // Redirige según rol al detectar user
+  // Redirige según rol
   useEffect(() => {
     if (!loading && user) {
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
     }
   }, [user, loading, navigate]);
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLocalError(null);
+  // Esquema de validación con Yup
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Correo inválido').required('Requerido'),
+    password: Yup.string().min(6, 'Mínimo 6 caracteres').required('Requerido'),
+  });
 
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setSubmitError('');
+    if (!captchaValue) {
+      setSubmitError('Por favor completa el reCAPTCHA');
+      setSubmitting(false);
+      return;
+    }
     try {
-      await login(email, password);
-      // redirección en useEffect
+      await login(values.email, values.password, captchaValue);
+      // La redirección la hace el useEffect
     } catch (err) {
-      console.error('Login error detalle:', err.response || err);
       const msg = err.response?.data?.message || 'Error en el inicio de sesión';
-      setLocalError(msg);
+      setSubmitError(msg);
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-green-100">
-      <h2 className="text-3xl font-bold mb-6 text-green-800">Iniciar Sesión</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="p-3 border border-green-400 rounded"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="p-3 border border-green-400 rounded"
-          required
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-green-600 text-white py-3 rounded hover:bg-green-700 transition disabled:opacity-50"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 className="text-3xl font-extrabold text-green-800 mb-6 text-center">
+          Iniciar Sesión
+        </h2>
+
+        <Formik
+          initialValues={{ email: '', password: '' }}
+          validationSchema={LoginSchema}
+          onSubmit={handleSubmit}
         >
-          {loading ? 'Cargando...' : 'Iniciar Sesión'}
-        </button>
-        {localError && (
-          <p className="text-red-600 mt-2 text-center">{localError}</p>
-        )}
-      </form>
+          {({ isSubmitting }) => (
+            <Form className="space-y-6">
+              {/* Email */}
+              <div className="relative">
+                <HiMail className="absolute left-3 top-3 text-green-500" />
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="Correo electrónico"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-600 text-sm mt-1"
+                />
+              </div>
+
+              {/* Password */}
+              <div className="relative">
+                <HiLockClosed className="absolute left-3 top-3 text-green-500" />
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="Contraseña"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition"
+                />
+                <ErrorMessage
+                  name="password"
+                  component="div"
+                  className="text-red-600 text-sm mt-1"
+                />
+              </div>
+
+              {/* reCAPTCHA */}
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                  onChange={value => setCaptchaValue(value)}
+                />
+              </div>
+              {submitError && (
+                <p className="text-red-600 text-center text-sm">{submitError}</p>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full flex justify-center items-center gap-2 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+              >
+                {isSubmitting ? 'Cargando...' : 'Iniciar Sesión'}
+              </button>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 };
 
 export default Login;
-

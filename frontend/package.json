@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
+    "formik": "^2.4.6",
     "framer-motion": "^12.10.4",
     "pdfkit": "^0.13.0",
     "react": "^19.0.0",
@@ -21,7 +22,8 @@
     "react-router-dom": "^7.4.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.6.1"
   },
   "scripts": {
     "start": "react-scripts start",
