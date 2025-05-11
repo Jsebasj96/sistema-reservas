@@ -9,6 +9,7 @@ const Home = () => {
   const message = location.state?.message;
 
   return (
+    <div className="m-[5px]">
     <div className="font-sans text-gray-800">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-white shadow z-50">
@@ -31,7 +32,7 @@ const Home = () => {
       </header>
 
       {/* Hero */}
-      <section id="inicio" className="pt-24 bg-gradient-to-br from-green-200 to-green-100 text-center">
+      <section id="inicio" className="pt-0 bg-gradient-to-br from-green-200 to-green-100 text-center">
         {message && <div className="bg-green-500 text-white p-4 rounded mb-4 max-w-xl mx-auto">{message}</div>}
         <div className="max-w-5xl mx-auto px-6 py-16">
           <h2 className="text-4xl md:text-5xl font-extrabold mb-6 text-green-800">Vive la experiencia única en el Club Campestre “La Buena Vida”</h2>
@@ -231,6 +232,7 @@ const Home = () => {
           </div>
         </div>
       </footer>
+    </div>
     </div>
   );
 };
