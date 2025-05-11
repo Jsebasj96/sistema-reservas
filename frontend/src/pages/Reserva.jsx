@@ -13,37 +13,31 @@ const Reserva = () => {
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
-  // Redirige al login si no está autenticado
+  // 1) Redirigir si no está autenticado
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login');
-    }
+    if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-  // Carga habitaciones disponibles
+  // 2) Cargar habitaciones
   useEffect(() => {
     if (!user) return;
-    axios.get(
-      `${process.env.REACT_APP_API_URL}/habitaciones/disponibles`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      }
-    )
-    .then(res => {
-      setHabitaciones(Array.isArray(res.data) ? res.data : []);
-    })
-    .catch(err => {
-      if (err.response?.status === 401) {
-        navigate('/login', { replace: true });
-      } else {
-        console.error('Error cargando habitaciones:', err);
-        setHabitaciones([]);
-      }
-    });
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/habitaciones/disponibles`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      .then(res => {
+        setHabitaciones(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => {
+        if (err.response?.status === 401) navigate('/login', { replace: true });
+        else {
+          console.error(err);
+          setHabitaciones([]);
+        }
+      });
   }, [user, navigate]);
 
+  // 3) Schema de validación
   const ReservaSchema = Yup.object().shape({
     nombreCompleto: Yup.string().required('Requerido'),
     numeroDocumento: Yup.string().required('Requerido'),
@@ -53,10 +47,11 @@ const Reserva = () => {
     numeroDias: Yup.number().min(1).required('Requerido'),
     fechaEntrada: Yup.date().required('Requerido'),
     habitacionId: Yup.string().required('Requerido'),
-    medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
+    medioPago: Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
     numeroTransaccion: Yup.string().required('Requerido'),
   });
 
+  // 4) Envío de formulario
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       const habit = habitaciones.find(h => h.id === +values.habitacionId);
@@ -66,7 +61,7 @@ const Reserva = () => {
       const montoAnticipado = montoTotal * 0.3;
 
       // Crear reserva
-      const resReserva = await axios.post(
+      const { data: reserva } = await axios.post(
         `${process.env.REACT_APP_API_URL}/reservas`,
         {
           cliente_id: user.id,
@@ -82,14 +77,13 @@ const Reserva = () => {
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-      const reservaId = resReserva.data.id;
 
       // Subir comprobante
       if (imagenComprobante) {
         const formData = new FormData();
         formData.append('imagen', imagenComprobante);
         await axios.post(
-          `${process.env.REACT_APP_API_URL}/reservas/${reservaId}/comprobante`,
+          `${process.env.REACT_APP_API_URL}/reservas/${reserva.id}/comprobante`,
           formData,
           {
             headers: {
@@ -100,11 +94,11 @@ const Reserva = () => {
         );
       }
 
-      // Crear pago anticipado
+      // Crear pago
       await axios.post(
         `${process.env.REACT_APP_API_URL}/pagos`,
         {
-          reserva_id: reservaId,
+          reserva_id: reserva.id,
           monto: montoAnticipado,
           medio_pago: values.medioPago,
           numero_transaccion: values.numeroTransaccion,
@@ -113,7 +107,7 @@ const Reserva = () => {
       );
 
       setResumenReserva({
-        codigoReserva: reservaId,
+        codigoReserva: reserva.id,
         nombre: values.nombreCompleto,
         correo: values.correoElectronico,
         fechaEntrada: values.fechaEntrada,
@@ -127,7 +121,7 @@ const Reserva = () => {
       resetForm();
       setImagenComprobante(null);
     } catch (err) {
-      console.error('Error al crear reserva:', err);
+      console.error(err);
       alert(err.response?.data?.error || err.message);
     } finally {
       setSubmitting(false);
@@ -135,12 +129,12 @@ const Reserva = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Formulario de Reserva</h1>
 
-      {/* Wrapper flex para centrar y ancho 1/3 */}
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-lg md:w-1/3 bg-white p-6 rounded-lg shadow">
+      {/* Contenedor fijo a un tercio y centrado */}
+      <div className="flex justify-center w-full">
+        <div className="w-1/3 min-w-[320px] bg-white p-6 rounded-lg shadow">
           <Formik
             initialValues={{
               nombreCompleto: '',
@@ -171,16 +165,16 @@ const Reserva = () => {
                   { name: 'ninos', label: 'Niños', type: 'number' },
                   { name: 'numeroDias', label: 'Número de Días', type: 'number' },
                   { name: 'fechaEntrada', label: 'Fecha de Entrada', type: 'date' },
-                ].map((field) => (
-                  <div key={field.name}>
-                    <label className="block mb-1">{field.label}</label>
+                ].map((f) => (
+                  <div key={f.name}>
+                    <label className="block mb-1">{f.label}</label>
                     <Field
-                      name={field.name}
-                      type={field.type}
+                      name={f.name}
+                      type={f.type}
                       className="w-full border border-gray-300 p-2 rounded"
                     />
                     <ErrorMessage
-                      name={field.name}
+                      name={f.name}
                       component="div"
                       className="text-red-600 text-sm mt-1"
                     />
@@ -267,12 +261,12 @@ const Reserva = () => {
       </div>
 
       {resumenReserva && (
-        <div className="w-full flex justify-center mt-8">
-          <div className="w-full max-w-2xl md:w-2/3 bg-white p-6 rounded-lg shadow">
+        <div className="mt-8 w-full flex justify-center">
+          <div className="w-2/3 bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-bold mb-4">Resumen de Reserva</h2>
-            {Object.entries(resumenReserva).map(([key, val]) => (
-              <p key={key} className="mb-1">
-                <strong>{key.replace(/([A-Z])/g, ' $1')}:</strong> {val}
+            {Object.entries(resumenReserva).map(([k, v]) => (
+              <p key={k} className="mb-1">
+                <strong>{k.replace(/([A-Z])/g, ' $1')}:</strong> {v}
               </p>
             ))}
           </div>
@@ -283,4 +277,5 @@ const Reserva = () => {
 };
 
 export default Reserva;
+
 
