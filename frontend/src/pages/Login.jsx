@@ -14,10 +14,17 @@ const Login = () => {
   const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate(user.role === 'admin' ? '/admin' : '/dashboard');
+  if (!loading && user) {
+    switch (user.role) {
+      case 'admin':
+        navigate('/admin');
+        break;
+      default:
+        navigate('/');
+        break;
     }
-  }, [user, loading, navigate]);
+  }
+}, [user, loading, navigate]);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Correo inválido').required('Requerido'),
