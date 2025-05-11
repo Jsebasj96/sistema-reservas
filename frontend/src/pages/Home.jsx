@@ -8,29 +8,154 @@ const Home = () => {
   const message = location.state?.message;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-200 via-green-100 to-green-300 flex flex-col items-center justify-center px-6 py-10">
-      {message && (
-        <div className="bg-green-500 text-white p-4 rounded mb-6">
-          {message}
+    <div className="font-sans text-gray-800">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 bg-white shadow z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-green-700">Club Campestre "La Buena Vida"</h1>
+          <nav className="hidden md:flex space-x-6">
+            <a href="#inicio" className="hover:text-green-700">Inicio</a>
+            <a href="#servicios" className="hover:text-green-700">Servicios</a>
+            <a href="#reservas" className="hover:text-green-700">Reservas</a>
+            <a href="#pasadias" className="hover:text-green-700">Pasadías</a>
+            <a href="#restaurante-bar" className="hover:text-green-700">Restaurante y Bar</a>
+            <a href="#eventos" className="hover:text-green-700">Eventos</a>
+            <a href="#contacto" className="hover:text-green-700">Contacto</a>
+          </nav>
+          <div className="space-x-3">
+            <button onClick={() => navigate('/login')} className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition">Iniciar Sesión</button>
+            <button onClick={() => navigate('/register')} className="px-4 py-2 border border-green-700 text-green-700 rounded hover:bg-green-100 transition">Registrarse</button>
+          </div>
         </div>
-      )}
-      <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 mb-10 drop-shadow-md text-center">
-        Bienvenido al Club Campestre <br />"La Buena Vida."
-      </h1>
-      <div className="flex flex-wrap justify-center gap-6">
-        <button
-          onClick={() => navigate('/login')}
-          className="px-8 py-4 bg-green-700 text-white rounded-full text-xl font-semibold shadow-lg transform hover:bg-green-800 hover:scale-105 transition-all duration-300"
-        >
-          Iniciar Sesión
-        </button>
-        <button
-          onClick={() => navigate('/register')}
-          className="px-8 py-4 bg-white text-green-700 border-2 border-green-700 rounded-full text-xl font-semibold shadow-lg transform hover:bg-green-100 hover:scale-105 transition-all duration-300"
-        >
-          Registrarse
-        </button>
-      </div>
+      </header>
+
+      {/* Hero */}
+      <section id="inicio" className="pt-24 bg-gradient-to-br from-green-200 to-green-100 text-center">
+        {message && <div className="bg-green-500 text-white p-4 rounded mb-4 max-w-xl mx-auto">{message}</div>}
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 text-green-800">Vive la experiencia única en el Club Campestre “La Buena Vida”</h2>
+          <p className="text-lg mb-8">Naturaleza, descanso y diversión en un solo lugar.</p>
+          <div className="flex justify-center gap-6 flex-wrap">
+            <button onClick={() => navigate('/reservas')} className="px-8 py-4 bg-green-700 text-white rounded-full text-xl hover:bg-green-800 transition">Reservar ahora</button>
+            <a href="#servicios" className="px-8 py-4 bg-white border-2 border-green-700 text-green-700 rounded-full text-xl hover:bg-green-100 transition">Conoce nuestros servicios</a>
+          </div>
+        </div>
+      </section>
+
+      {/* Servicios */}
+      <section id="servicios" className="bg-white py-16">
+        <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            ['Piscina', 'Acceso a piscinas para adultos y niños.'],
+            ['Cabañas y habitaciones', 'Hospedaje cómodo con naturaleza.'],
+            ['Restaurante y Bar', 'Comida tradicional y bebidas refrescantes.'],
+            ['Pasadías', 'Disfruta un día completo con piscina y almuerzo.'],
+            ['Actividades recreativas', 'Tejo, ciclas, caminatas, tenis de mesa.'],
+            ['Eventos', 'Alquiler de instalaciones para eventos.']
+          ].map(([title, desc], idx) => (
+            <div key={idx} className="bg-green-50 p-6 rounded shadow hover:shadow-lg transition">
+              <img src={`https://source.unsplash.com/400x200/?${title}`} alt={title} className="rounded mb-4" />
+              <h4 className="text-xl font-semibold mb-2">{title}</h4>
+              <p>{desc}</p>
+              <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Galería */}
+      <section className="bg-green-50 py-16">
+        <h3 className="text-3xl font-bold text-center mb-10">Galería</h3>
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+            <img key={num} src={`https://source.unsplash.com/400x300/?nature,resort,${num}`} alt="Galería" className="rounded shadow-md" />
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonios */}
+      <section className="bg-white py-16">
+        <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="grid gap-8 md:grid-cols-3">
+            {[
+              ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
+              ['Carlos M.', 'La atención fue excelente, volveremos.'],
+              ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
+            ].map(([name, quote], idx) => (
+              <div key={idx} className="bg-green-100 p-6 rounded shadow text-center">
+                <p className="italic mb-4">"{quote}"</p>
+                <h5 className="font-bold">{name}</h5>
+                <p>⭐⭐⭐⭐⭐</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Promociones */}
+      <section className="bg-green-700 text-white py-16">
+        <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
+        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
+            ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
+            ['Entre Semana', '20% de descuento de lunes a jueves.']
+          ].map(([title, desc], idx) => (
+            <div key={idx} className="bg-white text-green-800 p-6 rounded shadow">
+              <h4 className="text-xl font-bold mb-2">{title}</h4>
+              <p>{desc}</p>
+              <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Formulario de contacto */}
+      <section id="contacto" className="bg-white py-16">
+        <h3 className="text-3xl font-bold text-center mb-10">Contáctanos</h3>
+        <div className="max-w-xl mx-auto px-4">
+          <form className="space-y-4">
+            <input type="text" placeholder="Nombre" className="w-full border border-gray-300 rounded p-3" />
+            <input type="email" placeholder="Correo" className="w-full border border-gray-300 rounded p-3" />
+            <input type="tel" placeholder="Teléfono" className="w-full border border-gray-300 rounded p-3" />
+            <textarea placeholder="¿En qué podemos ayudarte?" className="w-full border border-gray-300 rounded p-3 h-32" />
+            <button type="submit" className="px-6 py-3 bg-green-700 text-white rounded hover:bg-green-800 transition">Enviar mensaje</button>
+          </form>
+        </div>
+      </section>
+
+      {/* Mapa + Info */}
+      <section className="bg-green-50 py-16">
+        <h3 className="text-3xl font-bold text-center mb-8">¿Dónde estamos?</h3>
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-8">
+          <iframe
+            title="Ubicación"
+            className="w-full h-80 rounded shadow"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.905092748706!2d-74.082!3d4.60971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDLCsDM2JzM0LjkiTiA3NMKwMDUnMDYuMCJX!5e0!3m2!1ses!2sco!4v1648664700000!5m2!1ses!2sco"
+            loading="lazy"
+          ></iframe>
+          <div>
+            <p><strong>Dirección:</strong> Km 10 vía al paraíso, zona campestre</p>
+            <p><strong>Teléfono:</strong> +57 300 123 4567</p>
+            <p><strong>Correo:</strong> info@clublabuenavida.com</p>
+            <p><strong>Horario:</strong> Lunes a Domingo 8:00am – 9:00pm</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-green-700 text-white py-6">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <p>© {new Date().getFullYear()} Club Campestre "La Buena Vida". Todos los derechos reservados.</p>
+          <div className="space-x-4 mt-4 md:mt-0">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
