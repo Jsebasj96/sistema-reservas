@@ -44,51 +44,52 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Servicios con íconos en horizontal */}
       <section id="servicios" className="bg-white py-16">
-      <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-8">
-        {[
-          {
-            title: 'Piscina',
-            desc: 'Acceso a piscinas para adultos y niños.',
-            icon: <FaSwimmingPool className="text-6xl text-green-700 mb-4" />,
-          },
-          {
-            title: 'Cabañas y habitaciones',
-            desc: 'Hospedaje cómodo con naturaleza.',
-            icon: <FaHotel className="text-6xl text-green-700 mb-4" />,
-          },
-          {
-            title: 'Restaurante y bar',
-            desc: 'Comida tradicional y bebidas refrescantes.',
-            icon: <FaUtensils className="text-6xl text-green-700 mb-4" />,
-          },
-          {
-            title: 'Pasadías',
-            desc: 'Disfruta un día completo con piscina y almuerzo.',
-            icon: <FaSun className="text-6xl text-green-700 mb-4" />,
-          },
-          {
-            title: 'Actividades recreativas',
-            desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
-            icon: <FaHiking className="text-6xl text-green-700 mb-4" />,
-          },
-          {
-            title: 'Eventos',
-            desc: 'Alquiler de instalaciones para eventos.',
-            icon: <FaCalendarAlt className="text-6xl text-green-700 mb-4" />,
-          },
-        ].map(({ title, desc, icon }, idx) => (
-          <div key={idx} className="bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
-            {icon}
-            <h4 className="text-xl font-semibold mb-2">{title}</h4>
-            <p>{desc}</p>
-            <button className="mt-3 text-green-700 hover:underline">Ver más</button>
-          </div>
-        ))}
-      </div>
-    </section>
+  <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+  <div className="overflow-x-auto px-4">
+    <div className="flex gap-6 min-w-max">
+      {[
+        {
+          title: 'Piscina',
+          desc: 'Acceso a piscinas para adultos y niños.',
+          icon: <FaSwimmingPool className="text-6xl text-green-700 mb-4" />,
+        },
+        {
+          title: 'Cabañas y habitaciones',
+          desc: 'Hospedaje cómodo con naturaleza.',
+          icon: <FaHotel className="text-6xl text-green-700 mb-4" />,
+        },
+        {
+          title: 'Restaurante y bar',
+          desc: 'Comida tradicional y bebidas refrescantes.',
+          icon: <FaUtensils className="text-6xl text-green-700 mb-4" />,
+        },
+        {
+          title: 'Pasadías',
+          desc: 'Disfruta un día completo con piscina y almuerzo.',
+          icon: <FaSun className="text-6xl text-green-700 mb-4" />,
+        },
+        {
+          title: 'Actividades recreativas',
+          desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
+          icon: <FaHiking className="text-6xl text-green-700 mb-4" />,
+        },
+        {
+          title: 'Eventos',
+          desc: 'Alquiler de instalaciones para eventos.',
+          icon: <FaCalendarAlt className="text-6xl text-green-700 mb-4" />,
+        },
+      ].map(({ title, desc, icon }, idx) => (
+        <div key={idx} className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center">
+          {icon}
+          <h4 className="text-xl font-semibold mb-2">{title}</h4>
+          <p>{desc}</p>
+          <button className="mt-3 text-green-700 hover:underline">Ver más</button>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Galería */}
       <section className="bg-green-50 py-16">
