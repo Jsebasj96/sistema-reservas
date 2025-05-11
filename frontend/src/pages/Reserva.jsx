@@ -9,35 +9,46 @@ import * as Yup from 'yup';
 const Reserva = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [habitaciones, setHabitaciones] = useState([]);
+
+  // Estado para tipo de alojamiento y opciones
+  const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
+  const [opcionesAlojamiento, setOpcionesAlojamiento] = useState([]);
+
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
-  // 1) Redirigir si no está autenticado
+  // Redirigir si no está autenticado
   useEffect(() => {
-    if (!loading && !user) navigate('/login');
+    if (!loading && !user) {
+      navigate('/login');
+    }
   }, [user, loading, navigate]);
 
-  // 2) Cargar habitaciones
+  // Cargar alojamientos disponibles según el tipo seleccionado
   useEffect(() => {
     if (!user) return;
+    const endpoint =
+      tipoAlojamiento === 'habitacion'
+        ? 'habitaciones/disponibles'
+        : 'cabanas/disponibles';
+
     axios
-      .get(`${process.env.REACT_APP_API_URL}/habitaciones/disponibles`, {
+      .get(`${process.env.REACT_APP_API_URL}/${endpoint}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
-      .then(res => {
-        setHabitaciones(Array.isArray(res.data) ? res.data : []);
+      .then((res) => {
+        setOpcionesAlojamiento(Array.isArray(res.data) ? res.data : []);
       })
-      .catch(err => {
-        if (err.response?.status === 401) navigate('/login', { replace: true });
-        else {
-          console.error(err);
-          setHabitaciones([]);
+      .catch((err) => {
+        console.error(err);
+        setOpcionesAlojamiento([]);
+        if (err.response?.status === 401) {
+          navigate('/login', { replace: true });
         }
       });
-  }, [user, navigate]);
+  }, [user, tipoAlojamiento, navigate]);
 
-  // 3) Schema de validación
+  // Esquema de validación
   const ReservaSchema = Yup.object().shape({
     nombreCompleto: Yup.string().required('Requerido'),
     numeroDocumento: Yup.string().required('Requerido'),
@@ -46,18 +57,22 @@ const Reserva = () => {
     ninos: Yup.number().min(0).required('Requerido'),
     numeroDias: Yup.number().min(1).required('Requerido'),
     fechaEntrada: Yup.date().required('Requerido'),
-    habitacionId: Yup.string().required('Requerido'),
-    medioPago: Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
+    alojamientoId: Yup.string().required('Requerido'),
+    medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
     numeroTransaccion: Yup.string().required('Requerido'),
   });
 
-  // 4) Envío de formulario
+  // Manejo de envío de formulario
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const habit = habitaciones.find(h => h.id === +values.habitacionId);
-      if (!habit) throw new Error('Habitación no válida');
+      const alojamiento = opcionesAlojamiento.find(
+        (a) => a.id === +values.alojamientoId
+      );
+      if (!alojamiento) {
+        throw new Error('Alojamiento no válido');
+      }
 
-      const montoTotal = habit.precioPorNoche * values.numeroDias;
+      const montoTotal = alojamiento.precioPorNoche * values.numeroDias;
       const montoAnticipado = montoTotal * 0.3;
 
       // Crear reserva
@@ -74,11 +89,15 @@ const Reserva = () => {
           total_pago: montoTotal,
           porcentaje_pagado: 0.3,
           estado: 'Pendiente',
+          tipo_alojamiento: tipoAlojamiento,
+          alojamiento_id: values.alojamientoId,
         },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
       );
 
-      // Subir comprobante
+      // Subir comprobante si existe
       if (imagenComprobante) {
         const formData = new FormData();
         formData.append('imagen', imagenComprobante);
@@ -94,7 +113,7 @@ const Reserva = () => {
         );
       }
 
-      // Crear pago
+      // Crear pago anticipado
       await axios.post(
         `${process.env.REACT_APP_API_URL}/pagos`,
         {
@@ -103,16 +122,19 @@ const Reserva = () => {
           medio_pago: values.medioPago,
           numero_transaccion: values.numeroTransaccion,
         },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
       );
 
+      // Mostrar resumen
       setResumenReserva({
         codigoReserva: reserva.id,
         nombre: values.nombreCompleto,
         correo: values.correoElectronico,
         fechaEntrada: values.fechaEntrada,
         numeroDias: values.numeroDias,
-        habitacion: habit.nombre,
+        alojamiento: alojamiento.nombre,
         montoAnticipado,
         montoRestante: montoTotal - montoAnticipado,
         estadoPago: '30% pagado / 70% pendiente',
@@ -132,7 +154,6 @@ const Reserva = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Formulario de Reserva</h1>
 
-      {/* Contenedor fijo a un tercio y centrado */}
       <div className="flex justify-center w-full">
         <div className="w-1/3 min-w-[320px] bg-white p-6 rounded-lg shadow">
           <Formik
@@ -144,7 +165,7 @@ const Reserva = () => {
               ninos: 0,
               numeroDias: 1,
               fechaEntrada: '',
-              habitacionId: '',
+              alojamientoId: '',
               medioPago: '',
               numeroTransaccion: '',
             }}
@@ -153,14 +174,11 @@ const Reserva = () => {
           >
             {({ isSubmitting }) => (
               <Form className="space-y-4">
+                {/* Campos básicos */}
                 {[
                   { name: 'nombreCompleto', label: 'Nombre Completo', type: 'text' },
                   { name: 'numeroDocumento', label: 'Número de Documento', type: 'text' },
-                  {
-                    name: 'correoElectronico',
-                    label: 'Correo Electrónico',
-                    type: 'email',
-                  },
+                  { name: 'correoElectronico', label: 'Correo Electrónico', type: 'email' },
                   { name: 'adultos', label: 'Adultos', type: 'number' },
                   { name: 'ninos', label: 'Niños', type: 'number' },
                   { name: 'numeroDias', label: 'Número de Días', type: 'number' },
@@ -181,31 +199,48 @@ const Reserva = () => {
                   </div>
                 ))}
 
+                {/* Selector de tipo de alojamiento */}
                 <div>
-                  <label className="block mb-1">Habitación/Cabaña</label>
+                  <label className="block mb-1">Tipo de Alojamiento</label>
+                  <select
+                    value={tipoAlojamiento}
+                    onChange={(e) => setTipoAlojamiento(e.target.value)}
+                    className="w-full border border-gray-300 p-2 rounded"
+                  >
+                    <option value="habitacion">Habitación</option>
+                    <option value="cabana">Cabaña</option>
+                  </select>
+                </div>
+
+                {/* Selector de alojamiento específico */}
+                <div>
+                  <label className="block mb-1">
+                    {tipoAlojamiento === 'habitacion' ? 'Habitación' : 'Cabaña'}
+                  </label>
                   <Field
                     as="select"
-                    name="habitacionId"
+                    name="alojamientoId"
                     className="w-full border border-gray-300 p-2 rounded"
                   >
                     <option value="">-- Seleccione --</option>
-                    {habitaciones.length > 0 ? (
-                      habitaciones.map((h) => (
-                        <option key={h.id} value={h.id}>
-                          {h.nombre} - ${h.precioPorNoche}/noche
+                    {opcionesAlojamiento.length > 0 ? (
+                      opcionesAlojamiento.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.nombre} - ${a.precioPorNoche}/noche
                         </option>
                       ))
                     ) : (
-                      <option disabled>No hay habitaciones</option>
+                      <option disabled>No hay disponibles</option>
                     )}
                   </Field>
                   <ErrorMessage
-                    name="habitacionId"
+                    name="alojamientoId"
                     component="div"
                     className="text-red-600 text-sm mt-1"
                   />
                 </div>
 
+                {/* Medio de pago */}
                 <div>
                   <label className="block mb-1">Medio de Pago</label>
                   <Field
@@ -224,6 +259,7 @@ const Reserva = () => {
                   />
                 </div>
 
+                {/* Comprobante */}
                 <div>
                   <label className="block mb-1">Comprobante (imagen)</label>
                   <input
@@ -234,6 +270,7 @@ const Reserva = () => {
                   />
                 </div>
 
+                {/* Número de transacción */}
                 <div>
                   <label className="block mb-1">Número de Transacción</label>
                   <Field
@@ -247,6 +284,7 @@ const Reserva = () => {
                   />
                 </div>
 
+                {/* Botón de submit */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -260,6 +298,7 @@ const Reserva = () => {
         </div>
       </div>
 
+      {/* Resumen de reserva */}
       {resumenReserva && (
         <div className="mt-8 w-full flex justify-center">
           <div className="w-2/3 bg-white p-6 rounded-lg shadow">
@@ -277,5 +316,3 @@ const Reserva = () => {
 };
 
 export default Reserva;
-
-
