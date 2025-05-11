@@ -162,7 +162,7 @@ const Home = () => {
       {/* Formulario de contacto */}
 <section id="contacto" className="bg-white py-16">
   <h3 className="text-3xl font-bold text-center mb-10">Contáctanos</h3>
-  <div className="max-w-2xl mx-auto px-4">
+  <div className="w-full max-w-2xl mx-auto px-4"> {/* Cambié max-w-2xl por w-full + max-w-2xl */}
     <form className="space-y-4">
       <input
         type="text"
@@ -192,6 +192,7 @@ const Home = () => {
     </form>
   </div>
 </section>
+
 
       {/* Mapa + Info */}
       <section className="bg-green-50 py-16">
