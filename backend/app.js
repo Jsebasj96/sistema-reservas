@@ -10,6 +10,7 @@ const barRoutes = require('./routes/barRoutes');
 const pasadiaRoutes = require('./routes/pasadiaRoutes');
 const habitacionRoutes = require('./routes/habitacionRoutes');
 const inventarioRoutes = require('./routes/inventarioRoutes');
+const cabanaRoutes = require('./routes/cabanaRoutes'); // ✅ Agregado
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/restaurante', restauranteRoutes);
 app.use('/api/bar', barRoutes);
 app.use('/api/pasadias', pasadiaRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
+app.use('/api/cabanas', cabanaRoutes);    // ✅ Montaje de la ruta de cabañas
 app.use('/api/inventario', inventarioRoutes);
 
 module.exports = app;
