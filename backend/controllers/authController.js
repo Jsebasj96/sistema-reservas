@@ -2,6 +2,7 @@ require('dotenv').config();
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt    = require('jsonwebtoken');
+const axios = require('axios');
 
 const register = async (req, res) => {
   const { email, password, name } = req.body;
@@ -21,17 +22,41 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body;
+
+  if (!recaptchaToken) {
+    return res.status(400).json({ error: 'Falta el token de reCAPTCHA' });
+  }
+
   try {
+    // 1. Verificar token de reCAPTCHA con Google
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${recaptchaToken}`;
+
+    const response = await axios.post(verifyURL);
+    const { success, score } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ error: 'reCAPTCHA inválido' });
+    }
+
+    // Opcional: puedes exigir un "score" mínimo si usas reCAPTCHA v3 (tú estás usando v2, así que no es obligatorio)
+
+    // 2. Autenticación normal
     const result = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
     if (!result.rows.length) return res.status(400).json({ error: 'Credenciales incorrectas' });
+
     const user = result.rows[0];
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) return res.status(400).json({ error: 'Credenciales incorrectas' });
+
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
+
+    // Aquí podrías usar cookies si ya estás manejando sesiones
     res.json({ token });
+
   } catch (err) {
-    console.error(err);
+    console.error('Error al verificar reCAPTCHA o login:', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
