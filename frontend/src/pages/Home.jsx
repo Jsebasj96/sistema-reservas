@@ -1,4 +1,3 @@
-// src/pages/Home.js
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaSwimmingPool, FaHotel, FaUtensils, FaSun, FaHiking, FaCalendarAlt } from 'react-icons/fa';
@@ -90,42 +89,43 @@ const Home = () => {
   </div>  
 </section>
 
-      <section className="bg-white py-16 px-4">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
-        <div className="overflow-x-auto">
-          <div className="flex gap-6 min-w-max">
-            {[
-              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-            ].map((src, index) => (
-              <div key={index} className="rounded-lg shadow-md overflow-hidden min-w-[320px]">
-                <img
-                  src={src}
-                  alt={`Galeria ${index + 1}`}
-                  className="w-full h-[208px] object-cover"
-                />
-              </div>
-            ))}
-          </div>
+      <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+      <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
+      <div className="overflow-x-auto">
+        <div className="flex gap-6 justify-center px-4 min-w-max">
+          {[
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          ].map((src, index) => (
+            <div key={index} className="min-w-[320px] rounded-lg shadow-md overflow-hidden">
+              <img
+                src={src}
+                alt={`Galeria ${index + 1}`}
+                className="w-[320px] h-[208px] object-cover rounded-md"
+              />
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+
 
 
       {/* Testimonios */}
       <section className="bg-white py-16">
       <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
       <div className="overflow-x-auto px-4">
-        <div className="flex gap-6 min-w-max">
+        <div className="flex gap-6 justify-center min-w-max">
           {[
             ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
             ['Carlos M.', 'La atención fue excelente, volveremos.'],
             ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
           ].map(([name, quote], idx) => (
-            <div key={idx} className="bg-green-100 p-6 rounded shadow text-center min-w-[250px]">
+            <div key={idx} className="min-w-[250px] bg-green-100 p-6 rounded shadow text-center">
               <p className="italic mb-4">"{quote}"</p>
               <h5 className="font-bold">{name}</h5>
               <p>⭐⭐⭐⭐⭐</p>
@@ -136,17 +136,18 @@ const Home = () => {
     </section>
 
 
+
       {/* Promociones */}
       <section className="bg-green-700 text-white py-16">
       <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
       <div className="overflow-x-auto px-4">
-        <div className="flex gap-6 min-w-max">
+        <div className="flex gap-6 justify-center min-w-max">
           {[
             ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
             ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
             ['Entre Semana', '20% de descuento de lunes a jueves.']
           ].map(([title, desc], idx) => (
-            <div key={idx} className="bg-white text-green-800 p-6 rounded shadow min-w-[250px]">
+            <div key={idx} className="min-w-[250px] bg-white text-green-800 p-6 rounded shadow text-center">
               <h4 className="text-xl font-bold mb-2">{title}</h4>
               <p>{desc}</p>
               <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
@@ -155,6 +156,7 @@ const Home = () => {
         </div>
       </div>
     </section>
+
 
       {/* Formulario de contacto */}
       <section id="contacto" className="bg-white py-16">
