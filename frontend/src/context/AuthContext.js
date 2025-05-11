@@ -3,10 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-// Obtener la URL base del backend desde el .env
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'; // Vite
-// Si usas Create React App (CRA), cambia a:
-// const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
