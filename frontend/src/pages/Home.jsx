@@ -90,67 +90,71 @@ const Home = () => {
   </div>  
 </section>
 
-      {/* Galería */}
-      <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
-      <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
-        {[
-            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-          ].map((src, index) => (
-            <div key={index} className="rounded-lg shadow-md overflow-hidden">
-              <img
-                src={src}
-                alt={`Galeria ${index + 1}`}
-                style={{ width: '320px', height: '208px', objectFit: 'cover' }}
-                className="rounded-md"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonios */}
-      <section className="bg-white py-16">
-        <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-3">
+      <section className="bg-white py-16 px-4">
+        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
+        <div className="overflow-x-auto">
+          <div className="flex gap-6 min-w-max">
             {[
-              ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
-              ['Carlos M.', 'La atención fue excelente, volveremos.'],
-              ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
-            ].map(([name, quote], idx) => (
-              <div key={idx} className="bg-green-100 p-6 rounded shadow text-center">
-                <p className="italic mb-4">"{quote}"</p>
-                <h5 className="font-bold">{name}</h5>
-                <p>⭐⭐⭐⭐⭐</p>
+              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            ].map((src, index) => (
+              <div key={index} className="rounded-lg shadow-md overflow-hidden min-w-[320px]">
+                <img
+                  src={src}
+                  alt={`Galeria ${index + 1}`}
+                  className="w-full h-[208px] object-cover"
+                />
               </div>
             ))}
           </div>
         </div>
       </section>
 
+
+      {/* Testimonios */}
+      <section className="bg-white py-16">
+      <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
+      <div className="overflow-x-auto px-4">
+        <div className="flex gap-6 min-w-max">
+          {[
+            ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
+            ['Carlos M.', 'La atención fue excelente, volveremos.'],
+            ['Luisa R.', 'Comida deliciosa y paisajes únicos.']
+          ].map(([name, quote], idx) => (
+            <div key={idx} className="bg-green-100 p-6 rounded shadow text-center min-w-[250px]">
+              <p className="italic mb-4">"{quote}"</p>
+              <h5 className="font-bold">{name}</h5>
+              <p>⭐⭐⭐⭐⭐</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+
       {/* Promociones */}
       <section className="bg-green-700 text-white py-16">
-        <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
+      <div className="overflow-x-auto px-4">
+        <div className="flex gap-6 min-w-max">
           {[
             ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
             ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
             ['Entre Semana', '20% de descuento de lunes a jueves.']
           ].map(([title, desc], idx) => (
-            <div key={idx} className="bg-white text-green-800 p-6 rounded shadow">
+            <div key={idx} className="bg-white text-green-800 p-6 rounded shadow min-w-[250px]">
               <h4 className="text-xl font-bold mb-2">{title}</h4>
               <p>{desc}</p>
               <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
             </div>
           ))}
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* Formulario de contacto */}
       <section id="contacto" className="bg-white py-16">
