@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser  = require('cookie-parser');
 
 // Importar rutas
 const authRoutes = require('./routes/authRoutes');
@@ -26,6 +27,7 @@ app.use(cors({
 }));
 
 // Middleware para procesar cuerpos de solicitudes en formato JSON
+app.use(cookieParser()); 
 app.use(express.json());
 
 // Definir las rutas
