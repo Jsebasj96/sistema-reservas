@@ -65,7 +65,7 @@ const Reserva = () => {
       const { data: reserva } = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/reservas`,
         {
-          cliente_id: user.id,
+          user_id: user.id,
           alojamiento_id: item.id, // Alojamiento en vez de habitacion_id
           fecha_inicio: values.fechaEntrada,
           fecha_fin: new Date(
