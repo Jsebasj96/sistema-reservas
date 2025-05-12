@@ -70,7 +70,7 @@ const Reserva = () => {
 
       // 1) crear reserva
       const { data: reserva } = await axios.post(
-        `${process.env.REACT_APP_API_URL}/reservas`,
+        `${process.env.REACT_APP_API_URL}/api/reservas`,
         {
           cliente_id:      user.id,
           fecha_inicio:    values.fechaEntrada,
@@ -90,7 +90,7 @@ const Reserva = () => {
         const form = new FormData();
         form.append('imagen', imagenComprobante);
         await axios.post(
-          `${process.env.REACT_APP_API_URL}/reservas/${reserva.id}/comprobante`,
+          `${process.env.REACT_APP_API_URL}/api/reservas/${reserva.id}/comprobante`,
           form,
           {
             headers: {
@@ -103,7 +103,7 @@ const Reserva = () => {
 
       // 3) pago anticipado
       await axios.post(
-        `${process.env.REACT_APP_API_URL}/pagos`,
+        `${process.env.REACT_APP_API_URL}/api/pagos`,
         {
           reserva_id:       reserva.id,
           monto:            antic,
