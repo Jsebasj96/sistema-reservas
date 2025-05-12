@@ -18,14 +18,14 @@ const Reserva = () => {
     if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-  // 🚚 cargar alojamientos (habitaciones o cabañas)
+  // 🚚 cargar alojamientos según tipo
   useEffect(() => {
     if (!user) return;
 
-    const url = `${process.env.REACT_APP_API_URL}/api/alojamientos/disponibles`;
+    const url = `${process.env.REACT_APP_API_URL}/api/alojamientos/disponibles?tipo=${tipoAlojamiento}`;
 
     axios
-      .get(url, { withCredentials: true }) // ← Aquí incluimos withCredentials
+      .get(url, { withCredentials: true })
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [];
         setAlojamientos(data);
@@ -34,7 +34,7 @@ const Reserva = () => {
         if (err.response?.status === 401) navigate('/login');
         else console.error(err);
       });
-  }, [user, navigate]);
+  }, [user, tipoAlojamiento, navigate]);
 
   // 💾 esquema Formik
   const ReservaSchema = Yup.object().shape({
@@ -53,7 +53,6 @@ const Reserva = () => {
   // 📤 envío de reserva + pago
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      // tomar datos correctos según tipo
       const item = alojamientos.find(x => x.id === +values.alojamientoId);
       if (!item) throw new Error('Selección inválida');
 
@@ -61,12 +60,11 @@ const Reserva = () => {
       const total = precio * values.numeroDias;
       const antic = total * 0.3;
 
-      // 1) crear reserva (envía cookie con JWT)
       const { data: reserva } = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/reservas`,
         {
           user_id: user.id,
-          alojamiento_id: item.id, // Alojamiento en vez de habitacion_id
+          alojamiento_id: item.id,
           fecha_inicio: values.fechaEntrada,
           fecha_fin: new Date(
             new Date(values.fechaEntrada).setDate(
@@ -77,13 +75,9 @@ const Reserva = () => {
           porcentaje_pagado: 0.3,
           estado: 'Pendiente',
         },
-        { withCredentials: true } // ← Aquí también
+        { withCredentials: true }
       );
 
-      // 2) comprobante opcional (comentado)
-      // if (imagenComprobante) { … }
-
-      // 3) pago anticipado
       await axios.post(
         `${process.env.REACT_APP_API_URL}/api/pagos`,
         {
@@ -92,10 +86,9 @@ const Reserva = () => {
           medio_pago: values.medioPago,
           numero_transaccion: values.numeroTransaccion,
         },
-        { withCredentials: true } // ← Y aquí
+        { withCredentials: true }
       );
 
-      // 4) resumen en UI
       setResumenReserva({
         código: reserva.id,
         nombre: values.nombreCompleto,
@@ -141,7 +134,6 @@ const Reserva = () => {
           >
             {({ isSubmitting, setFieldValue }) => (
               <Form className="space-y-4">
-                {/* selector tipo */}
                 <div>
                   <label className="block mb-1">Tipo Alojamiento</label>
                   <select
@@ -157,8 +149,7 @@ const Reserva = () => {
                   </select>
                 </div>
 
-                {/* resto campos */}
-                {[
+                {[ 
                   { name: 'nombreCompleto', label: 'Nombre Completo', type: 'text' },
                   { name: 'numeroDocumento', label: 'Número Documento', type: 'text' },
                   { name: 'correoElectronico', label: 'Correo Electrónico', type: 'email' },
@@ -182,7 +173,6 @@ const Reserva = () => {
                   </div>
                 ))}
 
-                {/* select dinámico */}
                 <div>
                   <label className="block mb-1">Alojamiento</label>
                   <Field as="select" name="alojamientoId" className="w-full border p-2 rounded">
@@ -200,7 +190,6 @@ const Reserva = () => {
                   />
                 </div>
 
-                {/* medio, comprobante, transacción */}
                 <div>
                   <label className="block mb-1">Medio Pago</label>
                   <Field as="select" name="medioPago" className="w-full border p-2 rounded">
@@ -266,4 +255,3 @@ const Reserva = () => {
 };
 
 export default Reserva;
-
