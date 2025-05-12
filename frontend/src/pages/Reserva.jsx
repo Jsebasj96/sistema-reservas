@@ -29,7 +29,7 @@ const Reserva = () => {
         : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
 
     axios
-      .get(url, { withCredentials: true })
+      .get(url, { withCredentials: true }) // ← Aquí incluimos withCredentials
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [];
         if (tipoAlojamiento === 'habitacion') setHabitaciones(data);
@@ -82,11 +82,11 @@ const Reserva = () => {
           porcentaje_pagado: 0.3,
           estado: 'Pendiente',
         },
-        { withCredentials: true }
+        { withCredentials: true } // ← Aquí también
       );
 
-      // 2) comprobante opcional (comentado hasta implementar en backend)
-      // if (imagenComprobante) { … }
+      // 2) comprobante opcional (comentado)
+//    if (imagenComprobante) { … }
 
       // 3) pago anticipado
       await axios.post(
@@ -97,7 +97,7 @@ const Reserva = () => {
           medio_pago: values.medioPago,
           numero_transaccion: values.numeroTransaccion,
         },
-        { withCredentials: true }
+        { withCredentials: true } // ← Y aquí
       );
 
       // 4) resumen en UI
@@ -280,4 +280,3 @@ const Reserva = () => {
 };
 
 export default Reserva;
-
