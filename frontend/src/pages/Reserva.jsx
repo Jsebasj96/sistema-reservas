@@ -86,20 +86,20 @@ const Reserva = () => {
       );
 
       // 2) comprobante opcional
-      if (imagenComprobante) {
-        const form = new FormData();
-        form.append('imagen', imagenComprobante);
-        await axios.post(
-          `${process.env.REACT_APP_API_URL}/api/reservas/${reserva.id}/comprobante`,
-          form,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-              'Content-Type': 'multipart/form-data'
-            }
-          }
-        );
-      }
+      //if (imagenComprobante) {
+      //  const form = new FormData();
+      //  form.append('imagen', imagenComprobante);
+       // await axios.post(
+       //   `${process.env.REACT_APP_API_URL}/api/reservas/${reserva.id}/comprobante`,
+       //   form,
+       //   {
+        //    headers: {
+       //       Authorization: `Bearer ${localStorage.getItem('token')}`,
+       //       'Content-Type': 'multipart/form-data'
+      //      }
+       //   }
+      //  );
+      //}
 
       // 3) pago anticipado
       await axios.post(
