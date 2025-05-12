@@ -10,8 +10,7 @@ const Reserva = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
-  const [habitaciones, setHabitaciones] = useState([]);
-  const [cabanas, setCabanas] = useState([]);
+  const [alojamientos, setAlojamientos] = useState([]);
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
@@ -19,26 +18,23 @@ const Reserva = () => {
     if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-  // 🚚 cargar datos al cambiar tipo
+  // 🚚 cargar alojamientos (habitaciones o cabañas)
   useEffect(() => {
     if (!user) return;
-    const url =
-      tipoAlojamiento === 'habitacion'
-        ? `${process.env.REACT_APP_API_URL}/api/habitaciones/disponibles`
-        : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
+
+    const url = `${process.env.REACT_APP_API_URL}/api/alojamientos/disponibles`;
 
     axios
       .get(url, { withCredentials: true }) // ← Aquí incluimos withCredentials
       .then(res => {
         const data = Array.isArray(res.data) ? res.data : [];
-        if (tipoAlojamiento === 'habitacion') setHabitaciones(data);
-        else setCabanas(data);
+        setAlojamientos(data);
       })
       .catch(err => {
         if (err.response?.status === 401) navigate('/login');
         else console.error(err);
       });
-  }, [tipoAlojamiento, user, navigate]);
+  }, [user, navigate]);
 
   // 💾 esquema Formik
   const ReservaSchema = Yup.object().shape({
@@ -49,7 +45,7 @@ const Reserva = () => {
     ninos: Yup.number().min(0).required('Requerido'),
     numeroDias: Yup.number().min(1).required('Requerido'),
     fechaEntrada: Yup.date().required('Requerido'),
-    habitacionId: Yup.string().required('Requerido'),
+    alojamientoId: Yup.string().required('Requerido'),
     medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
     numeroTransaccion: Yup.string().required('Requerido'),
   });
@@ -58,8 +54,7 @@ const Reserva = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       // tomar datos correctos según tipo
-      const lista = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
-      const item = lista.find(x => x.id === +values.habitacionId);
+      const item = alojamientos.find(x => x.id === +values.alojamientoId);
       if (!item) throw new Error('Selección inválida');
 
       const precio = item.precio_por_noche || item.precioPorNoche;
@@ -71,6 +66,7 @@ const Reserva = () => {
         `${process.env.REACT_APP_API_URL}/api/reservas`,
         {
           cliente_id: user.id,
+          alojamiento_id: item.id, // Alojamiento en vez de habitacion_id
           fecha_inicio: values.fechaEntrada,
           fecha_fin: new Date(
             new Date(values.fechaEntrada).setDate(
@@ -85,7 +81,7 @@ const Reserva = () => {
       );
 
       // 2) comprobante opcional (comentado)
-//    if (imagenComprobante) { … }
+      // if (imagenComprobante) { … }
 
       // 3) pago anticipado
       await axios.post(
@@ -106,10 +102,7 @@ const Reserva = () => {
         correo: values.correoElectronico,
         entrada: values.fechaEntrada,
         noches: values.numeroDias,
-        alojamiento:
-          tipoAlojamiento === 'habitacion'
-            ? `Habitación #${item.numero}`
-            : item.nombre,
+        alojamiento: `${item.tipo} ${item.nombre || item.numero}`,
         anticipo: antic,
         pendiente: total - antic,
       });
@@ -139,7 +132,7 @@ const Reserva = () => {
               ninos: 0,
               numeroDias: 1,
               fechaEntrada: '',
-              habitacionId: '',
+              alojamientoId: '',
               medioPago: '',
               numeroTransaccion: '',
             }}
@@ -155,7 +148,7 @@ const Reserva = () => {
                     value={tipoAlojamiento}
                     onChange={e => {
                       setTipoAlojamiento(e.target.value);
-                      setFieldValue('habitacionId', '');
+                      setFieldValue('alojamientoId', '');
                     }}
                     className="w-full border p-2 rounded"
                   >
@@ -192,22 +185,16 @@ const Reserva = () => {
                 {/* select dinámico */}
                 <div>
                   <label className="block mb-1">Alojamiento</label>
-                  <Field as="select" name="habitacionId" className="w-full border p-2 rounded">
+                  <Field as="select" name="alojamientoId" className="w-full border p-2 rounded">
                     <option value="">-- Seleccione --</option>
-                    {tipoAlojamiento === 'habitacion'
-                      ? habitaciones.map(h => (
-                          <option key={h.id} value={h.id}>
-                            #{h.numero} – Capacidad: {h.capacidad} – ${h.precio_por_noche}
-                          </option>
-                        ))
-                      : cabanas.map(c => (
-                          <option key={c.id} value={c.id}>
-                            {c.nombre} – Capacidad: {c.capacidad} – ${c.precio_por_noche}
-                          </option>
-                        ))}
+                    {alojamientos.map(a => (
+                      <option key={a.id} value={a.id}>
+                        {a.tipo === 'habitacion' ? `#${a.numero}` : a.nombre} – Capacidad: {a.capacidad} – ${a.precio_por_noche}
+                      </option>
+                    ))}
                   </Field>
                   <ErrorMessage
-                    name="habitacionId"
+                    name="alojamientoId"
                     component="div"
                     className="text-red-600 text-sm mt-1"
                   />
@@ -279,3 +266,4 @@ const Reserva = () => {
 };
 
 export default Reserva;
+
