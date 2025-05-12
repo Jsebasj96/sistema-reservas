@@ -1,20 +1,18 @@
 const pool = require('../config/db');
 
-// Crear reserva
-exports.crearReserva = async (req, res) => {
-  const { cliente_id, alojamiento_id, fecha_inicio, fecha_fin } = req.body;
-
+const createReserva = async (req, res) => {
+  const { alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado } = req.body;
+  const userId = req.user.id;
   try {
     const result = await pool.query(
-      `INSERT INTO reservas (cliente_id, alojamiento_id, fecha_inicio, fecha_fin)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [cliente_id, alojamiento_id, fecha_inicio, fecha_fin]
+      `INSERT INTO reservas (alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [userId, alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado]
     );
-
     res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error('Error al crear reserva:', error);
-    res.status(500).json({ error: 'Error del servidor' });
+  } catch (err) {
+    console.error('Error al crear reserva:', err);
+    res.status(500).json({ error: 'Error al crear la reserva' });
   }
 };
 
