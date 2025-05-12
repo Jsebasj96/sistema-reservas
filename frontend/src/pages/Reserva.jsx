@@ -15,7 +15,6 @@ const Reserva = () => {
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
-  // 🔒 redirigir si no logueado
   useEffect(() => {
     if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);

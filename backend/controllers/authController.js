@@ -53,7 +53,13 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
     // Aquí podrías usar cookies si ya estás manejando sesiones
-    res.json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,         // obligatorio en https (Render)
+      sameSite: "none",     // obligatorio si frontend está en otro dominio (como Vercel)
+      maxAge: 24 * 60 * 60 * 1000 // 1 día
+    });
+    res.json({ message: "Login exitoso" });
 
   } catch (err) {
     console.error('Error al verificar reCAPTCHA o login:', err);
