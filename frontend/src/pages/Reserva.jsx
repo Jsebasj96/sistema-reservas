@@ -25,24 +25,22 @@ const Reserva = () => {
     if (!user) return;
     const url =
       tipoAlojamiento === 'habitacion'
-        ? `${process.env.REACT_APP_API_URL}/habitaciones/disponibles`
-        : `${process.env.REACT_APP_API_URL}/cabanas`;
+    ? `${process.env.REACT_APP_API_URL}/api/habitaciones/disponibles`
+    : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
 
-    axios.get(url, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    .then(res => {
-      if (tipoAlojamiento === 'habitacion') {
-        setHabitaciones(Array.isArray(res.data) ? res.data : []);
-      } else {
-        setCabanas(Array.isArray(res.data) ? res.data : []);
-      }
-    })
-    .catch(err => {
-      if (err.response?.status === 401) navigate('/login');
-      else console.error(err);
-    });
-  }, [tipoAlojamiento, user, navigate]);
+    axios.get(url)
+      .then(res => {
+        if (tipoAlojamiento === 'habitacion') {
+          setHabitaciones(Array.isArray(res.data) ? res.data : []);
+        } else {
+          setCabanas(Array.isArray(res.data) ? res.data : []);
+        }
+      })
+      .catch(err => {
+        if (err.response?.status === 401) navigate('/login');
+        else console.error(err);
+      });
+  }, [tipoAlojamiento, user, navigate]);  
 
   // 💾 esquema Formik
   const ReservaSchema = Yup.object().shape({
@@ -210,12 +208,12 @@ const Reserva = () => {
                     {tipoAlojamiento==='habitacion'
                       ? habitaciones.map(h => (
                           <option key={h.id} value={h.id}>
-                            #{h.numero} – cap:{h.capacidad} – ${h.precio_por_noche}
+                            #{h.numero} – Capacidad:{h.capacidad} – ${h.precio_por_noche}
                           </option>
                         ))
                       : cabanas.map(c => (
                           <option key={c.id} value={c.id}>
-                            {c.nombre} – cap:{c.capacidad} – ${c.precio_por_noche}
+                            {c.nombre} – Capacidad::{c.capacidad} – ${c.precio_por_noche}
                           </option>
                         ))
                     }
