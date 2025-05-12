@@ -58,6 +58,12 @@ const Reserva = () => {
 
   // 📤 envío de reserva + pago
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    const token = localStorage.getItem('token');
+  console.log('👉 Token guardado en localStorage:', token);
+
+  console.log('👉 Headers que enviaré:', {
+    Authorization: `Bearer ${token}`
+  });
     try {
       // tomar datos correctos según tipo
       const lista = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
