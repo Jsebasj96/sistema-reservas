@@ -9,99 +9,113 @@ import * as Yup from 'yup';
 const Reserva = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
-  const [alojamientos, setAlojamientos] = useState([]);
+  const [habitaciones, setHabitaciones] = useState([]);
+  const [cabanas, setCabanas] = useState([]);
   const [resumenReserva, setResumenReserva] = useState(null);
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
+  // Redirigir si no hay usuario
   useEffect(() => {
     if (!loading && !user) navigate('/login');
   }, [user, loading, navigate]);
 
-  // 🚚 cargar alojamientos según tipo
+  // Cargar habitaciones o cabañas disponibles
   useEffect(() => {
     if (!user) return;
+    const url =
+      tipoAlojamiento === 'habitacion'
+        ? `${process.env.REACT_APP_API_URL}/api/habitaciones/disponibles`
+        : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
 
-    const url = `${process.env.REACT_APP_API_URL}/api/alojamientos/disponibles?tipo=${tipoAlojamiento}`;
-
-    axios
-      .get(url, { withCredentials: true })
+    axios.get(url, { withCredentials: true })
       .then(res => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        setAlojamientos(data);
+        if (tipoAlojamiento === 'habitacion') {
+          setHabitaciones(Array.isArray(res.data) ? res.data : []);
+        } else {
+          setCabanas(Array.isArray(res.data) ? res.data : []);
+        }
       })
       .catch(err => {
         if (err.response?.status === 401) navigate('/login');
         else console.error(err);
       });
-  }, [user, tipoAlojamiento, navigate]);
+  }, [tipoAlojamiento, user, navigate]);
 
-  // 💾 esquema Formik
+  // Unificar la lista a mostrar en el select
+  const alojamientos = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
+
+  // Validaciones Formik
   const ReservaSchema = Yup.object().shape({
-    nombreCompleto: Yup.string().required('Requerido'),
-    numeroDocumento: Yup.string().required('Requerido'),
-    correoElectronico: Yup.string().email('Inválido').required('Requerido'),
-    adultos: Yup.number().min(1).required('Requerido'),
-    ninos: Yup.number().min(0).required('Requerido'),
-    numeroDias: Yup.number().min(1).required('Requerido'),
-    fechaEntrada: Yup.date().required('Requerido'),
-    alojamientoId: Yup.string().required('Requerido'),
-    medioPago: Yup.string().oneOf(['Nequi', 'Transferencia']).required('Requerido'),
-    numeroTransaccion: Yup.string().required('Requerido'),
+    nombreCompleto:     Yup.string().required('Requerido'),
+    numeroDocumento:    Yup.string().required('Requerido'),
+    correoElectronico:  Yup.string().email('Inválido').required('Requerido'),
+    adultos:            Yup.number().min(1).required('Requerido'),
+    ninos:              Yup.number().min(0).required('Requerido'),
+    numeroDias:         Yup.number().min(1).required('Requerido'),
+    fechaEntrada:       Yup.date().required('Requerido'),
+    alojamientoId:      Yup.string().required('Requerido'),
+    medioPago:          Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
+    numeroTransaccion:  Yup.string().required('Requerido'),
   });
 
-  // 📤 envío de reserva + pago
+  // Envío del formulario
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
+      // Buscar el ítem seleccionado
       const item = alojamientos.find(x => x.id === +values.alojamientoId);
       if (!item) throw new Error('Selección inválida');
 
       const precio = item.precio_por_noche || item.precioPorNoche;
-      const total = precio * values.numeroDias;
-      const antic = total * 0.3;
+      const total  = precio * values.numeroDias;
+      const antic  = total * 0.3;
 
+      // Crear reserva
       const { data: reserva } = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/reservas`,
         {
-          user_id: user.id,
-          alojamiento_id: item.id,
-          fecha_inicio: values.fechaEntrada,
-          fecha_fin: new Date(
-            new Date(values.fechaEntrada).setDate(
-              new Date(values.fechaEntrada).getDate() + +values.numeroDias
-            )
-          ),
-          total_pago: total,
-          porcentaje_pagado: 0.3,
-          estado: 'Pendiente',
+          user_id:            user.id,
+          alojamiento_id:     item.id,
+          fecha_inicio:       values.fechaEntrada,
+          fecha_fin:          new Date(
+                                new Date(values.fechaEntrada)
+                                  .setDate(new Date(values.fechaEntrada).getDate() + +values.numeroDias)
+                              ),
+          total_pago:         total,
+          porcentaje_pagado:  0.3,
+          estado:             'Pendiente',
         },
         { withCredentials: true }
       );
 
+      // Crear pago de anticipo
       await axios.post(
         `${process.env.REACT_APP_API_URL}/api/pagos`,
         {
-          reserva_id: reserva.id,
-          monto: antic,
-          medio_pago: values.medioPago,
-          numero_transaccion: values.numeroTransaccion,
+          reserva_id:           reserva.id,
+          monto:                antic,
+          medio_pago:           values.medioPago,
+          numero_transaccion:   values.numeroTransaccion,
         },
         { withCredentials: true }
       );
 
+      // Mostrar resumen
       setResumenReserva({
-        código: reserva.id,
-        nombre: values.nombreCompleto,
-        correo: values.correoElectronico,
-        entrada: values.fechaEntrada,
-        noches: values.numeroDias,
-        alojamiento: `${item.tipo} ${item.nombre || item.numero}`,
-        anticipo: antic,
-        pendiente: total - antic,
+        Código:     reserva.id,
+        Nombre:     values.nombreCompleto,
+        Correo:     values.correoElectronico,
+        Entrada:    values.fechaEntrada,
+        Noches:     values.numeroDias,
+        Alojamiento:`${tipoAlojamiento === 'habitacion' ? `#${item.numero}` : item.nombre}`,
+        Anticipo:   antic,
+        Pendiente:  total - antic,
       });
 
       resetForm();
       setImagenComprobante(null);
+
     } catch (e) {
       console.error(e);
       alert(e.response?.data?.error || e.message);
@@ -115,26 +129,28 @@ const Reserva = () => {
       <h1 className="text-2xl font-bold mb-6">Formulario de Reserva</h1>
 
       <div className="w-full flex justify-center">
-        <div className="w-1/3 min-w-[320px] bg-white p-6 rounded-lg shadow">
+        <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow">
           <Formik
             initialValues={{
-              nombreCompleto: '',
-              numeroDocumento: '',
+              nombreCompleto:    '',
+              numeroDocumento:   '',
               correoElectronico: '',
-              adultos: 1,
-              ninos: 0,
-              numeroDias: 1,
-              fechaEntrada: '',
-              alojamientoId: '',
-              medioPago: '',
+              adultos:           1,
+              ninos:             0,
+              numeroDias:        1,
+              fechaEntrada:      '',
+              alojamientoId:     '',
+              medioPago:         '',
               numeroTransaccion: '',
             }}
             validationSchema={ReservaSchema}
             onSubmit={handleSubmit}
           >
             {({ isSubmitting, setFieldValue }) => (
-              <Form className="space-y-4">
-                <div>
+              <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Tipo de alojamiento: ocupa todo el ancho */}
+                <div className="col-span-2">
                   <label className="block mb-1">Tipo Alojamiento</label>
                   <select
                     value={tipoAlojamiento}
@@ -149,14 +165,15 @@ const Reserva = () => {
                   </select>
                 </div>
 
-                {[ 
-                  { name: 'nombreCompleto', label: 'Nombre Completo', type: 'text' },
-                  { name: 'numeroDocumento', label: 'Número Documento', type: 'text' },
+                {/* Campos individuales */}
+                {[
+                  { name: 'nombreCompleto',    label: 'Nombre Completo',    type: 'text' },
+                  { name: 'numeroDocumento',   label: 'Número Documento',   type: 'text' },
                   { name: 'correoElectronico', label: 'Correo Electrónico', type: 'email' },
-                  { name: 'adultos', label: 'Adultos', type: 'number' },
-                  { name: 'ninos', label: 'Niños', type: 'number' },
-                  { name: 'numeroDias', label: 'Noches', type: 'number' },
-                  { name: 'fechaEntrada', label: 'Fecha Entrada', type: 'date' },
+                  { name: 'adultos',           label: 'Adultos',            type: 'number' },
+                  { name: 'ninos',             label: 'Niños',              type: 'number' },
+                  { name: 'numeroDias',        label: 'Noches',             type: 'number' },
+                  { name: 'fechaEntrada',      label: 'Fecha Entrada',      type: 'date' },
                 ].map(f => (
                   <div key={f.name}>
                     <label className="block mb-1">{f.label}</label>
@@ -173,13 +190,17 @@ const Reserva = () => {
                   </div>
                 ))}
 
-                <div>
+                {/* Select de alojamientos: ocupa todo el ancho */}
+                <div className="col-span-2">
                   <label className="block mb-1">Alojamiento</label>
                   <Field as="select" name="alojamientoId" className="w-full border p-2 rounded">
                     <option value="">-- Seleccione --</option>
                     {alojamientos.map(a => (
                       <option key={a.id} value={a.id}>
-                        {a.tipo === 'habitacion' ? `#${a.numero}` : a.nombre} – Capacidad: {a.capacidad} – ${a.precio_por_noche}
+                        {tipoAlojamiento === 'habitacion'
+                          ? `#${a.numero} – Capacidad: ${a.capacidad} – $${a.precio_por_noche}`
+                          : `${a.nombre} – Capacidad: ${a.capacidad} – $${a.precio_por_noche}`
+                        }
                       </option>
                     ))}
                   </Field>
@@ -190,6 +211,7 @@ const Reserva = () => {
                   />
                 </div>
 
+                {/* Medio de pago */}
                 <div>
                   <label className="block mb-1">Medio Pago</label>
                   <Field as="select" name="medioPago" className="w-full border p-2 rounded">
@@ -200,9 +222,11 @@ const Reserva = () => {
                   <ErrorMessage
                     name="medioPago"
                     component="div"
-                    className="text-red-600"
+                    className="text-red-600 text-sm mt-1"
                   />
                 </div>
+
+                {/* Comprobante de pago (no procesado en este ejemplo) */}
                 <div>
                   <label className="block mb-1">Comprobante (imagen)</label>
                   <input
@@ -212,6 +236,8 @@ const Reserva = () => {
                     className="w-full"
                   />
                 </div>
+
+                {/* Número de Transacción */}
                 <div>
                   <label className="block mb-1"># Transacción</label>
                   <Field
@@ -225,22 +251,26 @@ const Reserva = () => {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-                >
-                  {isSubmitting ? 'Procesando…' : 'Realizar Reserva'}
-                </button>
+                {/* Botón: ocupa todo el ancho */}
+                <div className="col-span-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                  >
+                    {isSubmitting ? 'Procesando…' : 'Realizar Reserva'}
+                  </button>
+                </div>
               </Form>
             )}
           </Formik>
         </div>
       </div>
 
+      {/* Resumen */}
       {resumenReserva && (
         <div className="mt-8 w-full flex justify-center">
-          <div className="w-2/3 bg-white p-6 rounded-lg shadow">
+          <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-bold mb-4">Resumen</h2>
             {Object.entries(resumenReserva).map(([k, v]) => (
               <p key={k}>
