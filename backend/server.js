@@ -27,9 +27,8 @@ const WHITE_LIST = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // permitir requests sin origin (Postman, tests) o de tus front
     if (!origin || WHITE_LIST.includes(origin)) {
-      callback(null, true);
+      callback(null, origin); // ← CAMBIA 'true' por 'origin'
     } else {
       callback(new Error(`Origen CORS no permitido: ${origin}`));
     }
@@ -38,7 +37,6 @@ const corsOptions = {
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true
 };
-
 // monta CORS y el preflight handler
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
