@@ -19,12 +19,14 @@ const app = express();
 // Configurar CORS
 app.use(cors({
   origin: [
-    "http://localhost:3000",  // Dominio local para desarrollo
-    "sistema-reservas-eight.vercel.app" // Dominio desplegado en Vercel
+    'http://localhost:3000',
+    'https://sistema-reservas-eight.vercel.app',
+    'https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app', 
+    'https://sistema-reservas-final.onrender.com'
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  credentials: true  // ✅ Necesario para permitir el envío de cookies desde el frontend
 }));
 
 // Middleware para procesar cuerpos de solicitudes en formato JSON
