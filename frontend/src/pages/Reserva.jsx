@@ -1,4 +1,3 @@
-// src/pages/Reserva.jsx
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,10 +9,13 @@ const Reserva = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const API_URL = process.env.REACT_APP_API_URL
+                || 'https://sistema-reservas-final.onrender.com';
+
   const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
   const [habitaciones, setHabitaciones] = useState([]);
   const [cabanas, setCabanas] = useState([]);
-  const [resumenReserva, setResumenReserva] = useState(null);
+  const [resumenReserva, setResumenReserva] = useState(null); 
   const [imagenComprobante, setImagenComprobante] = useState(null);
 
   // Redirigir si no hay usuario
@@ -26,8 +28,8 @@ const Reserva = () => {
     if (!user) return;
     const url =
       tipoAlojamiento === 'habitacion'
-        ? `${process.env.REACT_APP_API_URL}/api/habitaciones/disponibles`
-        : `${process.env.REACT_APP_API_URL}/api/cabanas/disponibles`;
+        ? `${API_URL}/api/habitaciones/disponibles`
+        : `${API_URL}/api/cabanas/disponibles`;
 
     axios.get(url, { withCredentials: true })
       .then(res => {
@@ -41,7 +43,7 @@ const Reserva = () => {
         if (err.response?.status === 401) navigate('/login');
         else console.error(err);
       });
-  }, [tipoAlojamiento, user, navigate]);
+  }, [tipoAlojamiento, user, navigate, API_URL]);
 
   // Unificar la lista a mostrar en el select
   const alojamientos = tipoAlojamiento === 'habitacion' ? habitaciones : cabanas;
@@ -73,7 +75,7 @@ const Reserva = () => {
 
       // Crear reserva
       const { data: reserva } = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/reservas`,
+        `${API_URL}/api/reservas`,
         {
           user_id:            user.id,
           alojamiento_id:     item.id,
@@ -91,7 +93,7 @@ const Reserva = () => {
 
       // Crear pago de anticipo
       await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/pagos`,
+        `${API_URL}/api/pagos`,
         {
           reserva_id:           reserva.id,
           monto:                antic,
