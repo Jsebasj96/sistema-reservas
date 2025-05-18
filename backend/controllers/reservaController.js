@@ -5,8 +5,10 @@ const createReserva = async (req, res) => {
   const userId = req.user.id;
   try {
     const result = await pool.query(
-      `INSERT INTO reservas (alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      `INSERT INTO reservas
+         (user_id, alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
       [userId, alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado]
     );
     res.status(201).json(result.rows[0]);
