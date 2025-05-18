@@ -20,7 +20,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:3000",  // Dominio local para desarrollo
-    "https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app" // Dominio desplegado en Vercel
+    "sistema-reservas-eight.vercel.app" // Dominio desplegado en Vercel
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
