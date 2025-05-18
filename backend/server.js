@@ -1,56 +1,70 @@
-require('dotenv').config();  // Cargar variables de entorno desde el archivo .env
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser'); // ✅ Necesario para leer cookies
+// server.js
+require('dotenv').config();   // Carga .env
+const express      = require('express');
+const cors         = require('cors');
+const cookieParser = require('cookie-parser');
 
-// Importar rutas
-const authRoutes = require('./routes/authRoutes');
-const reservaRoutes = require('./routes/reservaRoutes');
-const pagoRoutes = require('./routes/pagoRoutes');
+// Rutas
+const authRoutes        = require('./routes/authRoutes');
+const reservaRoutes     = require('./routes/reservaRoutes');
+const pagoRoutes        = require('./routes/pagoRoutes');
 const restauranteRoutes = require('./routes/restauranteRoutes');
-const barRoutes = require('./routes/barRoutes');
-const pasadiaRoutes = require('./routes/pasadiaRoutes');
-const habitacionRoutes = require('./routes/habitacionRoutes');
-const inventarioRoutes = require('./routes/inventarioRoutes');
-const cabanaRoutes = require('./routes/cabanaRoutes');
+const barRoutes         = require('./routes/barRoutes');
+const pasadiaRoutes     = require('./routes/pasadiaRoutes');
+const habitacionRoutes  = require('./routes/habitacionRoutes');
+const inventarioRoutes  = require('./routes/inventarioRoutes');
+const cabanaRoutes      = require('./routes/cabanaRoutes');
 
 const app = express();
 
-// Configurar CORS
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://sistema-reservas-eight.vercel.app',
-    'https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app', 
-    'https://sistema-reservas-final.onrender.com'
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true  // ✅ Necesario para permitir el envío de cookies desde el frontend
-}));
+// 1) CONFIGURAR CORS
+const WHITE_LIST = [
+  'http://localhost:3000',
+  'https://sistema-reservas-frontend-2vkwl931h-jsebasj96s-projects.vercel.app',
+  'https://sistema-reservas-eight.vercel.app',       // ← tu Vercel
+  'https://sistema-reservas-final.onrender.com'      // si vas a consumir API desde sí misma
+];
 
-// Middleware para procesar cuerpos de solicitudes en formato JSON
+const corsOptions = {
+  origin: (origin, callback) => {
+    // permitir requests sin origin (Postman, tests) o de tus front
+    if (!origin || WHITE_LIST.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origen CORS no permitido: ${origin}`));
+    }
+  },
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true
+};
+
+// monta CORS y el preflight handler
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// 2) MIDDLEWARES
 app.use(express.json());
-app.use(cookieParser()); // ✅ Permite leer cookies (para JWT)
+app.use(cookieParser());
 
-// Definir las rutas
-app.use('/api/auth', authRoutes);
-app.use('/api/reservas', reservaRoutes);
-app.use('/api/pagos', pagoRoutes);
-app.use('/api/restaurante', restauranteRoutes);
-app.use('/api/bar', barRoutes);
-app.use('/api/pasadias', pasadiaRoutes);
-app.use('/api/habitaciones', habitacionRoutes);
-app.use('/api/inventario', inventarioRoutes);
-app.use('/api/cabanas', cabanaRoutes);
+// 3) RUTAS
+app.use('/api/auth',         authRoutes);
+app.use('/api/reservas',      reservaRoutes);
+app.use('/api/pagos',         pagoRoutes);
+app.use('/api/restaurante',   restauranteRoutes);
+app.use('/api/bar',           barRoutes);
+app.use('/api/pasadias',      pasadiaRoutes);
+app.use('/api/habitaciones',  habitacionRoutes);
+app.use('/api/cabanas',       cabanaRoutes);
+app.use('/api/inventario',    inventarioRoutes);
 
-// Ruta raíz opcional
+// 4) RUTA RAÍZ (opcional)
 app.get('/', (req, res) => {
-  res.send('API del sistema de reservas del Club Campestre La Buena Vida');
+  res.send('API Sistema de Reservas La Buena Vida');
 });
 
-// Iniciar el servidor
+// 5) ARRANQUE
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
