@@ -5,6 +5,7 @@ require('dotenv').config();
 const verifyToken = (req, res, next) => {
   // Primero intenta sacarlo del header (opcional)
   let token = req.header('Authorization')?.replace('Bearer ', '');
+  console.log('>>> authMiddleware req.cookies =', req.cookies);
 
   // Si no viene en header, lo tomamos de la cookie "token"
   if (!token && req.cookies) {
