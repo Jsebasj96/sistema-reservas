@@ -58,6 +58,12 @@ const login = async (req, res) => {
       secure: true,         // obligatorio en https (Render)
       sameSite: "none",     // obligatorio si frontend está en otro dominio (como Vercel)
       maxAge: 24 * 60 * 60 * 1000 // 1 día
+      })
+      .status(200)
+      .json({
+        id:    user.id,
+        email: user.email,
+        role:  user.role
     });
     res.json({ message: "Login exitoso" });
 
