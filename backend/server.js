@@ -27,12 +27,15 @@ const WHITE_LIST = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || WHITE_LIST.includes(origin)) {
-      callback(null, origin); // ← CAMBIA 'true' por 'origin'
-    } else {
-      callback(new Error(`Origen CORS no permitido: ${origin}`));
-    }
-  },
+  console.log("🌐 ORIGIN:", origin);
+  if (!origin || WHITE_LIST.includes(origin)) {
+    console.log("✅ ORIGIN PERMITIDO");
+    callback(null, true);
+  } else {
+    console.warn("⛔ ORIGIN BLOQUEADO:", origin);
+    callback(new Error(`Origen CORS no permitido: ${origin}`));
+  }
+},
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true
