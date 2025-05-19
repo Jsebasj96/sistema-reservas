@@ -12,9 +12,8 @@ export default function ServicioDetalle() {
         return (
           <>
             <h2 className="text-3xl font-bold mb-4">Piscina</h2>
-            <div className="flex justify-center">
-              <div className="w-[100px] h-[100px]"></div>
-              <img src="https://cdn.pixabay.com/photo/2013/10/07/13/34/pool-191972_1280.jpg" alt="Piscina" className="w-full h-full object-cover rounded shadow"/>
+            <div className="space-y-4">
+              <img src="https://cdn.pixabay.com/photo/2013/10/07/13/34/pool-191972_1280.jpg" alt="Piscina" className="w-72 h-72 object-cover rounded shadow"/>
               <p><strong>Horario:</strong> 8:00 am – 6:00 pm</p>
               <p><strong>Reglas:</strong> Uso obligatorio de gorro, no correr, niños bajo supervisión.</p>
               <p><strong>Recomendaciones:</strong> Llegar temprano, usar bloqueador solar, llevar hidratación.</p>
