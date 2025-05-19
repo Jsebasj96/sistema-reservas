@@ -147,8 +147,8 @@ const Reserva = () => {
     <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Formulario de Reserva</h1>
 
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow">
+      <div className="flex justify-center">
+        <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow mx-4">
           <Formik
             initialValues={{
               nombreCompleto: '',
