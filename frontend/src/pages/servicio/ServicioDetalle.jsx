@@ -29,12 +29,12 @@ export default function ServicioDetalle() {
             <h2 className="text-3xl font-bold mb-6">Cabañas y Habitaciones</h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="border rounded p-4">
-                <img src="https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg" alt="Habitación" className="mb-2 rounded" />
+                <img src="https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg" alt="Habitación" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
                 <h3 className="text-xl font-semibold">Habitación Estándar</h3>
                 <p>Capacidad: 2 personas. Incluye baño privado, TV, aire acondicionado.</p>
               </div>
               <div className="border rounded p-4">
-                <img src="https://media.istockphoto.com/id/2170176939/photo/cozy-and-modern-living-room-in-the-tree-house.jpg?s=2048x2048&w=is&k=20&c=n2lUqrrUsYjIm6KE_fN7W3qLR-cLoVU9QoY9fzKNX0Q=" alt="Cabaña" className="mb-2 rounded" />
+                <img src="https://media.istockphoto.com/id/2170176939/photo/cozy-and-modern-living-room-in-the-tree-house.jpg?s=2048x2048&w=is&k=20&c=n2lUqrrUsYjIm6KE_fN7W3qLR-cLoVU9QoY9fzKNX0Q=" alt="Cabaña" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
                 <h3 className="text-xl font-semibold">Cabaña Familiar</h3>
                 <p>Capacidad: hasta 6 personas. Cocina equipada, zona verde, hamacas.</p>
               </div>
@@ -48,7 +48,7 @@ export default function ServicioDetalle() {
           <>
             <h2 className="text-3xl font-bold mb-4">Restaurante y Bar</h2>
             <div className="space-y-4">
-              <img src="https://cdn.pixabay.com/photo/2016/11/18/22/21/restaurant-1837150_1280.jpg" alt="Restaurante" className="rounded" />
+              <img src="https://cdn.pixabay.com/photo/2016/11/18/22/21/restaurant-1837150_1280.jpg" alt="Restaurante" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
               <p><strong>Horario:</strong> 7:00 am – 10:00 pm</p>
               <p><strong>Especialidades:</strong> Bandeja paisa, sancocho, jugos naturales, cervezas nacionales.</p>
               <p><strong>Recomendaciones:</strong> Reservar mesa en fines de semana, revisar menú del día.</p>
@@ -99,7 +99,7 @@ export default function ServicioDetalle() {
                 { nombre: 'Billar', img: 'https://cdn.pixabay.com/photo/2017/01/09/22/24/guy-playing-billiard-1967834_1280.jpg' },
               ].map((a, i) => (
                 <div key={i} className="border rounded p-4">
-                  <img src={a.img} alt={a.nombre} className="mb-2 rounded" />
+                  <img src={a.img} alt={a.nombre} style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow" />
                   <h3 className="text-lg font-semibold">{a.nombre}</h3>
                   <p>Disfrútala sin costo adicional con tu entrada.</p>
                 </div>
