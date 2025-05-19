@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { obtenerReservas } from '../services/reservaService'; // 🔹 Importa el servicio
 
-// --- Sidebar ---
+/* --- Sidebar: Menú lateral con navegación --- */
 function Sidebar({ activeMenu, setActiveMenu }) {
+  // Clases para elemento activo
   const menuItemClass = (isActive) =>
     isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600';
 
@@ -44,15 +44,179 @@ function Sidebar({ activeMenu, setActiveMenu }) {
               Historial
             </button>
           </li>
-          {/* Puedes mantener el resto del menú igual */}
+          {/* Cabañas y Habitaciones */}
+          <li className="mb-1 font-semibold">Cabañas y Habitaciones</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesEstado')}`}
+              onClick={() => setActiveMenu('habitacionesEstado')}
+            >
+              Estado
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesAsignar')}`}
+              onClick={() => setActiveMenu('habitacionesAsignar')}
+            >
+              Asignar
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesHistorial')}`}
+              onClick={() => setActiveMenu('habitacionesHistorial')}
+            >
+              Historial
+            </button>
+          </li>
+          {/* Servicios */}
+          <li className="mb-1 font-semibold">Servicios</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosDesayunos')}`}
+              onClick={() => setActiveMenu('serviciosDesayunos')}
+            >
+              Desayunos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosAlmuerzos')}`}
+              onClick={() => setActiveMenu('serviciosAlmuerzos')}
+            >
+              Almuerzos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosBar')}`}
+              onClick={() => setActiveMenu('serviciosBar')}
+            >
+              Bar
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosPiscina')}`}
+              onClick={() => setActiveMenu('serviciosPiscina')}
+            >
+              Piscina / Pasadía
+            </button>
+          </li>
+          {/* Inventarios */}
+          <li className="mb-1 font-semibold">Inventarios</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioAlimentos')}`}
+              onClick={() => setActiveMenu('inventarioAlimentos')}
+            >
+              Alimentos / Bebidas
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioHabitacion')}`}
+              onClick={() => setActiveMenu('inventarioHabitacion')}
+            >
+              Implementos Habitaciones
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioMesa')}`}
+              onClick={() => setActiveMenu('inventarioMesa')}
+            >
+              Servicios de Mesa
+            </button>
+          </li>
+          {/* Finanzas */}
+          <li className="mb-1 font-semibold">Finanzas</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasIngresos')}`}
+              onClick={() => setActiveMenu('finanzasIngresos')}
+            >
+              Ingresos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasPendientes')}`}
+              onClick={() => setActiveMenu('finanzasPendientes')}
+            >
+              Pagos pendientes
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasRegistro')}`}
+              onClick={() => setActiveMenu('finanzasRegistro')}
+            >
+              Registro de pagos
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasReportes')}`}
+              onClick={() => setActiveMenu('finanzasReportes')}
+            >
+              Reportes financieros
+            </button>
+          </li>
+          {/* Eventos y Alquileres */}
+          <li className="mb-1 font-semibold">Eventos y Alquileres</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'eventosGestion')}`}
+              onClick={() => setActiveMenu('eventosGestion')}
+            >
+              Gestión
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'eventosDisponibilidad')}`}
+              onClick={() => setActiveMenu('eventosDisponibilidad')}
+            >
+              Disponibilidad
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'eventosCostos')}`}
+              onClick={() => setActiveMenu('eventosCostos')}
+            >
+              Costos
+            </button>
+          </li>
+          {/* Consultas Rápidas */}
+          <li className="mb-1 font-semibold">Consultas Rápidas</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'consultasReserva')}`}
+              onClick={() => setActiveMenu('consultasReserva')}
+            >
+              Buscar reserva
+            </button>
+          </li>
+          <li className="ml-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'consultasConsumo')}`}
+              onClick={() => setActiveMenu('consultasConsumo')}
+            >
+              Consultar consumo
+            </button>
+          </li>
         </ul>
       </nav>
     </aside>
   );
 }
 
-// --- Dashboard ---
+/* --- Contenido del Dashboard (Panel de Control por defecto) --- */
 function DashboardContent() {
+  // Datos de ejemplo para ocupación y pagos
   const ocupacion = [
     { cabana: 'Cabaña 1', habitacion: 'A1', estado: 'Libre' },
     { cabana: 'Cabaña 2', habitacion: 'B3', estado: 'Ocupada' },
@@ -68,13 +232,13 @@ function DashboardContent() {
     { id: 202, reserva: 99, monto: 200, fecha: '2025-05-09' },
     { id: 203, reserva: 98, monto: 120, fecha: '2025-05-09' },
   ];
-  const ingresoDiario = 450;
+  const ingresoDiario = 450; // Ejemplo de ingresos del día
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Panel de Control</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Ocupación */}
+        {/* Ocupación actual (tabla) */}
         <div className="bg-white shadow rounded p-4">
           <h3 className="text-xl font-medium mb-2">Ocupación Actual</h3>
           <table className="min-w-full text-left">
@@ -96,8 +260,7 @@ function DashboardContent() {
             </tbody>
           </table>
         </div>
-
-        {/* Reservas Pendientes */}
+        {/* Reservas pendientes */}
         <div className="bg-white shadow rounded p-4">
           <h3 className="text-xl font-medium mb-2">Reservas Pendientes</h3>
           <ul className="list-disc list-inside space-y-1">
@@ -108,14 +271,12 @@ function DashboardContent() {
             ))}
           </ul>
         </div>
-
-        {/* Ingreso diario */}
+        {/* Ingresos diarios */}
         <div className="bg-white shadow rounded p-4">
           <h3 className="text-xl font-medium mb-2">Ingresos del día</h3>
           <p className="text-4xl font-bold text-green-600">${ingresoDiario}</p>
         </div>
-
-        {/* Últimos pagos */}
+        {/* Últimos pagos realizados */}
         <div className="bg-white shadow rounded p-4">
           <h3 className="text-xl font-medium mb-2">Últimos Pagos Realizados</h3>
           <table className="min-w-full text-left">
@@ -144,40 +305,15 @@ function DashboardContent() {
   );
 }
 
-// --- Reservas ---
+/* --- Contenidos para cada sección (a modo de ejemplo) --- */
 function ReservasGestionar() {
-  const [reservas, setReservas] = useState([]);
-
-  useEffect(() => {
-    const cargarReservas = async () => {
-      try {
-        const data = await obtenerReservas();
-        setReservas(data);
-      } catch (error) {
-        console.error('Error al cargar reservas:', error);
-      }
-    };
-    cargarReservas();
-  }, []);
-
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">Gestión de Reservas</h2>
-      <ul className="list-disc list-inside space-y-1">
-        {reservas.length === 0 ? (
-          <p>No hay reservas registradas.</p>
-        ) : (
-          reservas.map((res) => (
-            <li key={res.id}>
-              #{res.id} – {res.nombre} ({res.fecha})
-            </li>
-          ))
-        )}
-      </ul>
+      <p>Aquí puede gestionar las reservas existentes.</p>
     </div>
   );
 }
-
 function ReservasCrear() {
   return (
     <div>
@@ -186,7 +322,6 @@ function ReservasCrear() {
     </div>
   );
 }
-
 function ReservasHistorial() {
   return (
     <div>
@@ -196,30 +331,26 @@ function ReservasHistorial() {
   );
 }
 
-// --- Footer ---
+/* --- Footer: Contacto, enlaces, versión --- */
 function Footer() {
   return (
     <footer className="p-4 bg-gray-50 text-center text-sm text-gray-600 border-t">
       <p>Contacto: admin@labuenavida.com | Tel: (123) 456-7890</p>
       <div className="space-x-2">
-        <a href="#" className="hover:underline">
-          Política de Privacidad
-        </a>{' '}
-        |{' '}
-        <a href="#" className="hover:underline">
-          Términos de Servicio
-        </a>
+        <a href="#" className="hover:underline">Política de Privacidad</a> | 
+        <a href="#" className="hover:underline">Términos de Servicio</a>
       </div>
       <p className="mt-2">Versión 1.0.0</p>
     </footer>
   );
 }
 
-// --- Componente Principal ---
+/* --- Componente Principal: integra Header, Sidebar, Main Content y Footer --- */
 export default function AdminPanel() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
-  const userName = 'Admin';
+  const userName = 'Admin'; // Cambiar al nombre real según contexto
 
+  // Elige el componente de contenido según la sección activa
   let ContentComponent;
   switch (activeMenu) {
     case 'dashboard':
@@ -234,13 +365,17 @@ export default function AdminPanel() {
     case 'reservasHistorial':
       ContentComponent = <ReservasHistorial />;
       break;
+    // Agregar más casos para cada menú según sea necesario
     default:
       ContentComponent = <DashboardContent />;
   }
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {/* Sidebar con menú */}
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+
+      {/* Contenedor principal (header + contenido + footer) */}
       <div className="flex flex-col flex-1">
         <Header userName={userName} />
         <main className="flex-1 overflow-auto p-6">{ContentComponent}</main>
@@ -250,12 +385,3 @@ export default function AdminPanel() {
   );
 }
 
-// Puedes definir Header aquí o importarlo si ya lo tienes.
-function Header({ userName }) {
-  return (
-    <header className="bg-white shadow p-4 flex justify-between items-center border-b">
-      <h1 className="text-xl font-bold text-gray-800">Admin – Club La Buena Vida</h1>
-      <div className="text-sm text-gray-600">Bienvenido, {userName}</div>
-    </header>
-  );
-}
