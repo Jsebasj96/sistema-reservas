@@ -1,0 +1,10 @@
+Backend:
+
+git add .
+git commit -m "Actualizacion"
+git push origin main
+
+Fronted:
+npm run build
+
+
