@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// URL base de la API
-const API_URL = '/api/auth/';
+// URL base de la API wwww
+const API_URL = process.env.REACT_APP_API_URL + '/api/auth/';
 
 const login = async (email, password) => {
   try {
