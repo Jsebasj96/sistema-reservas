@@ -14,7 +14,7 @@ const pasadiaRoutes     = require('./routes/pasadiaRoutes');
 const habitacionRoutes  = require('./routes/habitacionRoutes');
 const inventarioRoutes  = require('./routes/inventarioRoutes');
 const cabanaRoutes      = require('./routes/cabanaRoutes');
-const eventosRoutes = require('./routes/eventos.routes');
+const eventosRoutes = require('./routes/eventosRoutes');
 
 const app = express();
 
