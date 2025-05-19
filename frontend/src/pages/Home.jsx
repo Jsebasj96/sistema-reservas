@@ -180,8 +180,9 @@ const Home = () => {
 
       {/* Testimonios */}
       <section className="bg-white py-16 mb-20">
+        <div className="max-w-screen-xl mx-auto px-4">
         <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
-        <div className="flex justify-between gap-6 flex-wrap">
+        <div className="flex flex-wrap justify-center gap-16">
           {[
             ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
             ['Carlos M.', 'La atención fue excelente, volveremos.'],
@@ -196,6 +197,7 @@ const Home = () => {
               <p>⭐⭐⭐⭐⭐</p>
             </div>
           ))}
+          </div>
         </div>
       </section>
 
