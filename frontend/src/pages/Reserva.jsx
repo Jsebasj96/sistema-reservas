@@ -111,10 +111,9 @@ const Reserva = () => {
       await axios.post(
         `${API_URL}/api/pagos`,
         {
-          reserva_id: reserva.id,
+          reservaId: reserva.id,
           monto: antic,
-          medio_pago: values.medioPago,
-          numero_transaccion: values.numeroTransaccion,
+          tipoPago: values.medioPago   // coincide con "tipo_pago" en la tabla
         },
         { withCredentials: true }
       );
