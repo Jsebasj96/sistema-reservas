@@ -131,7 +131,7 @@ const Home = () => {
                 title: 'Eventos',
                 desc: 'Alquiler de instalaciones para eventos.',
                 icon: <FaCalendarAlt className="text-4xl text-green-700 mb-4" />,
-                route: '/servicios/eventos',
+                route: '/eventos',
               },
             ].map(({ title, desc, icon, route }, idx) => (
               <div

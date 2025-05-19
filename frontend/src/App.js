@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Reserva from './pages/Reserva';
 import Pasadias from './pages/Pasadias';
+import Eventos from './pages/Eventos';
 import Servicios from './pages/Servicios';
 import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
@@ -55,6 +56,14 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Pasadias />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/eventos"
+                  element={
+                    <PrivateRoute>
+                      <Eventos />
                     </PrivateRoute>
                   }
                 />
