@@ -55,7 +55,7 @@ const Pasadias = () => {
   };
 
   return (
-    <div className="w-full sm:w-2/3 lg:w-1/3 mx-auto p-6">
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
       <h2 className="text-2xl font-bold mb-4">Reserva de Pasadía</h2>
 
       <Formik
@@ -64,7 +64,7 @@ const Pasadias = () => {
         onSubmit={handleSubmit}
       >
         {({ values }) => (
-          <Form className="space-y-4">
+          <Form className="flex justify-center">
             <div>
               <label className="block font-medium">Fecha</label>
               <Field type="date" name="fecha" className="w-full border px-3 py-2 rounded" />
