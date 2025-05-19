@@ -155,7 +155,7 @@ export default function ServicioDetalle() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 space-y-6">
+    <div className="max-w-5xl mx-auto py-8 px-4 flex flex-col items-center text-center space-y-6">
       {renderContenido()}
     </div>
   );
