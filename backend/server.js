@@ -14,6 +14,7 @@ const pasadiaRoutes     = require('./routes/pasadiaRoutes');
 const habitacionRoutes  = require('./routes/habitacionRoutes');
 const inventarioRoutes  = require('./routes/inventarioRoutes');
 const cabanaRoutes      = require('./routes/cabanaRoutes');
+const eventosRoutes = require('./routes/eventos.routes');
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use('/api/pasadias',      pasadiaRoutes);
 app.use('/api/habitaciones',  habitacionRoutes);
 app.use('/api/cabanas',       cabanaRoutes);
 app.use('/api/inventario',    inventarioRoutes);
+app.use('/api/eventos', eventosRoutes);
 
 // 4) RUTA RAÍZ (opcional)
 app.get('/', (req, res) => {
