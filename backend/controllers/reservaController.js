@@ -1,17 +1,33 @@
 const pool = require('../config/db');
 
 const createReserva = async (req, res) => {
-  const { alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado } = req.body;
+  const {habitacion_id,cabana_id,fecha_inicio,fecha_fin,total_pago,porcentaje_pagado,estado} = req.body;
   const userId = req.user.id;
+
   try {
-    const result = await pool.query(
-      `INSERT INTO reservas
-         (user_id, alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
-      [userId, alojamiento_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado]
-    );
-    res.status(201).json(result.rows[0]);
+    let query, params;
+
+    if (habitacion_id) {
+      query = `
+        INSERT INTO reservas
+          (user_id, habitacion_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *`;
+      params = [userId, habitacion_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado];
+    } else if (cabana_id) {
+      query = `
+        INSERT INTO reservas
+          (user_id, cabana_id,    fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *`;
+      params = [userId, cabana_id, fecha_inicio, fecha_fin, total_pago, porcentaje_pagado, estado];
+    } else {
+      return res.status(400).json({ error: 'Debes indicar habitacion_id o cabana_id' });
+    }
+
+    const result = await pool.query(query, params);
+    res.status(201).json({ reserva: result.rows[0] });
+
   } catch (err) {
     console.error('Error al crear reserva:', err);
     res.status(500).json({ error: 'Error al crear la reserva' });
