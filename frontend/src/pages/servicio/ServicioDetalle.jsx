@@ -29,12 +29,12 @@ export default function ServicioDetalle() {
             <h2 className="text-3xl font-bold mb-6">Cabañas y Habitaciones</h2>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="border rounded p-4">
-                <img src="https://via.placeholder.com/400x250?text=Habitación" alt="Habitación" className="mb-2 rounded" />
+                <img src="https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg" alt="Habitación" className="mb-2 rounded" />
                 <h3 className="text-xl font-semibold">Habitación Estándar</h3>
                 <p>Capacidad: 2 personas. Incluye baño privado, TV, aire acondicionado.</p>
               </div>
               <div className="border rounded p-4">
-                <img src="https://via.placeholder.com/400x250?text=Cabaña" alt="Cabaña" className="mb-2 rounded" />
+                <img src="https://media.istockphoto.com/id/2170176939/photo/cozy-and-modern-living-room-in-the-tree-house.jpg?s=2048x2048&w=is&k=20&c=n2lUqrrUsYjIm6KE_fN7W3qLR-cLoVU9QoY9fzKNX0Q=" alt="Cabaña" className="mb-2 rounded" />
                 <h3 className="text-xl font-semibold">Cabaña Familiar</h3>
                 <p>Capacidad: hasta 6 personas. Cocina equipada, zona verde, hamacas.</p>
               </div>
@@ -48,7 +48,7 @@ export default function ServicioDetalle() {
           <>
             <h2 className="text-3xl font-bold mb-4">Restaurante y Bar</h2>
             <div className="space-y-4">
-              <img src="https://via.placeholder.com/800x400?text=Restaurante" alt="Restaurante" className="rounded" />
+              <img src="https://cdn.pixabay.com/photo/2016/11/18/22/21/restaurant-1837150_1280.jpg" alt="Restaurante" className="rounded" />
               <p><strong>Horario:</strong> 7:00 am – 10:00 pm</p>
               <p><strong>Especialidades:</strong> Bandeja paisa, sancocho, jugos naturales, cervezas nacionales.</p>
               <p><strong>Recomendaciones:</strong> Reservar mesa en fines de semana, revisar menú del día.</p>
@@ -93,10 +93,10 @@ export default function ServicioDetalle() {
             <h2 className="text-3xl font-bold mb-4">Actividades Recreativas</h2>
             <div className="grid gap-6 md:grid-cols-2">
               {[
-                { nombre: 'Caminatas ecológicas', img: 'https://via.placeholder.com/400x250?text=Caminata' },
-                { nombre: 'Alquiler de ciclas', img: 'https://via.placeholder.com/400x250?text=Ciclas' },
-                { nombre: 'Tenis de mesa', img: 'https://via.placeholder.com/400x250?text=Tenis+Mesa' },
-                { nombre: 'Billar', img: 'https://via.placeholder.com/400x250?text=Billar' },
+                { nombre: 'Caminatas ecológicas', img: 'https://cdn.pixabay.com/photo/2021/11/15/18/47/nature-6799071_1280.jpg' },
+                { nombre: 'Alquiler de ciclas', img: 'https://cdn.pixabay.com/photo/2019/04/23/14/23/bike-4149653_1280.jpg' },
+                { nombre: 'Tenis de mesa', img: 'https://cdn.pixabay.com/photo/2016/05/31/23/21/table-tennis-1428051_1280.jpg' },
+                { nombre: 'Billar', img: 'https://cdn.pixabay.com/photo/2017/01/09/22/24/guy-playing-billiard-1967834_1280.jpg' },
               ].map((a, i) => (
                 <div key={i} className="border rounded p-4">
                   <img src={a.img} alt={a.nombre} className="mb-2 rounded" />
