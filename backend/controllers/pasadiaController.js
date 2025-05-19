@@ -1,13 +1,17 @@
 const pool = require('../config/db');
 
 const createPasadia = async (req, res) => {
-  const { clienteId, tipo, incluyeAlmuerzo } = req.body;
+  const { clienteId, fecha, tipo_pasadia, cantidad_personas, total_pago } = req.body;
+
   try {
     const result = await pool.query(
-      `INSERT INTO pasadias (user_id,tipo,almuerzo,fecha)
-       VALUES ($1,$2,$3,NOW()) RETURNING *`,
-      [clienteId, tipo, incluyeAlmuerzo]
+      `INSERT INTO pasadias 
+        (cliente_id, fecha, tipo_pasadia, cantidad_personas, total_pago)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [clienteId, fecha, tipo_pasadia, cantidad_personas, total_pago]
     );
+
     res.status(201).json({ pasadia: result.rows[0] });
   } catch (err) {
     console.error(err);
