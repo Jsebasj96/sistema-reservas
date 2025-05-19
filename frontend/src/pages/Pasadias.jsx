@@ -1,136 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { crearPasadia } from '../services/pasadiasService'; // Servicio que crearemos
 
-const Pasadias = () => {
-  // Estados para manejar los pasadías y la reserva
-  const [pasadias, setPasadias] = useState([]);
-  const [selectedPasadia, setSelectedPasadia] = useState(null);
-  const [nombre, setNombre] = useState('');
-  const [documento, setDocumento] = useState('');
-  const [numPersonas, setNumPersonas] = useState(0);
+const PasadiaForm = () => {
+  const { user } = useContext(AuthContext);
+
   const [fecha, setFecha] = useState('');
-  const [total, setTotal] = useState(0);
-  const [isBooking, setIsBooking] = useState(false);
+  const [tipoPasadia, setTipoPasadia] = useState('con_almuerzo'); // opción por defecto
+  const [cantidadPersonas, setCantidadPersonas] = useState(1);
 
-  // Cargar la lista de pasadías desde el backend
-  useEffect(() => {
-    axios.get('/api/services/pasadias')
-      .then(response => {
-        setPasadias(response.data);
-      })
-      .catch(error => {
-        console.error('Hubo un error al obtener los pasadías:', error);
-      });
-  }, []);
-
-  // Función para seleccionar un pasadía
-  const handlePasadiaSelect = (pasadia) => {
-    setSelectedPasadia(pasadia);
-    // Calcular el total del pasadía
-    setTotal(pasadia.precio);
-  };
-
-  // Función para manejar el envío del formulario de reserva
-  const handleBookingSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedPasadia || !nombre || !documento || !numPersonas || !fecha) {
-      alert('Por favor complete todos los campos');
-      return;
-    }
+    const total = calcularTotal(tipoPasadia, cantidadPersonas);
 
-    // Crear el objeto de reserva
-    const reserva = {
-      nombre,
-      documento,
-      numPersonas,
+    const pasadiaData = {
+      cliente_id: user.id,
       fecha,
-      pasadiaId: selectedPasadia._id,
-      total
+      tipo_pasadia: tipoPasadia,
+      total_pago: total,
     };
 
-    setIsBooking(true);
+    try {
+      await crearPasadia(pasadiaData);
+      alert('¡Pasadía reservada con éxito!');
+    } catch (error) {
+      console.error('Error al reservar pasadía:', error);
+      alert('Error al reservar pasadía');
+    }
+  };
 
-    // Realizar la reserva en el backend
-    axios.post('/api/hotel-bookings', reserva)
-      .then(response => {
-        alert('Reserva realizada con éxito');
-        // Limpiar los campos después de la reserva
-        setNombre('');
-        setDocumento('');
-        setNumPersonas(0);
-        setFecha('');
-        setTotal(0);
-        setIsBooking(false);
-      })
-      .catch(error => {
-        alert('Hubo un error al realizar la reserva');
-        console.error(error);
-        setIsBooking(false);
-      });
+  const calcularTotal = (tipo, cantidad) => {
+    const precioBase = tipo === 'con_almuerzo' ? 50000 : 35000;
+    return precioBase * cantidad;
   };
 
   return (
-    <div className="pasadias-container">
-      <h1>Reserva tu Pasadía en el Club Campestre "La Buena Vida"</h1>
-      
-      <div className="pasadias-list">
-        <h2>Pasadías Disponibles</h2>
-        <div className="pasadias">
-          {pasadias.map((pasadia) => (
-            <div key={pasadia._id} className="pasadia-card" onClick={() => handlePasadiaSelect(pasadia)}>
-              <h3>{pasadia.nombre}</h3>
-              <p>{pasadia.descripcion}</p>
-              <p><strong>Precio:</strong> ${pasadia.precio}</p>
-            </div>
-          ))}
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-xl">
+      <h2 className="text-3xl font-bold mb-4">Reserva de Pasadía</h2>
+
+      <div>
+        <label className="block font-medium">Fecha</label>
+        <input
+          type="date"
+          className="w-full border rounded px-3 py-2"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+        />
       </div>
 
-      {selectedPasadia && (
-        <div className="pasadia-details">
-          <h3>Detalles del Pasadía Seleccionado</h3>
-          <p><strong>Nombre:</strong> {selectedPasadia.nombre}</p>
-          <p><strong>Descripción:</strong> {selectedPasadia.descripcion}</p>
-          <p><strong>Precio:</strong> ${selectedPasadia.precio}</p>
-          
-          <form onSubmit={handleBookingSubmit}>
-            <h4>Reserva</h4>
-            <input 
-              type="text" 
-              placeholder="Nombre completo" 
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              required
-            />
-            <input 
-              type="text" 
-              placeholder="Número de documento" 
-              value={documento}
-              onChange={(e) => setDocumento(e.target.value)}
-              required
-            />
-            <input 
-              type="number" 
-              placeholder="Número de personas" 
-              value={numPersonas}
-              onChange={(e) => setNumPersonas(e.target.value)}
-              required
-            />
-            <input 
-              type="date" 
-              placeholder="Fecha de reserva" 
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              required
-            />
-            <p><strong>Total a pagar:</strong> ${total}</p>
-            <button type="submit" disabled={isBooking}>Reservar</button>
-          </form>
-        </div>
-      )}
-    </div>
+      <div>
+        <label className="block font-medium">Cantidad de personas</label>
+        <input
+          type="number"
+          min={1}
+          className="w-full border rounded px-3 py-2"
+          value={cantidadPersonas}
+          onChange={(e) => setCantidadPersonas(Number(e.target.value))}
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium">Tipo de pasadía</label>
+        <select
+          className="w-full border rounded px-3 py-2"
+          value={tipoPasadia}
+          onChange={(e) => setTipoPasadia(e.target.value)}
+        >
+          <option value="con_almuerzo">Con almuerzo</option>
+          <option value="sin_almuerzo">Sin almuerzo</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800"
+      >
+        Reservar pasadía
+      </button>
+    </form>
   );
 };
 
-export default Pasadias;
+export default PasadiaForm;
