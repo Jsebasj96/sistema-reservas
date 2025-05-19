@@ -43,7 +43,7 @@ const Eventos = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-10">
+    <div className="space-y-4">
       <form onSubmit={handleSubmit} className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
         <h2 className="text-2xl font-bold mb-4 text-center">Registrar Evento</h2>
 
