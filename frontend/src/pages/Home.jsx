@@ -119,7 +119,7 @@ const Home = () => {
                 title: 'Pasadías',
                 desc: 'Disfruta un día completo con piscina y almuerzo.',
                 icon: <FaSun className="text-4xl text-green-700 mb-4" />,
-                route: '/servicios/pasadias',
+                route: '/Pasadias',
               },
               {
                 title: 'Actividades recreativas',
