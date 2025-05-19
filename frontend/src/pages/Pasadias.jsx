@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 
@@ -6,52 +6,48 @@ const Pasadias = () => {
   const { user } = useContext(AuthContext);
 
   const [tipoPasadia, setTipoPasadia] = useState('con_almuerzo');
-  const [numPersonas, setNumPersonas] = useState(1);
+  const [cantidad, setCantidad] = useState(1);
   const [fecha, setFecha] = useState('');
   const [total, setTotal] = useState(0);
-  const [isBooking, setIsBooking] = useState(false);
+  const [mensaje, setMensaje] = useState('');
 
-  // Calcular total automáticamente cuando cambie tipo o cantidad
-  useState(() => {
-    const precio = tipoPasadia === 'con_almuerzo' ? 50000 : 35000;
-    setTotal(precio * numPersonas);
-  }, [tipoPasadia, numPersonas]);
+  // Calcular total automático
+  useEffect(() => {
+    const precioBase = tipoPasadia === 'con_almuerzo' ? 50000 : 35000;
+    setTotal(precioBase * cantidad);
+  }, [tipoPasadia, cantidad]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!fecha || !numPersonas || !tipoPasadia) {
-      alert('Por favor completa todos los campos');
+    if (!fecha) {
+      alert('Por favor elige una fecha.');
       return;
     }
 
-    const reserva = {
-      cliente_id: user.id,
-      fecha,
-      tipo_pasadia: tipoPasadia,
-      total_pago: total,
-    };
-
-    setIsBooking(true);
-
     try {
-      await axios.post('/api/pasadias', reserva, { withCredentials: true });
-      alert('Reserva de pasadía realizada con éxito');
-      setFecha('');
-      setTipoPasadia('con_almuerzo');
-      setNumPersonas(1);
-      setTotal(0);
+      await axios.post(
+        '/api/pasadias',
+        {
+          clienteId: user.id,
+          fecha,
+          tipo_pasadia: tipoPasadia,
+          cantidad_personas: cantidad,
+          total_pago: total
+        },
+        { withCredentials: true }
+      );
+
+      setMensaje('✅ Pasadía reservada con éxito');
     } catch (error) {
-      console.error('Error al reservar:', error);
-      alert('Hubo un error al realizar la reserva');
-    } finally {
-      setIsBooking(false);
+      console.error('Error al reservar pasadía:', error);
+      setMensaje('❌ Error al reservar pasadía');
     }
   };
 
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Reserva de Pasadía</h1>
+      <h2 className="text-2xl font-bold mb-4">Reserva de Pasadía</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -66,27 +62,27 @@ const Pasadias = () => {
         </div>
 
         <div>
+          <label className="block font-medium">Tipo de Pasadía</label>
+          <select
+            className="w-full border px-3 py-2 rounded"
+            value={tipoPasadia}
+            onChange={(e) => setTipoPasadia(e.target.value)}
+          >
+            <option value="con_almuerzo">Con almuerzo</option>
+            <option value="sin_almuerzo">Sin almuerzo</option>
+          </select>
+        </div>
+
+        <div>
           <label className="block font-medium">Cantidad de personas</label>
           <input
             type="number"
             min={1}
-            value={numPersonas}
-            onChange={(e) => setNumPersonas(Number(e.target.value))}
+            value={cantidad}
+            onChange={(e) => setCantidad(Number(e.target.value))}
             className="w-full border px-3 py-2 rounded"
             required
           />
-        </div>
-
-        <div>
-          <label className="block font-medium">Tipo de pasadía</label>
-          <select
-            value={tipoPasadia}
-            onChange={(e) => setTipoPasadia(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          >
-            <option value="con_almuerzo">Con almuerzo - $50,000</option>
-            <option value="sin_almuerzo">Sin almuerzo - $35,000</option>
-          </select>
         </div>
 
         <div>
@@ -95,14 +91,17 @@ const Pasadias = () => {
 
         <button
           type="submit"
-          disabled={isBooking}
           className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
         >
-          Reservar Pasadía
+          Reservar
         </button>
+
+        {mensaje && <p className="mt-4 font-medium">{mensaje}</p>}
       </form>
     </div>
   );
 };
 
 export default Pasadias;
+
+
