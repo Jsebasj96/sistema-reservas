@@ -14,6 +14,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Reserva from './pages/Reserva';
 import Pasadias from './pages/Pasadias';
 import Servicios from './pages/Servicios';
+import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import './styles/tailwind.css';
@@ -62,6 +63,14 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Servicios />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/servicios/:tipo"
+                  element={
+                    <PrivateRoute>
+                      <ServicioDetalle />
                     </PrivateRoute>
                   }
                 />
