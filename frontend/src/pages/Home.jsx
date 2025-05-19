@@ -91,55 +91,63 @@ const Home = () => {
       </section>
 
       {/* Nuestros Servicios */}
-       <section className="my-16 px-4 md:px-16">
-        <h2 className="text-3xl font-bold mb-6 text-center">Nuestros Servicios</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Piscina</h3>
-            <p>Relájate en nuestra piscina de lujo con vista a las montañas.</p>
-            <Link to="/servicios/piscina" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Cabañas y habitaciones</h3>
-            <p>Alojamiento cómodo en cabañas y habitaciones totalmente equipadas.</p>
-            <Link to="/servicios/hospedaje" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Restaurante y bar</h3>
-            <p>Disfruta de una excelente gastronomía y bebidas tropicales.</p>
-            <Link to="/servicios/restaurante-bar" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Pasadías</h3>
-            <p>Pasa el día completo disfrutando de todas nuestras instalaciones.</p>
-            <Link to="/servicios/pasadias" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Actividades recreativas</h3>
-            <p>Entretenimiento para toda la familia con juegos y deportes.</p>
-            <Link to="/servicios/actividades" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
-          </div>
-
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="text-xl font-semibold mb-2">Eventos</h3>
-            <p>Organiza tus eventos con nosotros: bodas, cumpleaños y más.</p>
-            <Link to="/servicios/eventos" className="text-blue-600 hover:underline mt-2 inline-block">
-              Ver más
-            </Link>
+      <section id="servicios" className="bg-white py-16">
+        <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+        <div className="overflow-x-auto px-4">
+          <div className="flex gap-6 min-w-max">
+            {[
+              {
+                title: 'Piscina',
+                desc: 'Acceso a piscinas para adultos y niños.',
+                icon: <FaSwimmingPool className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/piscina',
+              },
+              {
+                title: 'Cabañas y habitaciones',
+                desc: 'Hospedaje cómodo con naturaleza.',
+                icon: <FaHotel className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/hospedaje',
+              },
+              {
+                title: 'Restaurante y bar',
+                desc: 'Comida tradicional y bebidas refrescantes.',
+                icon: <FaUtensils className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/restaurante-bar',
+              },
+              {
+                title: 'Pasadías',
+                desc: 'Disfruta un día completo con piscina y almuerzo.',
+                icon: <FaSun className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/pasadias',
+              },
+              {
+                title: 'Actividades recreativas',
+                desc: 'Tejo, ciclas, caminatas, tenis de mesa.',
+                icon: <FaHiking className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/actividades',
+              },
+              {
+                title: 'Eventos',
+                desc: 'Alquiler de instalaciones para eventos.',
+                icon: <FaCalendarAlt className="text-4xl text-green-700 mb-4" />,
+                route: '/servicios/eventos',
+              },
+            ].map(({ title, desc, icon, route }, idx) => (
+              <div
+                key={idx}
+                className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center"
+              >
+                {icon}
+                <h4 className="text-xl font-semibold mb-2">{title}</h4>
+                <p>{desc}</p>
+                <Link
+                  to={route}
+                  className="mt-3 inline-block text-green-700 hover:underline"
+                >
+                  Ver más
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>
