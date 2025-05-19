@@ -29,7 +29,6 @@ const Pasadias = () => {
       await axios.post(
         '/api/pasadias',
         {
-          clienteId: user.id,
           fecha,
           tipo_pasadia: tipoPasadia,
           cantidad_personas: cantidad,
