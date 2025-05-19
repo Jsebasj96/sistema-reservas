@@ -86,7 +86,7 @@ const Reserva = () => {
                               ),
           total_pago:         total,
           porcentaje_pagado:  0.3,
-          estado:             'Pendiente',
+          estado:             'pendiente',
         },
         { withCredentials: true }
       );
