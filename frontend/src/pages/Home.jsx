@@ -93,8 +93,8 @@ const Home = () => {
       {/* Nuestros Servicios */}
       <section id="servicios" className="bg-white py-16">
         <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
-        <div className="overflow-x-auto px-4">
-          <div className="flex gap-10 justify-center items-stretch w-max mx-auto">
+        <div className="px-4">
+        <div className="flex flex-wrap justify-center gap-6">
             {[
               {
                 title: 'Piscina',
@@ -135,7 +135,7 @@ const Home = () => {
             ].map(({ title, desc, icon, route }, idx) => (
               <div
                 key={idx}
-                className="w-[250px] mx-2 bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center flex flex-col gap-4"
+                className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center"
               >
                 {icon}
                 <h4 className="text-xl font-semibold mb-2">{title}</h4>
