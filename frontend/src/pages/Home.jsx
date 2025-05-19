@@ -156,7 +156,7 @@ const Home = () => {
       {/* Galería */}
       <section className="bg-white py-16 px-4">
         <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
-        <div className="max-w-screen-xl mx-auto px-4">
+        <div className="overflow-x-auto">
           <div className="flex flex-wrap justify-center gap-16">
             {[
               "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
