@@ -1,28 +1,28 @@
 const pool = require('../config/db');
 
 const createPago = async (req, res) => {
-  const { reservaId, pasadiaId, monto, metodo } = req.body;
-  const userId = req.user.id;
+  const { reservaId, monto, tipoPago } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO pagos (user_id,reserva_id,pasadia_id,monto,metodo,fecha)
-       VALUES ($1,$2,$3,$4,$5,NOW()) RETURNING *`,
-      [userId, reservaId||null, pasadiaId||null, monto, metodo]
+      `INSERT INTO pagos (reserva_id, tipo_pago, monto, fecha_pago)
+       VALUES ($1, $2, $3, NOW())
+       RETURNING *`,
+      [reservaId, tipoPago, monto]
     );
     res.status(201).json({ pago: result.rows[0] });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error del servidor' });
+    console.error('Error al crear pago:', err);
+    res.status(500).json({ error: 'Error al crear el pago' });
   }
 };
 
 const getAllPagos = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM pagos ORDER BY fecha DESC');
+    const result = await pool.query('SELECT * FROM pagos ORDER BY fecha_pago DESC');
     res.json({ pagos: result.rows });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error del servidor' });
+    res.status(500).json({ error: 'Error al obtener pagos' });
   }
 };
 
@@ -33,8 +33,9 @@ const getPagoById = async (req, res) => {
     res.json({ pago: result.rows[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error del servidor' });
+    res.status(500).json({ error: 'Error al obtener el pago' });
   }
 };
 
 module.exports = { createPago, getAllPagos, getPagoById };
+
