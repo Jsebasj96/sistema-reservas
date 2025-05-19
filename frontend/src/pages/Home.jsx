@@ -94,7 +94,7 @@ const Home = () => {
       <section id="servicios" className="bg-white py-16">
         <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
         <div className="px-4">
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-16">
             {[
               {
                 title: 'Piscina',
