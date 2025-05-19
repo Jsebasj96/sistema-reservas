@@ -135,7 +135,7 @@ const Home = () => {
             ].map(({ title, desc, icon, route }, idx) => (
               <div
                 key={idx}
-                className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center"
+                className="w-[250px] mx-2 bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center flex flex-col gap-4"
               >
                 {icon}
                 <h4 className="text-xl font-semibold mb-2">{title}</h4>
