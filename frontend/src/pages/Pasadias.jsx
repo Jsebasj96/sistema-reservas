@@ -55,7 +55,7 @@ const Pasadias = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
+    <div className="w-full sm:w-2/3 lg:w-1/3 mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">Reserva de Pasadía</h2>
 
       <Formik
