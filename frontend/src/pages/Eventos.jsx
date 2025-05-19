@@ -11,8 +11,9 @@ const Eventos = () => {
   const [descripcion, setDescripcion] = useState('');
   const [fecha, setFecha] = useState('');
   const [tipo, setTipo] = useState('privado');
-  const [costo, setCosto] = useState('');
   const [mensaje, setMensaje] = useState('');
+
+  const costoFijo = 450000;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +26,7 @@ const Eventos = () => {
           descripcion,
           fecha_evento: fecha,
           tipo_evento: tipo,
-          costo
+          costo: costoFijo
         },
         { withCredentials: true }
       );
@@ -35,7 +36,6 @@ const Eventos = () => {
       setDescripcion('');
       setFecha('');
       setTipo('privado');
-      setCosto('');
     } catch (error) {
       console.error('Error al registrar evento:', error);
       setMensaje('❌ Error al registrar evento');
@@ -43,7 +43,7 @@ const Eventos = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-10">
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-md p-6 bg-white rounded shadow space-y-4">
         <h2 className="text-2xl font-bold mb-4 text-center">Registrar Evento</h2>
 
@@ -93,16 +93,10 @@ const Eventos = () => {
         </div>
 
         <div>
-          <label className="block font-medium">Costo</label>
-          <input
-            type="number"
-            min="0"
-            step="1000"
-            value={costo}
-            onChange={(e) => setCosto(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
+          <label className="block font-medium">Total a pagar</label>
+          <div className="w-full px-3 py-2 rounded bg-gray-100 border text-gray-800 font-semibold">
+            $450.000
+          </div>
         </div>
 
         <button
@@ -119,3 +113,4 @@ const Eventos = () => {
 };
 
 export default Eventos;
+
