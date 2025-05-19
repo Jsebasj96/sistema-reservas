@@ -203,8 +203,9 @@ const Home = () => {
 
       {/* Promociones */}
       <section className="bg-green-700 text-white py-16">
+        <div className="max-w-screen-xl mx-auto px-4">
         <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
-        <div className="flex justify-between gap-6 flex-wrap">
+        <div className="flex flex-wrap justify-center gap-16">
           {[
             ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
             ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
@@ -219,6 +220,7 @@ const Home = () => {
               <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
             </div>
           ))}
+          </div>
         </div>
       </section>
 
@@ -260,8 +262,9 @@ const Home = () => {
 
       {/* Mapa + Info */}
       <section className="bg-green-50 py-16">
+        <div className="max-w-screen-xl mx-auto px-4">
         <h3 className="text-3xl font-bold text-center mb-8">¿Dónde estamos?</h3>
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-8">
+        <div className="flex flex-wrap justify-center gap-16">
           <iframe
             title="Ubicación"
             className="w-full h-80 rounded shadow"
@@ -273,6 +276,7 @@ const Home = () => {
             <p><strong>Teléfono:</strong> +57 300 123 4567</p>
             <p><strong>Correo:</strong> info@clublabuenavida.com</p>
             <p><strong>Horario:</strong> Lunes a Domingo 8:00am – 9:00pm</p>
+          </div>
           </div>
         </div>
       </section>
