@@ -54,7 +54,7 @@ const Eventos = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        <Form className="w-full max-w-md space-y-4 bg-white p-6 rounded shadow">
+        <Form className="space-y-4">
           <div>
             <label className="block font-medium">Nombre del Evento</label>
             <Field
