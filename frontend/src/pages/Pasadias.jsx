@@ -1,43 +1,53 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import axios from 'axios';
+
+const API_URL =
+  process.env.REACT_APP_API_URL || 'https://sistema-reservas-final.onrender.com';
 
 const Pasadias = () => {
   const { user } = useContext(AuthContext);
-
-  const [tipoPasadia, setTipoPasadia] = useState('con_almuerzo');
-  const [cantidad, setCantidad] = useState(1);
-  const [fecha, setFecha] = useState('');
-  const [total, setTotal] = useState(0);
   const [mensaje, setMensaje] = useState('');
 
-  // Calcular total automático
-  useEffect(() => {
-    const precioBase = tipoPasadia === 'con_almuerzo' ? 50000 : 35000;
-    setTotal(precioBase * cantidad);
-  }, [tipoPasadia, cantidad]);
+  const initialValues = {
+    fecha: '',
+    tipo_pasadia: 'con_almuerzo',
+    cantidad_personas: 1,
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object({
+    fecha: Yup.date().required('La fecha es obligatoria'),
+    tipo_pasadia: Yup.string().required('Selecciona un tipo de pasadía'),
+    cantidad_personas: Yup.number()
+      .min(1, 'Debe haber al menos 1 persona')
+      .required('Ingresa la cantidad de personas'),
+  });
 
-    if (!fecha) {
-      alert('Por favor elige una fecha.');
-      return;
-    }
+  const calcularTotal = (tipo, cantidad) => {
+    const precio = tipo === 'con_almuerzo' ? 50000 : 35000;
+    return precio * cantidad;
+  };
+
+  const handleSubmit = async (values, { resetForm }) => {
+    const total_pago = calcularTotal(values.tipo_pasadia, values.cantidad_personas);
 
     try {
       await axios.post(
-        '/api/pasadias',
+        `${API_URL}/api/pasadias`,
         {
-          fecha,
-          tipo_pasadia: tipoPasadia,
-          cantidad_personas: cantidad,
-          total_pago: total
+          user_id: user.id,
+          fecha: values.fecha,
+          tipo_pasadia: values.tipo_pasadia,
+          cantidad_personas: values.cantidad_personas,
+          total_pago,
         },
         { withCredentials: true }
       );
 
       setMensaje('✅ Pasadía reservada con éxito');
+      resetForm();
     } catch (error) {
       console.error('Error al reservar pasadía:', error);
       setMensaje('❌ Error al reservar pasadía');
@@ -48,59 +58,63 @@ const Pasadias = () => {
     <div className="max-w-xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">Reserva de Pasadía</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium">Fecha</label>
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ values }) => (
+          <Form className="space-y-4">
+            <div>
+              <label className="block font-medium">Fecha</label>
+              <Field type="date" name="fecha" className="w-full border px-3 py-2 rounded" />
+              <ErrorMessage name="fecha" component="div" className="text-red-500 text-sm" />
+            </div>
 
-        <div>
-          <label className="block font-medium">Tipo de Pasadía</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={tipoPasadia}
-            onChange={(e) => setTipoPasadia(e.target.value)}
-          >
-            <option value="con_almuerzo">Con almuerzo</option>
-            <option value="sin_almuerzo">Sin almuerzo</option>
-          </select>
-        </div>
+            <div>
+              <label className="block font-medium">Tipo de Pasadía</label>
+              <Field as="select" name="tipo_pasadia" className="w-full border px-3 py-2 rounded">
+                <option value="con_almuerzo">Con almuerzo</option>
+                <option value="sin_almuerzo">Sin almuerzo</option>
+              </Field>
+              <ErrorMessage name="tipo_pasadia" component="div" className="text-red-500 text-sm" />
+            </div>
 
-        <div>
-          <label className="block font-medium">Cantidad de personas</label>
-          <input
-            type="number"
-            min={1}
-            value={cantidad}
-            onChange={(e) => setCantidad(Number(e.target.value))}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+            <div>
+              <label className="block font-medium">Cantidad de personas</label>
+              <Field
+                type="number"
+                name="cantidad_personas"
+                min={1}
+                className="w-full border px-3 py-2 rounded"
+              />
+              <ErrorMessage
+                name="cantidad_personas"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
 
-        <div>
-          <p className="font-semibold">Total a pagar: ${total.toLocaleString()}</p>
-        </div>
+            <div>
+              <p className="font-semibold">
+                Total a pagar: $
+                {calcularTotal(values.tipo_pasadia, values.cantidad_personas).toLocaleString()}
+              </p>
+            </div>
 
-        <button
-          type="submit"
-          className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
-        >
-          Reservar
-        </button>
+            <button
+              type="submit"
+              className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
+            >
+              Reservar
+            </button>
 
-        {mensaje && <p className="mt-4 font-medium">{mensaje}</p>}
-      </form>
+            {mensaje && <p className="mt-4 font-medium">{mensaje}</p>}
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };
 
 export default Pasadias;
-
-
