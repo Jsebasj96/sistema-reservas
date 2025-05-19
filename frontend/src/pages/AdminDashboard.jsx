@@ -1,5 +1,43 @@
 import React, { useState, useEffect } from 'react';
 
+/* --- Header: Logo, nombre de usuario, fecha/hora, configuración, cerrar sesión --- */
+function Header({ userName }) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    // Actualiza la hora cada segundo
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <header className="flex items-center justify-between px-6 py-4 bg-white border-b">
+      {/* Logo y nombre del club */}
+      <div className="flex items-center space-x-3">
+        <img src="/logo.png" alt="Logo La Buena Vida" className="h-8 w-8" />
+        <span className="text-xl font-semibold">Club La Buena Vida</span>
+      </div>
+      {/* Nombre de usuario, fecha/hora, iconos */}
+      <div className="flex items-center space-x-4">
+        <span className="hidden md:inline text-gray-700">Hola, {userName}</span>
+        <span className="text-gray-600">
+          {currentTime.toLocaleDateString('es-ES')} {currentTime.toLocaleTimeString('es-ES')}
+        </span>
+        {/* Icono de configuración (reemplazar emoji por SVG si se desea) */}
+        <button className="p-2 hover:bg-gray-100 rounded-full" aria-label="Configuración">
+          ⚙️
+        </button>
+        {/* Botón cerrar sesión */}
+        <button className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Cerrar sesión
+        </button>
+      </div>
+    </header>
+  );
+}
+
 /* --- Sidebar: Menú lateral con navegación --- */
 function Sidebar({ activeMenu, setActiveMenu }) {
   // Clases para elemento activo
