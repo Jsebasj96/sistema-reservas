@@ -528,7 +528,7 @@ function ReservasHistorial() {
 }
 
 // ------------- HabitacionesEstado -------------
-function HabitacionesEstado({ onReservar }) {
+function HabitacionesEstado() {
   const [habitaciones, setHabitaciones] = useState([]);
   const [cabanas, setCabanas] = useState([]);
 
@@ -584,11 +584,11 @@ axios
               <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
               <td className="px-3 py-2 border">
                 <button
-                onClick={onReservar}
-                className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                Reservar ahora
-              </button>
+                  onClick={() => asignarLimpieza(label.toLowerCase(), it.id)}
+                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Asignar Limpieza
+                </button>
               </td>
             </tr>
           ))
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
     case 'reservasHistorial':
       ContentComponent = <ReservasHistorial />;
       break;
-    case 'habitacionesEstado':  ContentComponent = <HabitacionesEstado onReservar={() => setActiveContent('reservasCrear')} />; break;
+    case 'habitacionesEstado':  ContentComponent = <HabitacionesEstado />; break;
     case 'habitacionesAsignar': ContentComponent = <HabitacionesAsignar />;break;
     case 'habitacionesHistorial':ContentComponent = <HabitacionesHistorial />;break;
     default:
