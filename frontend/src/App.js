@@ -84,6 +84,16 @@ function App() {
                   }
                 />
 
+                {/* Protegida para empleado */}
+                <Route
+                  path="//dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />    
+
                 {/* Protegida para admin */}
                 <Route
                   path="/admin"

@@ -1,64 +1,147 @@
-import React, { useState, useContext } from 'react';
-import AuthContext from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const Register = () => {
-  const { error } = useContext(AuthContext);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
+const API_URL = process.env.REACT_APP_API_URL || 'https://sistema-reservas-final.onrender.com';
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const Dashboard = () => {
+  const [tipoServicio, setTipoServicio] = useState('desayuno');
+  const [productos, setProductos] = useState([]);
+  const [pedido, setPedido] = useState([]);
+  const [habitacion, setHabitacion] = useState('');
+  const [mensaje, setMensaje] = useState('');
+
+  // Simulamos productos por categoría
+  const productosPorTipo = {
+    desayuno: [
+      { id: 1, nombre: 'Desayuno Tradicional', precio: 10000 },
+      { id: 2, nombre: 'Huevo', precio: 3000 },
+      { id: 3, nombre: 'Jugo natural', precio: 4000 },
+      { id: 4, nombre: 'Caldo', precio: 5000 },
+    ],
+    almuerzo: [
+      { id: 5, nombre: 'Bandeja paisa', precio: 18000 },
+      { id: 6, nombre: 'Pollo asado', precio: 15000 },
+      { id: 7, nombre: 'Arroz adicional', precio: 3000 },
+      { id: 8, nombre: 'Papa adicional', precio: 3000 },
+    ],
+    bar: [
+      { id: 9, nombre: 'Agua', precio: 2500 },
+      { id: 10, nombre: 'Gaseosa', precio: 3000 },
+      { id: 11, nombre: 'Cerveza', precio: 5000 },
+      { id: 12, nombre: 'Ron', precio: 8000 },
+    ],
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    setProductos(productosPorTipo[tipoServicio]);
+  }, [tipoServicio]);
+
+  const agregarProducto = (producto) => {
+    const existente = pedido.find((p) => p.id === producto.id);
+    if (existente) {
+      setPedido(
+        pedido.map((p) =>
+          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+        )
+      );
+    } else {
+      setPedido([...pedido, { ...producto, cantidad: 1 }]);
+    }
+  };
+
+  const calcularTotal = () =>
+    pedido.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+
+  const enviarPedido = async () => {
     try {
-      await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-        credentials: 'include'
-      });
-      alert('Registro exitoso');
-    } catch (err) {
-      console.error(err);
+      for (const item of pedido) {
+        await axios.post(
+          `${API_URL}/api/pedidos`,
+          {
+            usuario_id: 1, // debes reemplazar con el ID del mesero logueado
+            producto_id: item.id,
+            nombre_producto: item.nombre,
+            cantidad: item.cantidad,
+            precio_unitario: item.precio,
+            total: item.precio * item.cantidad,
+            tipo: tipoServicio,
+            categoria: tipoServicio,
+            habitacion_id: habitacion || null,
+          },
+          { withCredentials: true }
+        );
+      }
+      setMensaje('✅ Pedido registrado con éxito');
+      setPedido([]);
+      setHabitacion('');
+    } catch (error) {
+      console.error(error);
+      setMensaje('❌ Error al registrar el pedido');
     }
   };
 
   return (
-    <div>
-      <h2>Registro</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-2xl font-bold mb-4">Registro de Pedidos</h2>
+
+      <div className="mb-4">
+        <label className="block font-semibold mb-2">Tipo de Servicio:</label>
+        <select
+          value={tipoServicio}
+          onChange={(e) => setTipoServicio(e.target.value)}
+          className="border px-4 py-2 rounded w-full"
+        >
+          <option value="desayuno">Desayuno</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="bar">Bar</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block font-semibold mb-2">Habitación o Cabaña (opcional):</label>
         <input
           type="text"
-          name="name"
-          placeholder="Nombre"
-          value={formData.name}
-          onChange={handleChange}
-        /><br />
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo"
-          value={formData.email}
-          onChange={handleChange}
-        /><br />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-        /><br />
-        <button type="submit">Registrarse</button>
-      </form>
+          value={habitacion}
+          onChange={(e) => setHabitacion(e.target.value)}
+          placeholder="Ej: 102"
+          className="border px-4 py-2 rounded w-full"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        {productos.map((prod) => (
+          <button
+            key={prod.id}
+            onClick={() => agregarProducto(prod)}
+            className="bg-white border rounded p-3 shadow hover:bg-gray-200"
+          >
+            <div className="font-semibold">{prod.nombre}</div>
+            <div className="text-sm text-gray-600">${prod.precio}</div>
+          </button>
+        ))}
+      </div>
+
+      <h3 className="text-xl font-bold mb-2">Pedido Actual</h3>
+      <ul className="bg-white rounded shadow p-4 mb-4">
+        {pedido.map((item) => (
+          <li key={item.id} className="flex justify-between py-1">
+            {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
+          </li>
+        ))}
+      </ul>
+
+      <div className="font-bold text-lg mb-4">Total: ${calcularTotal()}</div>
+
+      <button
+        onClick={enviarPedido}
+        className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+      >
+        Enviar Pedido
+      </button>
+
+      {mensaje && <p className="mt-4 font-semibold">{mensaje}</p>}
     </div>
   );
 };
 
-export default Register;
-
+export default Dashboard;
