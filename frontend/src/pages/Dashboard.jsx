@@ -62,7 +62,7 @@ export default function Dashboard() {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // reemplaza por el ID real del mesero
+            usuario_id: 1, // reemplaza con el ID real del mesero
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -85,93 +85,85 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        Registro de Pedidos
-      </h2>
+    <div className="min-h-screen bg-gray-100 p-6 flex items-start justify-center">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
+        <h2 className="text-2xl font-bold mb-4 text-center">
+          Registro de Pedidos
+        </h2>
 
-      {/* Flex container para centrar */}
-      <div className="flex justify-center">
-        {/* Ancho completo en móvil, un tercio en md+, y máximo 2xl */}
-        <div className="w-full md:w-1/3 max-w-2xl bg-white p-6 rounded-lg shadow">
-          {/* Tipo de Servicio */}
-          <div className="mb-4">
-            <label className="block font-semibold mb-2">
-              Tipo de Servicio:
-            </label>
-            <select
-              value={tipoServicio}
-              onChange={(e) => setTipoServicio(e.target.value)}
-              className="border px-4 py-2 rounded w-full"
-            >
-              <option value="desayuno">Desayuno</option>
-              <option value="almuerzo">Almuerzo</option>
-              <option value="bar">Bar</option>
-            </select>
-          </div>
-
-          {/* Habitación/Cabaña */}
-          <div className="mb-4">
-            <label className="block font-semibold mb-2">
-              Habitación o Cabaña (opcional):
-            </label>
-            <input
-              type="text"
-              value={habitacion}
-              onChange={(e) => setHabitacion(e.target.value)}
-              placeholder="Ej: 102"
-              className="border px-4 py-2 rounded w-full"
-            />
-          </div>
-
-          {/* Productos */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            {productos.map((prod) => (
-              <button
-                key={prod.id}
-                onClick={() => agregarProducto(prod)}
-                className="bg-white border rounded p-3 shadow hover:bg-gray-200"
-              >
-                <div className="font-semibold">{prod.nombre}</div>
-                <div className="text-sm text-gray-600">
-                  ${prod.precio}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Pedido Actual */}
-          <h3 className="text-xl font-bold mb-2">Pedido Actual</h3>
-          <ul className="bg-gray-50 rounded p-4 mb-4">
-            {pedido.map((item) => (
-              <li
-                key={item.id}
-                className="flex justify-between py-1"
-              >
-                {item.nombre} x{item.cantidad} = $
-                {item.precio * item.cantidad}
-              </li>
-            ))}
-          </ul>
-
-          {/* Total + Botón */}
-          <div className="font-bold text-lg mb-4">
-            Total: ${calcularTotal()}
-          </div>
-          <button
-            onClick={enviarPedido}
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        {/* Tipo de Servicio */}
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">
+            Tipo de Servicio:
+          </label>
+          <select
+            value={tipoServicio}
+            onChange={(e) => setTipoServicio(e.target.value)}
+            className="border px-4 py-2 rounded w-full"
           >
-            Enviar Pedido
-          </button>
-
-          {mensaje && (
-            <p className="mt-4 text-center font-semibold">
-              {mensaje}
-            </p>
-          )}
+            <option value="desayuno">Desayuno</option>
+            <option value="almuerzo">Almuerzo</option>
+            <option value="bar">Bar</option>
+          </select>
         </div>
+
+        {/* Habitación / Cabaña */}
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">
+            Habitación o Cabaña (opcional):
+          </label>
+          <input
+            type="text"
+            value={habitacion}
+            onChange={(e) => setHabitacion(e.target.value)}
+            placeholder="Ej: 102"
+            className="border px-4 py-2 rounded w-full"
+          />
+        </div>
+
+        {/* Productos */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          {productos.map((prod) => (
+            <button
+              key={prod.id}
+              onClick={() => agregarProducto(prod)}
+              className="bg-white border rounded p-3 shadow hover:bg-gray-200"
+            >
+              <div className="font-semibold">{prod.nombre}</div>
+              <div className="text-sm text-gray-600">
+                ${prod.precio}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Pedido Actual */}
+        <h3 className="text-xl font-bold mb-2">Pedido Actual</h3>
+        <ul className="bg-gray-50 rounded p-4 mb-4">
+          {pedido.map((item) => (
+            <li key={item.id} className="flex justify-between py-1">
+              {item.nombre} x{item.cantidad} = $
+              {item.precio * item.cantidad}
+            </li>
+          ))}
+        </ul>
+
+        {/* Total y Enviar */}
+        <div className="font-bold text-lg mb-4">
+          Total: ${calcularTotal()}
+        </div>
+        <button
+          onClick={enviarPedido}
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        >
+          Enviar Pedido
+        </button>
+
+        {mensaje && (
+          <p className="mt-4 text-center font-semibold">{mensaje}</p>
+        )}
       </div>
     </div>
   )
 }
+
