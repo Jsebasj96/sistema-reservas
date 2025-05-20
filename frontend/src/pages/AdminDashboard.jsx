@@ -523,6 +523,122 @@ function ReservasHistorial() {
   );
 }
 
+// ------------- HabitacionesEstado -------------
+function HabitacionesEstado() {
+  const [habitaciones, setHabitaciones] = useState([]);
+  // obtenemos también cabañas
+  const [cabanas, setCabanas] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/habitaciones', { withCredentials:true })
+      .then(r => setHabitaciones(r.data))
+      .catch(console.error);
+    axios.get('/api/cabanas', { withCredentials:true })
+      .then(r => setCabanas(r.data))
+      .catch(console.error);
+  }, []);
+
+  const asignarLimpieza = (tipo, id) => {
+    alert(`Limpieza de ${tipo} #${id} asignada a Empleado X`);
+  };
+
+  const renderTable = (items, label) => (
+    <div className="mb-6">
+      <h3 className="text-xl font-medium mb-2">{label}</h3>
+      <table className="min-w-full bg-white shadow rounded">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-3 py-2 border">ID</th>
+            <th className="px-3 py-2 border">{label === 'Habitaciones' ? 'Nro.' : 'Nombre'}</th>
+            <th className="px-3 py-2 border">Estado</th>
+            <th className="px-3 py-2 border">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(it => (
+            <tr key={it.id}>
+              <td className="px-3 py-2 border">{it.id}</td>
+              <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
+              <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
+              <td className="px-3 py-2 border">
+                <button
+                  onClick={() => asignarLimpieza(label.toLowerCase(), it.id)}
+                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >Asignar Limpieza</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Estado de Habitaciones y Cabañas</h2>
+      {renderTable(habitaciones, 'Habitaciones')}
+      {renderTable(cabanas, 'Cabañas')}
+    </div>
+  );
+}
+
+// ------------- HabitacionesAsignar -------------
+// Para este ejemplo es idéntico a HabitacionesEstado:
+const HabitacionesAsignar = HabitacionesEstado;
+
+// ------------- HabitacionesHistorial -------------
+function HabitacionesHistorial() {
+  const [unitId, setUnitId] = useState('');
+  const [tipo, setTipo] = useState('habitacion');
+  const [historial, setHistorial] = useState([]);
+
+  const fetchHistorial = () => {
+    axios.get(`/api/reservas?${tipo}_id=${unitId}`, { withCredentials:true })
+      .then(r => setHistorial(r.data.reservas || r.data))
+      .catch(console.error);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Historial de Reservas por Unidad</h2>
+      <div className="flex items-center space-x-4 mb-4">
+        <select value={tipo} onChange={e=>setTipo(e.target.value)} className="border p-2 rounded">
+          <option value="habitacion">Habitación</option>
+          <option value="cabana">Cabaña</option>
+        </select>
+        <input
+          type="number" placeholder="ID unidad"
+          value={unitId} onChange={e=>setUnitId(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <button onClick={fetchHistorial} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+          Ver Historial
+        </button>
+      </div>
+      <table className="min-w-full bg-white shadow rounded">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-3 py-2 border">Reserva ID</th>
+            <th className="px-3 py-2 border">Fecha Inicio</th>
+            <th className="px-3 py-2 border">Fecha Fin</th>
+            <th className="px-3 py-2 border">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {historial.map(r => (
+            <tr key={r.id}>
+              <td className="px-3 py-2 border">{r.id}</td>
+              <td className="px-3 py-2 border">{r.fecha_inicio}</td>
+              <td className="px-3 py-2 border">{r.fecha_fin}</td>
+              <td className="px-3 py-2 border">${r.total_pago}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 /* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -539,6 +655,9 @@ export default function AdminDashboard() {
     case 'reservasHistorial':
       ContentComponent = <ReservasHistorial />;
       break;
+    case 'habitacionesEstado':  Content = <HabitacionesEstado />; break;
+    case 'habitacionesAsignar': Content = <HabitacionesAsignar />;break;
+    case 'habitacionesHistorial':Content = <HabitacionesHistorial />;break;
     default:
       ContentComponent = <DashboardContent />;
   }
