@@ -655,9 +655,9 @@ export default function AdminDashboard() {
     case 'reservasHistorial':
       ContentComponent = <ReservasHistorial />;
       break;
-    case 'habitacionesEstado':  Content = <HabitacionesEstado />; break;
-    case 'habitacionesAsignar': Content = <HabitacionesAsignar />;break;
-    case 'habitacionesHistorial':Content = <HabitacionesHistorial />;break;
+    case 'habitacionesEstado':  ContentComponent = <HabitacionesEstado />; break;
+    case 'habitacionesAsignar': ContentComponent = <HabitacionesAsignar />;break;
+    case 'habitacionesHistorial':ContentComponent = <HabitacionesHistorial />;break;
     default:
       ContentComponent = <DashboardContent />;
   }
