@@ -1,9 +1,10 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
-import { reservasService } from '../services/reservasService';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 /* --- Header: Logo, nombre de usuario, fecha/hora, configuración, cerrar sesión --- */
 function Header({ userName }) {
@@ -290,96 +291,212 @@ function ReservasGestionar() {
 
 /* --- 2) Crear Reserva --- */
 function ReservasCrear() {
-  const schema = Yup.object().shape({
-    fechaEntrada: Yup.date().required('Requerido'),
+  const { user, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || '';
+
+  const [tipoAlojamiento, setTipoAlojamiento] = useState('habitacion');
+  const [habitaciones, setHabitaciones] = useState([]);
+  const [cabanas, setCabanas] = useState([]);
+  const [resumenReserva, setResumenReserva] = useState(null);
+  const [imagenComprobante, setImagenComprobante] = useState(null);
+
+  // redirigir si no hay user
+  useEffect(() => {
+    if (!loading && !user) navigate('/login');
+  }, [user, loading, navigate]);
+
+  // cargar disponibles
+  useEffect(() => {
+    if (!user) return;
+    const url = tipoAlojamiento==='habitacion'
+      ? `${API_URL}/api/habitaciones/disponibles`
+      : `${API_URL}/api/cabanas/disponibles`;
+    axios.get(url, { withCredentials:true })
+      .then(res => {
+        tipoAlojamiento==='habitacion'
+          ? setHabitaciones(Array.isArray(res.data)?res.data:[])
+          : setCabanas(Array.isArray(res.data)?res.data:[]);
+      })
+      .catch(err => console.error(err));
+  }, [tipoAlojamiento, user, API_URL]);
+
+  const alojamientos = tipoAlojamiento==='habitacion' ? habitaciones : cabanas;
+
+  const ReservaSchema = Yup.object().shape({
+    nombreCompleto: Yup.string().required('Requerido'),
+    numeroDocumento: Yup.string().required('Requerido'),
+    correoElectronico: Yup.string().email('Inválido').required('Requerido'),
+    adultos: Yup.number().min(1).required('Requerido'),
+    ninos: Yup.number().min(0).required('Requerido'),
     numeroDias: Yup.number().min(1).required('Requerido'),
-    tipo: Yup.string().oneOf(['habitacion','cabana']).required(),
-    alojamientoId: Yup.number().required('Requerido'),
+    fechaEntrada: Yup.date().required('Requerido'),
+    alojamientoId: Yup.string().required('Requerido'),
+    medioPago: Yup.string().oneOf(['Nequi','Transferencia']).required('Requerido'),
+    numeroTransaccion: Yup.string().required('Requerido'),
   });
 
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const item = alojamientos.find(x => x.id===+values.alojamientoId);
+      if (!item) throw new Error('Selección inválida');
+      const precio = item.precio_por_noche || item.precioPorNoche;
+      const total = precio * values.numeroDias;
+      const antic = total * 0.3;
+      let reservaPayload = {
+        fecha_inicio: values.fechaEntrada,
+        fecha_fin: new Date(new Date(values.fechaEntrada)
+          .setDate(new Date(values.fechaEntrada).getDate()+values.numeroDias)),
+        total_pago: total,
+        porcentaje_pagado: 0.3,
+        estado: 'pendiente',
+      };
+      if (tipoAlojamiento==='habitacion') reservaPayload.habitacion_id = item.id;
+      else reservaPayload.cabana_id = item.id;
+
+      // crear reserva
+      const { data: reserva } = await axios.post(
+        `${API_URL}/api/reservas`, reservaPayload,
+        { withCredentials:true }
+      );
+      // crear pago anticipo
+      await axios.post(
+        `${API_URL}/api/pagos`,
+        { reservaId: reserva.id, monto: antic, tipoPago: values.medioPago },
+        { withCredentials:true }
+      );
+      // resumen
+      setResumenReserva({
+        Código: reserva.id,
+        Nombre: values.nombreCompleto,
+        Correo: values.correoElectronico,
+        Entrada: values.fechaEntrada,
+        Noches: values.numeroDias,
+        Alojamiento: tipoAlojamiento==='habitacion'
+          ? `#${item.numero}` : item.nombre,
+        Anticipo: antic,
+        Pendiente: total-antic,
+      });
+      resetForm();
+      setImagenComprobante(null);
+    } catch (e) {
+      console.error(e);
+      alert(e.response?.data?.error||e.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Crear Reserva</h2>
-      <Formik
-        initialValues={{
-          fechaEntrada: '',
-          numeroDias: 1,
-          tipo: 'habitacion',
-          alojamientoId: '',
-        }}
-        validationSchema={schema}
-        onSubmit={async (vals, { resetForm, setSubmitting }) => {
-          try {
-            const inicio = vals.fechaEntrada;
-            const fin = new Date(
-              new Date(inicio).setDate(new Date(inicio).getDate() + vals.numeroDias)
-            );
-            // aquí puedes sustituir precio fijo o calcular dinámico:
-            const total = 100000 * vals.numeroDias;
-
-            await reservasService.crearReserva({
-              fecha_inicio: inicio,
-              fecha_fin: fin,
-              total_pago: total,
-              porcentaje_pagado: 0.3,
-              estado: 'pendiente',
-              [vals.tipo === 'habitacion' ? 'habitacion_id' : 'cabana_id']: vals.alojamientoId,
-            });
-
-            alert('✅ Reserva creada con éxito');
-            resetForm();
-          } catch (e) {
-            alert(`❌ ${e.message}`);
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow">
-            {[
-              { name: 'fechaEntrada', label: 'Fecha Entrada', type: 'date' },
-              { name: 'numeroDias', label: 'Noches', type: 'number' },
-            ].map((f) => (
-              <div key={f.name}>
-                <label className="block mb-1 font-medium">{f.label}</label>
-                <Field name={f.name} type={f.type} className="w-full border p-2 rounded" />
-                <ErrorMessage name={f.name} component="div" className="text-red-500 text-sm" />
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
+      <h2 className="text-2xl font-bold mb-6">Crear Reserva</h2>
+      <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow">
+        <Formik
+          initialValues={{
+            nombreCompleto:'', numeroDocumento:'', correoElectronico:'',
+            adultos:1, ninos:0, numeroDias:1, fechaEntrada:'',
+            alojamientoId:'', medioPago:'', numeroTransaccion:''
+          }}
+          validationSchema={ReservaSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, setFieldValue }) => (
+            <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Tipo alojamiento */}
+              <div className="col-span-2">
+                <label className="block mb-1">Tipo Alojamiento</label>
+                <select
+                  value={tipoAlojamiento}
+                  onChange={e => {
+                    setTipoAlojamiento(e.target.value);
+                    setFieldValue('alojamientoId','');
+                  }}
+                  className="w-full border p-2 rounded"
+                >
+                  <option value="habitacion">Habitación</option>
+                  <option value="cabana">Cabaña</option>
+                </select>
               </div>
+              {[
+                {name:'nombreCompleto',label:'Nombre Completo',type:'text'},
+                {name:'numeroDocumento',label:'Documento',type:'text'},
+                {name:'correoElectronico',label:'Correo Electrónico',type:'email'},
+                {name:'adultos',label:'Adultos',type:'number'},
+                {name:'ninos',label:'Niños',type:'number'},
+                {name:'numeroDias',label:'Noches',type:'number'},
+                {name:'fechaEntrada',label:'Fecha Entrada',type:'date'}
+              ].map(f=>(
+                <div key={f.name}>
+                  <label className="block mb-1">{f.label}</label>
+                  <Field name={f.name} type={f.type} className="w-full border p-2 rounded"/>
+                  <ErrorMessage name={f.name} component="div" className="text-red-600 text-sm"/>
+                </div>
+              ))}
+              {/* Alojamiento */}
+              <div className="col-span-2">
+                <label className="block mb-1">Alojamiento</label>
+                <Field as="select" name="alojamientoId" className="w-full border p-2 rounded">
+                  <option value="">-- Seleccione --</option>
+                  {alojamientos.map(a=>(
+                    <option key={a.id} value={a.id}>
+                      {tipoAlojamiento==='habitacion'
+                        ? `#${a.numero} – $${a.precio_por_noche}`
+                        : `${a.nombre} – $${a.precio_por_noche}`}
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="alojamientoId" component="div" className="text-red-600 text-sm"/>
+              </div>
+              {/* Medio pago + transacción */}
+              <div>
+                <label className="block mb-1">Medio Pago</label>
+                <Field as="select" name="medioPago" className="w-full border p-2 rounded">
+                  <option value="">-- Seleccione --</option>
+                  <option value="Nequi">Nequi</option>
+                  <option value="Transferencia">Transferencia</option>
+                </Field>
+                <ErrorMessage name="medioPago" component="div" className="text-red-600 text-sm"/>
+              </div>
+              <div>
+                <label className="block mb-1"># Transacción</label>
+                <Field name="numeroTransaccion" className="w-full border p-2 rounded"/>
+                <ErrorMessage name="numeroTransaccion" component="div" className="text-red-600 text-sm"/>
+              </div>
+              {/* Comprobante */}
+              <div>
+                <label className="block mb-1">Comprobante</label>
+                <input
+                  type="file" accept="image/*"
+                  onChange={e=>setImagenComprobante(e.currentTarget.files[0])}
+                  className="w-full"
+                />
+              </div>
+              {/* Botón */}
+              <div className="col-span-2">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+                >
+                  {isSubmitting ? 'Procesando…' : 'Realizar Reserva'}
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+
+      {/* Resumen */}
+      {resumenReserva && (
+        <div className="mt-8 w-full flex justify-center">
+          <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Resumen</h2>
+            {Object.entries(resumenReserva).map(([k,v])=>(
+              <p key={k}><strong>{k}:</strong> {v}</p>
             ))}
-
-            <div className="col-span-2">
-              <label className="block mb-1 font-medium">Tipo</label>
-              <Field as="select" name="tipo" className="w-full border p-2 rounded">
-                <option value="habitacion">Habitación</option>
-                <option value="cabana">Cabaña</option>
-              </Field>
-            </div>
-
-            <div className="col-span-2">
-              <label className="block mb-1 font-medium">ID Alojamiento</label>
-              <Field
-                name="alojamientoId"
-                type="number"
-                className="w-full border p-2 rounded"
-              />
-              <ErrorMessage
-                name="alojamientoId"
-                component="div"
-                className="text-red-500 text-sm"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="col-span-2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-            >
-              {isSubmitting ? 'Guardando…' : 'Crear Reserva'}
-            </button>
-          </Form>
-        )}
-      </Formik>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
