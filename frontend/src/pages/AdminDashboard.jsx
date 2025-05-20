@@ -537,7 +537,7 @@ useEffect(() => {
   .get(`${API_URL}/api/habitaciones/disponibles`, { withCredentials: true })
   .then(r => {
     console.log('👉 Habitaciones recibidas:', r.data);
-    setHabitaciones(Array.isArray(res.data) ? res.data : []);
+    setHabitaciones(Array.isArray(r.data) ? r.data : []);
   })
   .catch(console.error);
 
@@ -545,7 +545,7 @@ axios
   .get(`${API_URL}/api/cabanas/disponibles`, { withCredentials: true })
   .then(r => {
     console.log('👉 Cabañas recibidas:', r.data);
-    setCabanas(Array.isArray(res.data) ? res.data : []);
+    setCabanas(Array.isArray(r.data) ? r.data : []);
   })
   .catch(console.error);
 }, []);
