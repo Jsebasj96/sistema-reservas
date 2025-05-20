@@ -528,21 +528,32 @@ function HabitacionesEstado() {
   const [habitaciones, setHabitaciones] = useState([]);
   const [cabanas, setCabanas] = useState([]);
 
-  useEffect(() => {
-    axios.get('/api/habitaciones', { withCredentials: true })
-      .then(r => {
-        // asumimos { habitaciones: [...] }
-        setHabitaciones(Array.isArray(r.data.habitaciones) ? r.data.habitaciones : []);
-      })
-      .catch(console.error);
+useEffect(() => {
+  axios
+    .get('/api/habitaciones', { withCredentials: true })
+    .then(r => {
+      // si r.data es array, úsalo directamente; si viene en r.data.habitaciones, úsalo ahí
+      const list = Array.isArray(r.data)
+        ? r.data
+        : Array.isArray(r.data.habitaciones)
+          ? r.data.habitaciones
+          : [];
+      setHabitaciones(list);
+    })
+    .catch(console.error);
 
-    axios.get('/api/cabanas', { withCredentials: true })
-      .then(r => {
-        // asumimos { cabanas: [...] }
-        setCabanas(Array.isArray(r.data.cabanas) ? r.data.cabanas : []);
-      })
-      .catch(console.error);
-  }, []);
+  axios
+    .get('/api/cabanas', { withCredentials: true })
+    .then(r => {
+      const list = Array.isArray(r.data)
+        ? r.data
+        : Array.isArray(r.data.cabanas)
+          ? r.data.cabanas
+          : [];
+      setCabanas(list);
+    })
+    .catch(console.error);
+}, []);
 
   const asignarLimpieza = (tipo, id) => {
     alert(`Limpieza de ${tipo} #${id} asignada a Empleado X`);
