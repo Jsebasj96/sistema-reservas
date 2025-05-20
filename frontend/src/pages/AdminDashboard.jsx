@@ -530,30 +530,20 @@ function HabitacionesEstado() {
 
 useEffect(() => {
   axios
-    .get('/api/habitaciones', { withCredentials: true })
-    .then(r => {
-      console.log('👉 Habitaciones recibidas:', r.data); // ← AÑADE ESTO
-      const list = Array.isArray(r.data)
-        ? r.data
-        : Array.isArray(r.data.habitaciones)
-          ? r.data.habitaciones
-          : [];
-      setHabitaciones(list);
-    })
-    .catch(console.error);
+  .get('/api/habitaciones', { withCredentials: true })
+  .then(r => {
+    console.log('👉 Habitaciones recibidas:', r.data);
+    setHabitaciones(Array.isArray(r.data) ? r.data : []);
+  })
+  .catch(console.error);
 
-  axios
-    .get('/api/cabanas', { withCredentials: true })
-    .then(r => {
-      console.log('👉 Cabañas recibidas:', r.data); // ← AÑADE ESTO
-      const list = Array.isArray(r.data)
-        ? r.data
-        : Array.isArray(r.data.cabanas)
-          ? r.data.cabanas
-          : [];
-      setCabanas(list);
-    })
-    .catch(console.error);
+axios
+  .get('/api/cabanas', { withCredentials: true })
+  .then(r => {
+    console.log('👉 Cabañas recibidas:', r.data);
+    setCabanas(Array.isArray(r.data) ? r.data : []);
+  })
+  .catch(console.error);
 }, []);
 
 
