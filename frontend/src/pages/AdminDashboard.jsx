@@ -652,7 +652,6 @@ axios
             <tr key={it.id}>
               <td className="px-3 py-2 border">{it.id}</td>
               <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
-              <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
               <td className="px-3 py-2 border">
                 <button
                   onClick={() => asignarLimpieza(label.toLowerCase(), it.id)}
