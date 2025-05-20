@@ -15,7 +15,7 @@ const habitacionRoutes  = require('./routes/habitacionRoutes');
 const inventarioRoutes  = require('./routes/inventarioRoutes');
 const cabanaRoutes      = require('./routes/cabanaRoutes');
 const eventosRoutes = require('./routes/eventosRoutes');
-
+const pedidoRoutes = require('./routes/pedidoRoutes');
 const app = express();
 
 // 1) CONFIGURAR CORS
@@ -60,6 +60,7 @@ app.use('/api/habitaciones',  habitacionRoutes);
 app.use('/api/cabanas',       cabanaRoutes);
 app.use('/api/inventario',    inventarioRoutes);
 app.use('/api/eventos', eventosRoutes);
+app.use('/api/pedidos', pedidoRoutes);
 
 // 4) RUTA RAÍZ (opcional)
 app.get('/', (req, res) => {

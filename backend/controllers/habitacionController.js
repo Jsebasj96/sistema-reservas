@@ -28,7 +28,7 @@ const createHabitacion = async (req, res) => {
   const { numero, capacidad, estado, precio_por_noche } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO habitaciones (numero, capacidad, estado)
+      `INSERT INTO habitaciones (numero, capacidad, estado, precio_por_noche)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
       [numero, capacidad, estado, precio_por_noche]
