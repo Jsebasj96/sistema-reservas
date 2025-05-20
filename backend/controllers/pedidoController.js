@@ -3,23 +3,34 @@ const pool = require('../config/db');
 
 const createPedido = async (req, res) => {
   const {
-    usuario_id,
     producto_id,
     nombre_producto,
     cantidad,
     precio_unitario,
     total,
     tipo,         // 'desayuno' | 'almuerzo' | 'bar'
-    categoria,    // mismo valor que tipo, o más fino ('hospedaje', 'pasadia', etc.)
-    habitacion_id // opcional para cargar a habitación/cabaña
+    categoria,    // igual a tipo o más específico
+    habitacion_id // opcional
   } = req.body;
+  const usuario_id = req.user.id;
 
   try {
     const result = await pool.query(
       `INSERT INTO pedidos
-        (usuario_id, producto_id, nombre_producto, cantidad,
-         precio_unitario, total, tipo, categoria, habitacion_id, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+        (usuario_id,
+         producto_id,
+         nombre_producto,
+         cantidad,
+         precio_unitario,
+         total,
+         tipo,
+         categoria,
+         habitacion_id,
+         estado,
+         fecha,
+         created_at)
+       VALUES
+        ($1,$2,$3,$4,$5,$6,$7,$8,$9,'Pendiente', NOW(), NOW())
        RETURNING *`,
       [
         usuario_id,
@@ -52,7 +63,6 @@ const getAllPedidos = async (req, res) => {
   }
 };
 
-// Opcional: reporte de totales por categoría
 const getIngresosPorCategoria = async (req, res) => {
   try {
     const result = await pool.query(
@@ -72,3 +82,4 @@ module.exports = {
   getAllPedidos,
   getIngresosPorCategoria
 };
+
