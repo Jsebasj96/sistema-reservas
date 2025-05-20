@@ -81,7 +81,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 px-4">
       <h2 className="text-2xl font-bold mb-4">Registro de Pedidos</h2>
 
       <div className="mb-4">
