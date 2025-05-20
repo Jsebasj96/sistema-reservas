@@ -566,6 +566,78 @@ axios
               {label === 'Habitaciones' ? 'Número' : 'Nombre'}
             </th>
             <th className="px-3 py-2 border">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+        {items.length === 0 ? (
+          <tr>
+            <td colSpan="4" className="text-center py-4 text-gray-500">
+              No hay datos para mostrar
+            </td>
+          </tr>
+        ) : (
+          items.map(it => (
+            <tr key={it.id}>
+              <td className="px-3 py-2 border">{it.id}</td>
+              <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
+              <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+      </table>
+    </div>
+  );
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Estado de Habitaciones y Cabañas</h2>
+      {renderTable(habitaciones, 'Habitaciones')}
+      {renderTable(cabanas, 'Cabañas')}
+    </div>
+  );
+}
+
+// ------------- HabitacionesAsignar -------------
+// Para este ejemplo es idéntico a HabitacionesEstado:
+function HabitacionesAsignar() {
+  const [habitaciones, setHabitaciones] = useState([]);
+  const [cabanas, setCabanas] = useState([]);
+
+useEffect(() => {
+  axios
+  .get(`${API_URL}/api/habitaciones/disponibles`, { withCredentials: true })
+  .then(r => {
+    console.log('👉 Habitaciones recibidas:', r.data);
+    setHabitaciones(Array.isArray(r.data) ? r.data : []);
+  })
+  .catch(console.error);
+
+axios
+  .get(`${API_URL}/api/cabanas/disponibles`, { withCredentials: true })
+  .then(r => {
+    console.log('👉 Cabañas recibidas:', r.data);
+    setCabanas(Array.isArray(r.data) ? r.data : []);
+  })
+  .catch(console.error);
+}, []);
+
+
+  const asignarLimpieza = (tipo, id) => {
+    alert(`Limpieza de ${tipo} #${id} asignada a Empleado X`);
+  };
+
+  const renderTable = (items, label) => (
+    <div className="mb-6">
+      <h3 className="text-xl font-medium mb-2">{label}</h3>
+      <table className="min-w-full bg-white shadow rounded">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-3 py-2 border">ID</th>
+            <th className="px-3 py-2 border">
+              {label === 'Habitaciones' ? 'Número' : 'Nombre'}
+            </th>
+            <th className="px-3 py-2 border">Estado</th>
             <th className="px-3 py-2 border">Acción</th>
           </tr>
         </thead>
@@ -606,10 +678,6 @@ axios
     </div>
   );
 }
-
-// ------------- HabitacionesAsignar -------------
-// Para este ejemplo es idéntico a HabitacionesEstado:
-const HabitacionesAsignar = HabitacionesEstado;
 
 // ------------- HabitacionesHistorial -------------
 function HabitacionesHistorial() {
