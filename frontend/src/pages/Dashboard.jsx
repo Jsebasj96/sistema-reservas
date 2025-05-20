@@ -38,11 +38,9 @@ export default function Dashboard() {
   const agregarProducto = (producto) => {
     const existente = pedido.find((p) => p.id === producto.id);
     if (existente) {
-      setPedido(
-        pedido.map((p) =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
-        )
-      );
+      setPedido(pedido.map(p =>
+        p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+      ));
     } else {
       setPedido([...pedido, { ...producto, cantidad: 1 }]);
     }
@@ -57,7 +55,7 @@ export default function Dashboard() {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // Cambia por el ID real del mesero
+            usuario_id: 1,
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -73,23 +71,22 @@ export default function Dashboard() {
       setMensaje('✅ Pedido registrado con éxito');
       setPedido([]);
       setHabitacion('');
-    } catch (error) {
-      console.error(error);
+    } catch {
       setMensaje('❌ Error al registrar el pedido');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10 px-4">
-      {/* Contenedor con ancho máximo de ~28rem (1/3 aprox en pantallas grandes) */}
-      <div className="bg-white w-full max-w-md p-6 rounded shadow">
+    <div className="min-h-screen bg-gray-100 py-10">
+      {/* container centra y limita ancho */}
+      <div className="container mx-auto max-w-md bg-white p-6 rounded shadow border-2 border-red-200">
         <h1 className="text-2xl font-bold mb-6 text-center">Registro de Pedidos</h1>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1">Tipo de Servicio:</label>
+          <label className="block font-semibold mb-1">Tipo de Servicio</label>
           <select
             value={tipoServicio}
-            onChange={(e) => setTipoServicio(e.target.value)}
+            onChange={e => setTipoServicio(e.target.value)}
             className="w-full border rounded px-3 py-2"
           >
             <option value="desayuno">Desayuno</option>
@@ -99,22 +96,22 @@ export default function Dashboard() {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1">Habitación o Cabaña (opcional):</label>
+          <label className="block font-semibold mb-1">Habitación / Cabaña</label>
           <input
             type="text"
             value={habitacion}
-            onChange={(e) => setHabitacion(e.target.value)}
+            onChange={e => setHabitacion(e.target.value)}
             placeholder="Ej: 102"
             className="w-full border rounded px-3 py-2"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
-          {productos.map((prod) => (
+          {productos.map(prod => (
             <button
               key={prod.id}
               onClick={() => agregarProducto(prod)}
-              className="bg-gray-50 border rounded p-3 hover:bg-gray-100"
+              className="bg-gray-50 border p-3 rounded hover:bg-gray-100"
             >
               <div className="font-medium">{prod.nombre}</div>
               <div className="text-sm text-gray-600">${prod.precio}</div>
@@ -124,7 +121,7 @@ export default function Dashboard() {
 
         <h2 className="text-lg font-bold mb-2">Pedido Actual</h2>
         <ul className="mb-4 max-h-40 overflow-y-auto">
-          {pedido.map((item) => (
+          {pedido.map(item => (
             <li key={item.id} className="flex justify-between py-1">
               {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
             </li>
@@ -135,7 +132,7 @@ export default function Dashboard() {
 
         <button
           onClick={enviarPedido}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
         >
           Enviar Pedido
         </button>
@@ -145,3 +142,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
