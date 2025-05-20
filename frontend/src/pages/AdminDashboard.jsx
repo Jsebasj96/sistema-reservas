@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { reservasService } from '../services/reservasService';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 /* --- Header: Logo, nombre de usuario, fecha/hora, configuración, cerrar sesión --- */
 function Header({ userName }) {
@@ -291,10 +292,11 @@ function ReservasGestionar() {
 function ReservasCrear() {
   const schema = Yup.object().shape({
     fechaEntrada: Yup.date().required('Requerido'),
-    numeroDias:   Yup.number().min(1).required('Requerido'),
-    tipo:         Yup.string().oneOf(['habitacion','cabana']).required(),
-    alojamientoId:Yup.number().required('Requerido'),
+    numeroDias: Yup.number().min(1).required('Requerido'),
+    tipo: Yup.string().oneOf(['habitacion','cabana']).required(),
+    alojamientoId: Yup.number().required('Requerido'),
   });
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">Crear Reserva</h2>
@@ -303,60 +305,75 @@ function ReservasCrear() {
           fechaEntrada: '',
           numeroDias: 1,
           tipo: 'habitacion',
-          alojamientoId: ''
+          alojamientoId: '',
         }}
         validationSchema={schema}
-        onSubmit={async (vals,{resetForm, setSubmitting})=>{
+        onSubmit={async (vals, { resetForm, setSubmitting }) => {
           try {
-            // aquí calculas fecha_fin y total_pago igual que en tu Reserva.jsx
             const inicio = vals.fechaEntrada;
-            const fin = new Date(new Date(inicio).setDate(new Date(inicio).getDate()+vals.numeroDias));
-            const total = 100000 * vals.numeroDias; // ejemplo
+            const fin = new Date(
+              new Date(inicio).setDate(new Date(inicio).getDate() + vals.numeroDias)
+            );
+            // aquí puedes sustituir precio fijo o calcular dinámico:
+            const total = 100000 * vals.numeroDias;
+
             await reservasService.crearReserva({
               fecha_inicio: inicio,
               fecha_fin: fin,
               total_pago: total,
               porcentaje_pagado: 0.3,
               estado: 'pendiente',
-              [vals.tipo === 'habitacion' ? 'habitacion_id' : 'cabana_id']: vals.alojamientoId
+              [vals.tipo === 'habitacion' ? 'habitacion_id' : 'cabana_id']: vals.alojamientoId,
             });
-            alert('Reserva creada');
+
+            alert('✅ Reserva creada con éxito');
             resetForm();
           } catch (e) {
-            alert(e.message);
+            alert(`❌ ${e.message}`);
           } finally {
             setSubmitting(false);
           }
         }}
       >
-        {({isSubmitting})=>(
+        {({ isSubmitting }) => (
           <Form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow">
             {[
-              { name:'fechaEntrada', label:'Fecha Entrada', type:'date' },
-              { name:'numeroDias',   label:'Noches',       type:'number' },
-            ].map(f=>(
+              { name: 'fechaEntrada', label: 'Fecha Entrada', type: 'date' },
+              { name: 'numeroDias', label: 'Noches', type: 'number' },
+            ].map((f) => (
               <div key={f.name}>
-                <label>{f.label}</label>
-                <Field name={f.name} type={f.type} className="w-full border p-2 rounded"/>
-                <ErrorMessage name={f.name} component="div" className="text-red-500 text-sm"/>
+                <label className="block mb-1 font-medium">{f.label}</label>
+                <Field name={f.name} type={f.type} className="w-full border p-2 rounded" />
+                <ErrorMessage name={f.name} component="div" className="text-red-500 text-sm" />
               </div>
             ))}
+
             <div className="col-span-2">
-              <label>Tipo</label>
+              <label className="block mb-1 font-medium">Tipo</label>
               <Field as="select" name="tipo" className="w-full border p-2 rounded">
                 <option value="habitacion">Habitación</option>
                 <option value="cabana">Cabaña</option>
               </Field>
             </div>
+
             <div className="col-span-2">
-              <label>ID Alojamiento</label>
-              <Field name="alojamientoId" type="number" className="w-full border p-2 rounded"/>
-              <ErrorMessage name="alojamientoId" component="div" className="text-red-500 text-sm"/>
+              <label className="block mb-1 font-medium">ID Alojamiento</label>
+              <Field
+                name="alojamientoId"
+                type="number"
+                className="w-full border p-2 rounded"
+              />
+              <ErrorMessage
+                name="alojamientoId"
+                component="div"
+                className="text-red-500 text-sm"
+              />
             </div>
+
             <button
               type="submit"
               disabled={isSubmitting}
-              className="col-span-2 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              className="col-span-2 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
             >
               {isSubmitting ? 'Guardando…' : 'Crear Reserva'}
             </button>
