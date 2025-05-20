@@ -87,16 +87,16 @@ function Sidebar({ activeMenu, setActiveMenu }) {
           <li className="mb-1 font-semibold">Pasadias</li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'crearEvento')}`}
-              onClick={() => setActiveMenu('crearEvento')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'CrearEvento')}`}
+              onClick={() => setActiveMenu('CrearEvento')}
             >
               Reservar
             </button>
           </li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'eventoHistorial')}`}
-              onClick={() => setActiveMenu('eventoHistorial')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'EventoHistorial')}`}
+              onClick={() => setActiveMenu('EventoHistorial')}
             >
               Historial
             </button>
@@ -766,7 +766,7 @@ function CrearEvento() {
   );
 }
 
-function eventoHistorial() {
+function EventoHistorial() {
   const [eventos, setEventos] = useState([]);
 
   useEffect(() => {
@@ -807,8 +807,8 @@ export default function AdminDashboard() {
     case 'habitacionesEstado':  ContentComponent = <HabitacionesEstado />; break;
     case 'habitacionesAsignar': ContentComponent = <HabitacionesAsignar />;break;
     case 'habitacionesHistorial':ContentComponent = <HabitacionesHistorial />;break;
-    case 'crearEvento':ContentComponent = <crearEvento />;break;
-    case 'eventoHistorial':ContentComponent = <eventoHistorial />;break;
+    case 'CrearEvento':ContentComponent = <CrearEvento />;break;
+    case 'EventoHistorial':ContentComponent = <EventoHistorial />;break;
     default:
     ContentComponent = <DashboardContent />;
   }
