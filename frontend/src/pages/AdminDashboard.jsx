@@ -84,37 +84,21 @@ function Sidebar({ activeMenu, setActiveMenu }) {
           </li>
 
           {/* Servicios */}
-          <li className="mb-1 font-semibold">Servicios</li>
+          <li className="mb-1 font-semibold">Pasadias</li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosDesayunos')}`}
-              onClick={() => setActiveMenu('serviciosDesayunos')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'crearEvento')}`}
+              onClick={() => setActiveMenu('crearEvento')}
             >
-              Desayunos
+              Reservar
             </button>
           </li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosAlmuerzos')}`}
-              onClick={() => setActiveMenu('serviciosAlmuerzos')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'eventoHistorial')}`}
+              onClick={() => setActiveMenu('eventoHistorial')}
             >
-              Almuerzos
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosBar')}`}
-              onClick={() => setActiveMenu('serviciosBar')}
-            >
-              Bar
-            </button>
-          </li>
-          <li className="ml-4 mb-4">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosPiscina')}`}
-              onClick={() => setActiveMenu('serviciosPiscina')}
-            >
-              Piscina / Pasadía
+              Historial
             </button>
           </li>
 
@@ -707,6 +691,109 @@ function HabitacionesHistorial() {
   );
 }
 
+function CrearEvento() {
+  const [mensaje, setMensaje] = useState('');
+
+  const initialValues = {
+    nombre_evento: '',
+    descripcion: '',
+    fecha_evento: '',
+    tipo_evento: 'privado',
+  };
+
+  const validationSchema = Yup.object({
+    nombre_evento: Yup.string().required('El nombre del evento es obligatorio'),
+    descripcion: Yup.string().required('La descripción es obligatoria'),
+    fecha_evento: Yup.date().required('La fecha es obligatoria'),
+    tipo_evento: Yup.string().required('Selecciona un tipo de evento'),
+  });
+
+  const costoFijo = 450000;
+
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      await axios.post(`${API_URL}/api/eventos`, { ...values, costo: costoFijo }, { withCredentials: true });
+      setMensaje('✅ Evento registrado correctamente');
+      resetForm();
+    } catch (error) {
+      console.error('Error al registrar evento:', error);
+      setMensaje('❌ Error al registrar evento');
+    }
+  };
+
+  return (
+    <div className="max-w-xl mx-auto bg-gray-50 py-8 px-6 rounded shadow">
+      <h2 className="text-2xl font-bold mb-6 text-center">Registrar Evento</h2>
+      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+        <Form className="space-y-4">
+          <div>
+            <label className="block font-medium">Nombre del Evento</label>
+            <Field type="text" name="nombre_evento" className="w-full border px-3 py-2 rounded" />
+            <ErrorMessage name="nombre_evento" component="div" className="text-red-500 text-sm" />
+          </div>
+          <div>
+            <label className="block font-medium">Descripción</label>
+            <Field as="textarea" name="descripcion" className="w-full border px-3 py-2 rounded" />
+            <ErrorMessage name="descripcion" component="div" className="text-red-500 text-sm" />
+          </div>
+          <div>
+            <label className="block font-medium">Fecha del Evento</label>
+            <Field type="date" name="fecha_evento" className="w-full border px-3 py-2 rounded" />
+            <ErrorMessage name="fecha_evento" component="div" className="text-red-500 text-sm" />
+          </div>
+          <div>
+            <label className="block font-medium">Tipo de Evento</label>
+            <Field as="select" name="tipo_evento" className="w-full border px-3 py-2 rounded">
+              <option value="privado">Privado</option>
+              <option value="corporativo">Corporativo</option>
+              <option value="social">Social</option>
+            </Field>
+            <ErrorMessage name="tipo_evento" component="div" className="text-red-500 text-sm" />
+          </div>
+          <div>
+            <label className="block font-medium">Total a pagar</label>
+            <div className="w-full px-3 py-2 rounded bg-gray-100 border text-gray-800 font-semibold">
+              $450.000
+            </div>
+          </div>
+          <button type="submit" className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800">
+            Registrar Evento
+          </button>
+          {mensaje && <p className="mt-4 text-center font-medium">{mensaje}</p>}
+        </Form>
+      </Formik>
+    </div>
+  );
+}
+
+function eventoHistorial() {
+  const [eventos, setEventos] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/api/eventos`, { withCredentials: true })
+      .then(res => setEventos(res.data.eventos || res.data))
+      .catch(console.error);
+  }, []);
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Historial de Eventos</h2>
+      <ul className="bg-white shadow rounded p-4 space-y-2">
+        {eventos.length === 0 ? (
+          <p className="text-gray-500">No hay eventos registrados.</p>
+        ) : (
+          eventos.map(e => (
+            <li key={e.id} className="border-b py-2">
+              <strong>#{e.id}</strong> - {e.nombre_evento} ({e.tipo_evento}) el {new Date(e.fecha_evento).toLocaleDateString()} – ${e.costo}
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  );
+}
+
+
 /* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -714,20 +801,16 @@ export default function AdminDashboard() {
 
   let ContentComponent;
   switch (activeMenu) {
-    case 'reservasGestionar':
-      ContentComponent = <ReservasGestionar />;
-      break;
-    case 'reservasCrear':
-      ContentComponent = <ReservasCrear />;
-      break;
-    case 'reservasHistorial':
-      ContentComponent = <ReservasHistorial />;
-      break;
+    case 'reservasGestionar': ContentComponent = <ReservasGestionar />; break;
+    case 'reservasCrear': ContentComponent = <ReservasCrear />; break;
+    case 'reservasHistorial': ContentComponent = <ReservasHistorial />; break;
     case 'habitacionesEstado':  ContentComponent = <HabitacionesEstado />; break;
     case 'habitacionesAsignar': ContentComponent = <HabitacionesAsignar />;break;
     case 'habitacionesHistorial':ContentComponent = <HabitacionesHistorial />;break;
+    case 'crearEvento':ContentComponent = <crearEvento />;break;
+    case 'eventoHistorial':ContentComponent = <eventoHistorial />;break;
     default:
-      ContentComponent = <DashboardContent />;
+    ContentComponent = <DashboardContent />;
   }
 
   return (
