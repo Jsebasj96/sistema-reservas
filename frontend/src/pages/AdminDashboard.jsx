@@ -11,16 +11,20 @@ function Header({ userName }) {
   }, []);
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white border-b">
+      {/* Logo y nombre del club */}
       <div className="flex items-center space-x-3">
-        <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+        <img src="/logo.png" alt="Logo La Buena Vida" className="h-8 w-8" />
         <span className="text-xl font-semibold">Club La Buena Vida</span>
       </div>
+      {/* Nombre de usuario, fecha/hora, iconos */}
       <div className="flex items-center space-x-4">
         <span className="hidden md:inline text-gray-700">Hola, {userName}</span>
         <span className="text-gray-600">
           {currentTime.toLocaleDateString('es-ES')} {currentTime.toLocaleTimeString('es-ES')}
         </span>
-        <button className="p-2 hover:bg-gray-100 rounded-full" aria-label="Configuración">⚙️</button>
+        <button className="p-2 hover:bg-gray-100 rounded-full" aria-label="Configuración">
+          ⚙️
+        </button>
         <button className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">
           Cerrar sesión
         </button>
@@ -29,49 +33,186 @@ function Header({ userName }) {
   );
 }
 
-/* --- Sidebar --- */
+/* --- Sidebar: Menú lateral con navegación --- */
 function Sidebar({ activeMenu, setActiveMenu }) {
-  const itemClass = isActive =>
+  const menuItemClass = isActive =>
     isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600';
+
   return (
     <aside className="w-64 bg-white border-r overflow-y-auto">
       <nav className="p-4">
         <ul>
           <li className="mb-2">
             <button
-              className={`w-full text-left py-2 ${itemClass(activeMenu === 'dashboard')}`}
+              className={`w-full text-left py-2 ${menuItemClass(activeMenu === 'dashboard')}`}
               onClick={() => setActiveMenu('dashboard')}
-            >Panel de Control</button>
+            >
+              Panel de Control
+            </button>
           </li>
 
+          {/* Reservas */}
           <li className="mb-1 font-semibold">Reservas</li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${itemClass(activeMenu === 'reservasGestionar')}`}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasGestionar')}`}
               onClick={() => setActiveMenu('reservasGestionar')}
-            >Gestionar</button>
+            >
+              Gestionar
+            </button>
           </li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${itemClass(activeMenu === 'reservasCrear')}`}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasCrear')}`}
               onClick={() => setActiveMenu('reservasCrear')}
-            >Crear</button>
+            >
+              Crear
+            </button>
           </li>
           <li className="ml-4 mb-4">
             <button
-              className={`w-full text-left py-1 ${itemClass(activeMenu === 'reservasHistorial')}`}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasHistorial')}`}
               onClick={() => setActiveMenu('reservasHistorial')}
-            >Historial</button>
+            >
+              Historial
+            </button>
           </li>
 
-          {/* ... otros menús ... */}
+          {/* Cabañas y Habitaciones */}
+          <li className="mb-1 font-semibold">Cabañas y Habitaciones</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesEstado')}`}
+              onClick={() => setActiveMenu('habitacionesEstado')}
+            >
+              Estado
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesAsignar')}`}
+              onClick={() => setActiveMenu('habitacionesAsignar')}
+            >
+              Asignar
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesHistorial')}`}
+              onClick={() => setActiveMenu('habitacionesHistorial')}
+            >
+              Historial
+            </button>
+          </li>
+
+          {/* Servicios */}
+          <li className="mb-1 font-semibold">Servicios</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosDesayunos')}`}
+              onClick={() => setActiveMenu('serviciosDesayunos')}
+            >
+              Desayunos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosAlmuerzos')}`}
+              onClick={() => setActiveMenu('serviciosAlmuerzos')}
+            >
+              Almuerzos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosBar')}`}
+              onClick={() => setActiveMenu('serviciosBar')}
+            >
+              Bar
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'serviciosPiscina')}`}
+              onClick={() => setActiveMenu('serviciosPiscina')}
+            >
+              Piscina / Pasadía
+            </button>
+          </li>
+
+          {/* Inventarios */}
+          <li className="mb-1 font-semibold">Inventarios</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioAlimentos')}`}
+              onClick={() => setActiveMenu('inventarioAlimentos')}
+            >
+              Alimentos / Bebidas
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioHabitacion')}`}
+              onClick={() => setActiveMenu('inventarioHabitacion')}
+            >
+              Implementos Habitaciones
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioMesa')}`}
+              onClick={() => setActiveMenu('inventarioMesa')}
+            >
+              Servicios de Mesa
+            </button>
+          </li>
+
+          {/* Finanzas */}
+          <li className="mb-1 font-semibold">Finanzas</li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasIngresos')}`}
+              onClick={() => setActiveMenu('finanzasIngresos')}
+            >
+              Ingresos
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasPendientes')}`}
+              onClick={() => setActiveMenu('finanzasPendientes')}
+            >
+              Pagos pendientes
+            </button>
+          </li>
+          <li className="ml-4 mb-2">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasRegistro')}`}
+              onClick={() => setActiveMenu('finanzasRegistro')}
+            >
+              Registro de pagos
+            </button>
+          </li>
+          <li className="ml-4 mb-4">
+            <button
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasReportes')}`}
+              onClick={() => setActiveMenu('finanzasReportes')}
+            >
+              Reportes financieros
+            </button>
+          </li>
+
+          {/* Eventos y Alquileres */}
+          <li className="mb-1 font-semibold">Eventos y Alquileres</li>
+          <li className="ml-4 mb-2">…</li>
+          {/* etc. */}
         </ul>
       </nav>
     </aside>
   );
 }
 
-/* --- Footer --- */
+/* --- Footer: Contacto, enlaces, versión --- */
 function Footer() {
   return (
     <footer className="p-4 bg-gray-50 text-center text-sm text-gray-600 border-t">
@@ -85,37 +226,39 @@ function Footer() {
   );
 }
 
-/* --- DashboardContent (visión general) --- */
+/* --- Contenido general --- */
 function DashboardContent() {
   return (
-    <div className="p-4">
+    <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4">Panel de Control</h2>
-      <p>Bienvenido al panel de administración.</p>
+      <p>Vista general del sistema.</p>
     </div>
   );
 }
 
-/* --- Reservas Gestionar: listado y eliminación --- */
+/* --- 1) Gestión de Reservas --- */
 function ReservasGestionar() {
   const [reservas, setReservas] = useState([]);
   useEffect(() => {
-    reservasService.obtenerReservas().then(setReservas).catch(console.error);
+    reservasService.obtenerReservas()
+      .then(list => setReservas(list))
+      .catch(err => console.error(err));
   }, []);
 
   const handleEliminar = async (id) => {
-    if (!window.confirm('¿Confirma eliminar esta reserva?')) return;
+    if (!window.confirm('¿Eliminar esta reserva?')) return;
     try {
       await reservasService.eliminarReserva(id);
       setReservas(reservas.filter(r => r.id !== id));
     } catch (e) {
       console.error(e);
-      alert('Error al eliminar');
+      alert('Error al eliminar reserva');
     }
   };
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Gestionar Reservas</h2>
+    <div className="p-4">
+      <h2 className="text-2xl font-semibold mb-4">Gestión de Reservas</h2>
       <table className="min-w-full bg-white shadow rounded">
         <thead>
           <tr>
@@ -137,8 +280,8 @@ function ReservasGestionar() {
               <td className="px-4 py-2 border">${r.total_pago}</td>
               <td className="px-4 py-2 border">
                 <button
-                  className="bg-red-500 text-white px-2 py-1 rounded"
                   onClick={() => handleEliminar(r.id)}
+                  className="bg-red-500 text-white px-2 py-1 rounded"
                 >Eliminar</button>
               </td>
             </tr>
@@ -149,7 +292,7 @@ function ReservasGestionar() {
   );
 }
 
-/* --- Reservas Crear: formulario simple --- */
+/* --- 2) Crear Reserva --- */
 function ReservasCrear() {
   const [form, setForm] = useState({
     habitacion_id: '',
@@ -161,29 +304,40 @@ function ReservasCrear() {
     estado: 'pendiente',
   });
   const [mensaje, setMensaje] = useState('');
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = async e => {
+
+  const onChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const onSubmit = async e => {
     e.preventDefault();
     try {
       await reservasService.crearReserva(form);
-      setMensaje('✅ Reserva creada');
+      setMensaje('✅ Reserva creada con éxito');
       setForm({ ...form, habitacion_id:'', cabana_id:'', fecha_inicio:'', fecha_fin:'', total_pago:'' });
-    } catch (e) {
-      console.error(e);
-      setMensaje('❌ Error al crear');
+    } catch (err) {
+      console.error(err);
+      setMensaje('❌ Error al crear la reserva');
     }
   };
 
   return (
-    <div>
+    <div className="p-4">
       <h2 className="text-2xl font-semibold mb-4">Crear Reserva</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+      <form onSubmit={onSubmit} className="space-y-4 max-w-md">
         <div>
           <label>Habitación ID</label>
           <input
             name="habitacion_id"
             value={form.habitacion_id}
-            onChange={handleChange}
+            onChange={onChange}
+            className="w-full border px-2 py-1 rounded"
+          />
+        </div>
+        <div>
+          <label>Cabaña ID (si aplica)</label>
+          <input
+            name="cabana_id"
+            value={form.cabana_id}
+            onChange={onChange}
             className="w-full border px-2 py-1 rounded"
           />
         </div>
@@ -193,7 +347,7 @@ function ReservasCrear() {
             type="date"
             name="fecha_inicio"
             value={form.fecha_inicio}
-            onChange={handleChange}
+            onChange={onChange}
             className="w-full border px-2 py-1 rounded"
           />
         </div>
@@ -203,7 +357,7 @@ function ReservasCrear() {
             type="date"
             name="fecha_fin"
             value={form.fecha_fin}
-            onChange={handleChange}
+            onChange={onChange}
             className="w-full border px-2 py-1 rounded"
           />
         </div>
@@ -212,12 +366,12 @@ function ReservasCrear() {
           <input
             name="total_pago"
             value={form.total_pago}
-            onChange={handleChange}
+            onChange={onChange}
             className="w-full border px-2 py-1 rounded"
           />
         </div>
         <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded">
-          Crear
+          Crear Reserva
         </button>
         {mensaje && <p className="mt-2">{mensaje}</p>}
       </form>
@@ -225,19 +379,21 @@ function ReservasCrear() {
   );
 }
 
-/* --- Reservas Historial: solo lectura --- */
+/* --- 3) Historial de Reservas --- */
 function ReservasHistorial() {
-  const [hist, setHist] = useState([]);
+  const [historial, setHistorial] = useState([]);
   useEffect(() => {
-    reservasService.obtenerReservas().then(setHist).catch(console.error);
+    reservasService.obtenerReservas()
+      .then(list => setHistorial(list))
+      .catch(console.error);
   }, []);
   return (
-    <div>
+    <div className="p-4">
       <h2 className="text-2xl font-semibold mb-4">Historial de Reservas</h2>
       <ul className="space-y-2">
-        {hist.map(r => (
+        {historial.map(r => (
           <li key={r.id} className="p-2 bg-white rounded shadow">
-            Reserva #{r.id} - {r.fecha_inicio} → {r.fecha_fin} (${r.total_pago})
+            Reserva #{r.id} – {r.fecha_inicio} → {r.fecha_fin} (${r.total_pago})
           </li>
         ))}
       </ul>
@@ -245,17 +401,24 @@ function ReservasHistorial() {
   );
 }
 
-/* --- Componente Principal --- */
+/* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const userName = 'Admin';
 
-  let Content;
+  let ContentComponent;
   switch (activeMenu) {
-    case 'reservasGestionar': Content = <ReservasGestionar />; break;
-    case 'reservasCrear':    Content = <ReservasCrear />;    break;
-    case 'reservasHistorial':Content = <ReservasHistorial />;break;
-    default:                  Content = <DashboardContent />;
+    case 'reservasGestionar':
+      ContentComponent = <ReservasGestionar />;
+      break;
+    case 'reservasCrear':
+      ContentComponent = <ReservasCrear />;
+      break;
+    case 'reservasHistorial':
+      ContentComponent = <ReservasHistorial />;
+      break;
+    default:
+      ContentComponent = <DashboardContent />;
   }
 
   return (
@@ -263,7 +426,7 @@ export default function AdminDashboard() {
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
       <div className="flex flex-col flex-1">
         <Header userName={userName} />
-        <main className="flex-1 overflow-auto p-6">{Content}</main>
+        <main className="flex-1 overflow-auto p-6">{ContentComponent}</main>
         <Footer />
       </div>
     </div>
