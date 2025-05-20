@@ -684,10 +684,18 @@ function HabitacionesHistorial() {
   const [historial, setHistorial] = useState([]);
 
   const fetchHistorial = () => {
-    axios.get(`/api/reservas?${tipo}_id=${unitId}`, { withCredentials:true })
-      .then(r => setHistorial(r.data.reservas || r.data))
-      .catch(console.error);
-  };
+  axios
+    .get(`${API_URL}/api/reservas?${tipo}_id=${unitId}`, { withCredentials: true })
+    .then(r => {
+      const data = r.data.reservas || r.data;
+      console.log("👉 Historial recibido:", data);
+      setHistorial(Array.isArray(data) ? data : []);
+    })
+    .catch(error => {
+      console.error("Error al obtener historial:", error);
+      setHistorial([]);
+    });
+};
 
   return (
     <div>
