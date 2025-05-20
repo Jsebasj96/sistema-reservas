@@ -526,15 +526,21 @@ function ReservasHistorial() {
 // ------------- HabitacionesEstado -------------
 function HabitacionesEstado() {
   const [habitaciones, setHabitaciones] = useState([]);
-  // obtenemos también cabañas
   const [cabanas, setCabanas] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/habitaciones', { withCredentials:true })
-      .then(r => setHabitaciones(r.data))
+    axios.get('/api/habitaciones', { withCredentials: true })
+      .then(r => {
+        // asumimos { habitaciones: [...] }
+        setHabitaciones(Array.isArray(r.data.habitaciones) ? r.data.habitaciones : []);
+      })
       .catch(console.error);
-    axios.get('/api/cabanas', { withCredentials:true })
-      .then(r => setCabanas(r.data))
+
+    axios.get('/api/cabanas', { withCredentials: true })
+      .then(r => {
+        // asumimos { cabanas: [...] }
+        setCabanas(Array.isArray(r.data.cabanas) ? r.data.cabanas : []);
+      })
       .catch(console.error);
   }, []);
 
@@ -549,7 +555,9 @@ function HabitacionesEstado() {
         <thead>
           <tr className="bg-gray-100">
             <th className="px-3 py-2 border">ID</th>
-            <th className="px-3 py-2 border">{label === 'Habitaciones' ? 'Nro.' : 'Nombre'}</th>
+            <th className="px-3 py-2 border">
+              {label === 'Habitaciones' ? 'Número' : 'Nombre'}
+            </th>
             <th className="px-3 py-2 border">Estado</th>
             <th className="px-3 py-2 border">Acción</th>
           </tr>
@@ -564,7 +572,9 @@ function HabitacionesEstado() {
                 <button
                   onClick={() => asignarLimpieza(label.toLowerCase(), it.id)}
                   className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >Asignar Limpieza</button>
+                >
+                  Asignar Limpieza
+                </button>
               </td>
             </tr>
           ))}
