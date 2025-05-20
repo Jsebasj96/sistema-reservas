@@ -57,7 +57,7 @@ export default function Dashboard() {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // Cambiar según usuario real
+            usuario_id: 1, // Cambia por el ID real del mesero
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -80,16 +80,17 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10">
-      <div className="bg-white w-full max-w-2xl p-6 rounded shadow-md">
+    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10 px-4">
+      {/* Contenedor con ancho máximo de ~28rem (1/3 aprox en pantallas grandes) */}
+      <div className="bg-white w-full max-w-md p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">Registro de Pedidos</h1>
 
         <div className="mb-4">
-          <label className="block font-semibold">Tipo de Servicio:</label>
+          <label className="block font-semibold mb-1">Tipo de Servicio:</label>
           <select
             value={tipoServicio}
             onChange={(e) => setTipoServicio(e.target.value)}
-            className="w-full border rounded px-3 py-2 mt-1"
+            className="w-full border rounded px-3 py-2"
           >
             <option value="desayuno">Desayuno</option>
             <option value="almuerzo">Almuerzo</option>
@@ -98,22 +99,22 @@ export default function Dashboard() {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold">Habitación o Cabaña (opcional):</label>
+          <label className="block font-semibold mb-1">Habitación o Cabaña (opcional):</label>
           <input
             type="text"
             value={habitacion}
             onChange={(e) => setHabitacion(e.target.value)}
             placeholder="Ej: 102"
-            className="w-full border rounded px-3 py-2 mt-1"
+            className="w-full border rounded px-3 py-2"
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           {productos.map((prod) => (
             <button
               key={prod.id}
               onClick={() => agregarProducto(prod)}
-              className="bg-gray-100 border p-3 rounded hover:bg-gray-200"
+              className="bg-gray-50 border rounded p-3 hover:bg-gray-100"
             >
               <div className="font-medium">{prod.nombre}</div>
               <div className="text-sm text-gray-600">${prod.precio}</div>
@@ -122,7 +123,7 @@ export default function Dashboard() {
         </div>
 
         <h2 className="text-lg font-bold mb-2">Pedido Actual</h2>
-        <ul className="mb-4">
+        <ul className="mb-4 max-h-40 overflow-y-auto">
           {pedido.map((item) => (
             <li key={item.id} className="flex justify-between py-1">
               {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
@@ -134,7 +135,7 @@ export default function Dashboard() {
 
         <button
           onClick={enviarPedido}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
         >
           Enviar Pedido
         </button>
@@ -144,5 +145,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
