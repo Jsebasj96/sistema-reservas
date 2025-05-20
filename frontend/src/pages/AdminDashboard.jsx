@@ -526,41 +526,79 @@ function ReservasHistorial() {
 // ------------- HabitacionesEstado -------------
 function HabitacionesEstado() {
   const [habitaciones, setHabitaciones] = useState([]);
+  const [cabanas, setCabanas] = useState([]);
 
-  useEffect(() => {
-    axios.get('/api/habitaciones/disponibles', { withCredentials: true })
-      .then(resp => {
-        console.log('habitaciones dispo:', resp.data);
-        setHabitaciones(resp.data);
-      })
-      .catch(console.error);
-  }, []);
+useEffect(() => {
+  axios
+    .get('/api/habitaciones/disponibles', { withCredentials: true })
+    .then(r => {
+      // si r.data es array, úsalo directamente; si viene en r.data.habitaciones, úsalo ahí
+      const list = Array.isArray(r.data)
+        ? r.data
+        : Array.isArray(r.data.habitaciones)
+          ? r.data.habitaciones
+          : [];
+      setHabitaciones(list);
+    })
+    .catch(console.error);
 
-  return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Estado de Habitaciones</h2>
-      <table className="min-w-full bg-white">
+  axios
+    .get('/api/cabanas/disponibles', { withCredentials: true })
+    .then(r => {
+      const list = Array.isArray(r.data)
+        ? r.data
+        : Array.isArray(r.data.cabanas)
+          ? r.data.cabanas
+          : [];
+      setCabanas(list);
+    })
+    .catch(console.error);
+}, []);
+
+  const asignarLimpieza = (tipo, id) => {
+    alert(`Limpieza de ${tipo} #${id} asignada a Empleado X`);
+  };
+
+  const renderTable = (items, label) => (
+    <div className="mb-6">
+      <h3 className="text-xl font-medium mb-2">{label}</h3>
+      <table className="min-w-full bg-white shadow rounded">
         <thead>
-          <tr>
-            <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">Número</th>
-            <th className="px-4 py-2">Capacidad</th>
-            <th className="px-4 py-2">Estado</th>
-            <th className="px-4 py-2">Precio</th>
+          <tr className="bg-gray-100">
+            <th className="px-3 py-2 border">ID</th>
+            <th className="px-3 py-2 border">
+              {label === 'Habitaciones' ? 'Número' : 'Nombre'}
+            </th>
+            <th className="px-3 py-2 border">Estado</th>
+            <th className="px-3 py-2 border">Acción</th>
           </tr>
         </thead>
         <tbody>
-          {habitaciones.map(h => (
-            <tr key={h.id}>
-              <td className="border px-4 py-2">{h.id}</td>
-              <td className="border px-4 py-2">{h.numero}</td>
-              <td className="border px-4 py-2">{h.capacidad}</td>
-              <td className="border px-4 py-2">{h.estado}</td>
-              <td className="border px-4 py-2">{h.precio_por_noche}</td>
+          {items.map(it => (
+            <tr key={it.id}>
+              <td className="px-3 py-2 border">{it.id}</td>
+              <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
+              <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
+              <td className="px-3 py-2 border">
+                <button
+                  onClick={() => asignarLimpieza(label.toLowerCase(), it.id)}
+                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Asignar Limpieza
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
+  );
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold mb-4">Estado de Habitaciones y Cabañas</h2>
+      {renderTable(habitaciones, 'Habitaciones')}
+      {renderTable(cabanas, 'Cabañas')}
     </div>
   );
 }
