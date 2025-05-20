@@ -1,3 +1,4 @@
+// src/pages/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -5,14 +6,14 @@ const API_URL =
   process.env.REACT_APP_API_URL ||
   'https://sistema-reservas-final.onrender.com';
 
-const Dashboard = () => {
+export default function Dashboard() {
   const [tipoServicio, setTipoServicio] = useState('desayuno');
   const [productos, setProductos] = useState([]);
   const [pedido, setPedido] = useState([]);
   const [habitacion, setHabitacion] = useState('');
   const [mensaje, setMensaje] = useState('');
 
-  // Simulamos productos por categoría
+  // Productos por tipo (simulado)
   const productosPorTipo = {
     desayuno: [
       { id: 1, nombre: 'Desayuno Tradicional', precio: 10000 },
@@ -34,16 +35,20 @@ const Dashboard = () => {
     ],
   };
 
+  // Cada vez que cambia el tipo, actualizamos la lista de productos
   useEffect(() => {
     setProductos(productosPorTipo[tipoServicio]);
   }, [tipoServicio]);
 
+  // Agregar producto al pedido
   const agregarProducto = (producto) => {
     const existente = pedido.find((p) => p.id === producto.id);
     if (existente) {
       setPedido(
         pedido.map((p) =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+          p.id === producto.id
+            ? { ...p, cantidad: p.cantidad + 1 }
+            : p
         )
       );
     } else {
@@ -51,16 +56,18 @@ const Dashboard = () => {
     }
   };
 
+  // Calcular total del pedido
   const calcularTotal = () =>
     pedido.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
 
+  // Enviar cada línea de pedido al backend
   const enviarPedido = async () => {
     try {
       for (const item of pedido) {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // ID del mesero logueado
+            usuario_id: 1, // Reemplaza por el ID real del mesero
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -83,16 +90,18 @@ const Dashboard = () => {
   };
 
   return (
-    // <-- contenedor flex que centra horizontalmente y ocupa toda la pantalla
-    <div className="flex justify-center items-start p-6 bg-gray-100 min-h-screen">
-      {/* contenido limitado a un tercio en pantallas md+ */}
-      <div className="w-full md:w-1/3 bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Registro de Pedidos
-        </h2>
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        Registro de Pedidos
+      </h2>
 
+      {/* Contenedor centrado y de ancho controlado */}
+      <div className="max-w-md w-full mx-auto bg-white p-6 rounded-lg shadow">
+        {/* Tipo de Servicio */}
         <div className="mb-4">
-          <label className="block font-semibold mb-2">Tipo de Servicio:</label>
+          <label className="block font-semibold mb-2">
+            Tipo de Servicio:
+          </label>
           <select
             value={tipoServicio}
             onChange={(e) => setTipoServicio(e.target.value)}
@@ -104,6 +113,7 @@ const Dashboard = () => {
           </select>
         </div>
 
+        {/* Habitación o Cabaña */}
         <div className="mb-4">
           <label className="block font-semibold mb-2">
             Habitación o Cabaña (opcional):
@@ -117,43 +127,53 @@ const Dashboard = () => {
           />
         </div>
 
+        {/* Botones de productos en grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           {productos.map((prod) => (
             <button
               key={prod.id}
               onClick={() => agregarProducto(prod)}
-              className="bg-gray-50 border rounded p-3 shadow hover:bg-gray-200"
+              className="bg-white border rounded p-3 shadow hover:bg-gray-200"
             >
               <div className="font-semibold">{prod.nombre}</div>
-              <div className="text-sm text-gray-600">${prod.precio}</div>
+              <div className="text-sm text-gray-600">
+                ${prod.precio}
+              </div>
             </button>
           ))}
         </div>
 
+        {/* Pedido actual */}
         <h3 className="text-xl font-bold mb-2">Pedido Actual</h3>
-        <ul className="bg-gray-50 rounded shadow p-4 mb-4">
+        <ul className="bg-gray-50 rounded p-4 mb-4">
           {pedido.map((item) => (
-            <li key={item.id} className="flex justify-between py-1">
-              {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
+            <li
+              key={item.id}
+              className="flex justify-between py-1"
+            >
+              {item.nombre} x{item.cantidad} = $
+              {item.precio * item.cantidad}
             </li>
           ))}
         </ul>
 
+        {/* Total y botón */}
         <div className="font-bold text-lg mb-4">
           Total: ${calcularTotal()}
         </div>
-
         <button
           onClick={enviarPedido}
-          className="w-full bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
         >
           Enviar Pedido
         </button>
 
-        {mensaje && <p className="mt-4 text-center font-semibold">{mensaje}</p>}
+        {mensaje && (
+          <p className="mt-4 text-center font-semibold">
+            {mensaje}
+          </p>
+        )}
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
