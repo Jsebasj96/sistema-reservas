@@ -7,6 +7,10 @@ import * as Yup from 'yup';
 import { AuthContext } from '../context/AuthContext';
 import { reservasService } from '../services/reservasService';
 
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  'https://sistema-reservas-final.onrender.com';
+
 /* --- Header: Logo, nombre de usuario, fecha/hora, configuración, cerrar sesión --- */
 function Header({ userName }) {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -530,18 +534,18 @@ function HabitacionesEstado() {
 
 useEffect(() => {
   axios
-  .get('/api/habitaciones', { withCredentials: true })
+  .get(`${API_URL}/api/habitaciones/disponibles`, { withCredentials: true })
   .then(r => {
     console.log('👉 Habitaciones recibidas:', r.data);
-    setHabitaciones(Array.isArray(r.data) ? r.data : []);
+    setHabitaciones(Array.isArray(res.data) ? res.data : []);
   })
   .catch(console.error);
 
 axios
-  .get('/api/cabanas', { withCredentials: true })
+  .get(`${API_URL}/api/cabanas/disponibles`, { withCredentials: true })
   .then(r => {
     console.log('👉 Cabañas recibidas:', r.data);
-    setCabanas(Array.isArray(r.data) ? r.data : []);
+    setCabanas(Array.isArray(res.data) ? res.data : []);
   })
   .catch(console.error);
 }, []);
