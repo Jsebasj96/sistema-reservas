@@ -1,6 +1,8 @@
 // src/pages/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { reservasService } from '../services/reservasService';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 /* --- Header: Logo, nombre de usuario, fecha/hora, configuración, cerrar sesión --- */
 function Header({ userName }) {
@@ -240,49 +242,42 @@ function DashboardContent() {
 function ReservasGestionar() {
   const [reservas, setReservas] = useState([]);
   useEffect(() => {
-    reservasService.obtenerReservas()
-      .then(list => setReservas(list))
-      .catch(err => console.error(err));
+    reservasService.obtenerReservas().then(setReservas).catch(console.error);
   }, []);
-
-  const handleEliminar = async (id) => {
+  const onDelete = async id => {
     if (!window.confirm('¿Eliminar esta reserva?')) return;
     try {
       await reservasService.eliminarReserva(id);
-      setReservas(reservas.filter(r => r.id !== id));
-    } catch (e) {
-      console.error(e);
-      alert('Error al eliminar reserva');
-    }
+      setReservas(r => r.filter(x => x.id !== id));
+    } catch (e) { alert(e.message); }
   };
-
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-2xl font-semibold mb-4">Gestión de Reservas</h2>
-      <table className="min-w-full bg-white shadow rounded">
+      <table className="min-w-full bg-white shadow rounded overflow-hidden">
         <thead>
-          <tr>
-            <th className="px-4 py-2 border">ID</th>
-            <th className="px-4 py-2 border">Usuario</th>
-            <th className="px-4 py-2 border">Inicio</th>
-            <th className="px-4 py-2 border">Fin</th>
-            <th className="px-4 py-2 border">Total</th>
-            <th className="px-4 py-2 border">Acciones</th>
+          <tr className="bg-gray-100">
+            {['ID','User','Hab/Cabaña','Inicio','Fin','Total','Acciones'].map(h=>(
+              <th key={h} className="px-4 py-2 text-left">{h}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {reservas.map(r => (
-            <tr key={r.id}>
-              <td className="px-4 py-2 border">{r.id}</td>
-              <td className="px-4 py-2 border">{r.user_id}</td>
-              <td className="px-4 py-2 border">{r.fecha_inicio}</td>
-              <td className="px-4 py-2 border">{r.fecha_fin}</td>
-              <td className="px-4 py-2 border">${r.total_pago}</td>
-              <td className="px-4 py-2 border">
+            <tr key={r.id} className="border-t">
+              <td className="px-4 py-2">{r.id}</td>
+              <td className="px-4 py-2">{r.user_id}</td>
+              <td className="px-4 py-2">{r.habitacion_id || r.cabana_id}</td>
+              <td className="px-4 py-2">{new Date(r.fecha_inicio).toLocaleDateString()}</td>
+              <td className="px-4 py-2">{new Date(r.fecha_fin).toLocaleDateString()}</td>
+              <td className="px-4 py-2">${r.total_pago}</td>
+              <td className="px-4 py-2">
                 <button
-                  onClick={() => handleEliminar(r.id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >Eliminar</button>
+                  onClick={()=>onDelete(r.id)}
+                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}
@@ -294,106 +289,98 @@ function ReservasGestionar() {
 
 /* --- 2) Crear Reserva --- */
 function ReservasCrear() {
-  const [form, setForm] = useState({
-    habitacion_id: '',
-    cabana_id: '',
-    fecha_inicio: '',
-    fecha_fin: '',
-    total_pago: '',
-    porcentaje_pagado: 0.3,
-    estado: 'pendiente',
+  const schema = Yup.object().shape({
+    fechaEntrada: Yup.date().required('Requerido'),
+    numeroDias:   Yup.number().min(1).required('Requerido'),
+    tipo:         Yup.string().oneOf(['habitacion','cabana']).required(),
+    alojamientoId:Yup.number().required('Requerido'),
   });
-  const [mensaje, setMensaje] = useState('');
-
-  const onChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const onSubmit = async e => {
-    e.preventDefault();
-    try {
-      await reservasService.crearReserva(form);
-      setMensaje('✅ Reserva creada con éxito');
-      setForm({ ...form, habitacion_id:'', cabana_id:'', fecha_inicio:'', fecha_fin:'', total_pago:'' });
-    } catch (err) {
-      console.error(err);
-      setMensaje('❌ Error al crear la reserva');
-    }
-  };
-
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-2xl font-semibold mb-4">Crear Reserva</h2>
-      <form onSubmit={onSubmit} className="space-y-4 max-w-md">
-        <div>
-          <label>Habitación ID</label>
-          <input
-            name="habitacion_id"
-            value={form.habitacion_id}
-            onChange={onChange}
-            className="w-full border px-2 py-1 rounded"
-          />
-        </div>
-        <div>
-          <label>Cabaña ID (si aplica)</label>
-          <input
-            name="cabana_id"
-            value={form.cabana_id}
-            onChange={onChange}
-            className="w-full border px-2 py-1 rounded"
-          />
-        </div>
-        <div>
-          <label>Fecha Inicio</label>
-          <input
-            type="date"
-            name="fecha_inicio"
-            value={form.fecha_inicio}
-            onChange={onChange}
-            className="w-full border px-2 py-1 rounded"
-          />
-        </div>
-        <div>
-          <label>Fecha Fin</label>
-          <input
-            type="date"
-            name="fecha_fin"
-            value={form.fecha_fin}
-            onChange={onChange}
-            className="w-full border px-2 py-1 rounded"
-          />
-        </div>
-        <div>
-          <label>Total a pagar</label>
-          <input
-            name="total_pago"
-            value={form.total_pago}
-            onChange={onChange}
-            className="w-full border px-2 py-1 rounded"
-          />
-        </div>
-        <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded">
-          Crear Reserva
-        </button>
-        {mensaje && <p className="mt-2">{mensaje}</p>}
-      </form>
+      <Formik
+        initialValues={{
+          fechaEntrada: '',
+          numeroDias: 1,
+          tipo: 'habitacion',
+          alojamientoId: ''
+        }}
+        validationSchema={schema}
+        onSubmit={async (vals,{resetForm, setSubmitting})=>{
+          try {
+            // aquí calculas fecha_fin y total_pago igual que en tu Reserva.jsx
+            const inicio = vals.fechaEntrada;
+            const fin = new Date(new Date(inicio).setDate(new Date(inicio).getDate()+vals.numeroDias));
+            const total = 100000 * vals.numeroDias; // ejemplo
+            await reservasService.crearReserva({
+              fecha_inicio: inicio,
+              fecha_fin: fin,
+              total_pago: total,
+              porcentaje_pagado: 0.3,
+              estado: 'pendiente',
+              [vals.tipo === 'habitacion' ? 'habitacion_id' : 'cabana_id']: vals.alojamientoId
+            });
+            alert('Reserva creada');
+            resetForm();
+          } catch (e) {
+            alert(e.message);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      >
+        {({isSubmitting})=>(
+          <Form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow">
+            {[
+              { name:'fechaEntrada', label:'Fecha Entrada', type:'date' },
+              { name:'numeroDias',   label:'Noches',       type:'number' },
+            ].map(f=>(
+              <div key={f.name}>
+                <label>{f.label}</label>
+                <Field name={f.name} type={f.type} className="w-full border p-2 rounded"/>
+                <ErrorMessage name={f.name} component="div" className="text-red-500 text-sm"/>
+              </div>
+            ))}
+            <div className="col-span-2">
+              <label>Tipo</label>
+              <Field as="select" name="tipo" className="w-full border p-2 rounded">
+                <option value="habitacion">Habitación</option>
+                <option value="cabana">Cabaña</option>
+              </Field>
+            </div>
+            <div className="col-span-2">
+              <label>ID Alojamiento</label>
+              <Field name="alojamientoId" type="number" className="w-full border p-2 rounded"/>
+              <ErrorMessage name="alojamientoId" component="div" className="text-red-500 text-sm"/>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="col-span-2 bg-green-600 text-white py-2 rounded hover:bg-green-700"
+            >
+              {isSubmitting ? 'Guardando…' : 'Crear Reserva'}
+            </button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }
 
 /* --- 3) Historial de Reservas --- */
 function ReservasHistorial() {
-  const [historial, setHistorial] = useState([]);
+  const [reservas, setReservas] = useState([]);
   useEffect(() => {
-    reservasService.obtenerReservas()
-      .then(list => setHistorial(list))
-      .catch(console.error);
+    reservasService.obtenerReservas().then(setReservas).catch(console.error);
   }, []);
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-2xl font-semibold mb-4">Historial de Reservas</h2>
-      <ul className="space-y-2">
-        {historial.map(r => (
-          <li key={r.id} className="p-2 bg-white rounded shadow">
-            Reserva #{r.id} – {r.fecha_inicio} → {r.fecha_fin} (${r.total_pago})
+      <ul className="bg-white shadow rounded p-4 space-y-2">
+        {reservas.map(r => (
+          <li key={r.id} className="border-b py-2">
+            <strong>#{r.id}</strong> {new Date(r.fecha_inicio).toLocaleDateString()} –{' '}
+            {new Date(r.fecha_fin).toLocaleDateString()} (${r.total_pago})
           </li>
         ))}
       </ul>
