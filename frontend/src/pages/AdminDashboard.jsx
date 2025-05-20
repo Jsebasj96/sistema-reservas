@@ -530,9 +530,9 @@ function HabitacionesEstado() {
 
 useEffect(() => {
   axios
-    .get('/api/habitaciones/disponibles', { withCredentials: true })
+    .get('/api/habitaciones', { withCredentials: true })
     .then(r => {
-      // si r.data es array, úsalo directamente; si viene en r.data.habitaciones, úsalo ahí
+      console.log('👉 Habitaciones recibidas:', r.data); // ← AÑADE ESTO
       const list = Array.isArray(r.data)
         ? r.data
         : Array.isArray(r.data.habitaciones)
@@ -543,8 +543,9 @@ useEffect(() => {
     .catch(console.error);
 
   axios
-    .get('/api/cabanas/disponibles', { withCredentials: true })
+    .get('/api/cabanas', { withCredentials: true })
     .then(r => {
+      console.log('👉 Cabañas recibidas:', r.data); // ← AÑADE ESTO
       const list = Array.isArray(r.data)
         ? r.data
         : Array.isArray(r.data.cabanas)
@@ -554,6 +555,7 @@ useEffect(() => {
     })
     .catch(console.error);
 }, []);
+
 
   const asignarLimpieza = (tipo, id) => {
     alert(`Limpieza de ${tipo} #${id} asignada a Empleado X`);
@@ -574,7 +576,14 @@ useEffect(() => {
           </tr>
         </thead>
         <tbody>
-          {items.map(it => (
+        {items.length === 0 ? (
+          <tr>
+            <td colSpan="4" className="text-center py-4 text-gray-500">
+              No hay datos para mostrar
+            </td>
+          </tr>
+        ) : (
+          items.map(it => (
             <tr key={it.id}>
               <td className="px-3 py-2 border">{it.id}</td>
               <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
@@ -588,8 +597,9 @@ useEffect(() => {
                 </button>
               </td>
             </tr>
-          ))}
-        </tbody>
+          ))
+        )}
+      </tbody>
       </table>
     </div>
   );
