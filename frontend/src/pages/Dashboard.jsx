@@ -1,17 +1,14 @@
-// src/pages/Dashboard.jsx
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const API_URL =
-  process.env.REACT_APP_API_URL ||
-  'https://sistema-reservas-final.onrender.com'
+const API_URL = process.env.REACT_APP_API_URL || 'https://sistema-reservas-final.onrender.com';
 
 export default function Dashboard() {
-  const [tipoServicio, setTipoServicio] = useState('desayuno')
-  const [productos, setProductos] = useState([])
-  const [pedido, setPedido] = useState([])
-  const [habitacion, setHabitacion] = useState('')
-  const [mensaje, setMensaje] = useState('')
+  const [tipoServicio, setTipoServicio] = useState('desayuno');
+  const [productos, setProductos] = useState([]);
+  const [pedido, setPedido] = useState([]);
+  const [habitacion, setHabitacion] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
   const productosPorTipo = {
     desayuno: [
@@ -32,29 +29,27 @@ export default function Dashboard() {
       { id: 11, nombre: 'Cerveza', precio: 5000 },
       { id: 12, nombre: 'Ron', precio: 8000 },
     ],
-  }
+  };
 
   useEffect(() => {
-    setProductos(productosPorTipo[tipoServicio])
-  }, [tipoServicio])
+    setProductos(productosPorTipo[tipoServicio]);
+  }, [tipoServicio]);
 
   const agregarProducto = (producto) => {
-    const existente = pedido.find((p) => p.id === producto.id)
+    const existente = pedido.find((p) => p.id === producto.id);
     if (existente) {
       setPedido(
         pedido.map((p) =>
-          p.id === producto.id
-            ? { ...p, cantidad: p.cantidad + 1 }
-            : p
+          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
         )
-      )
+      );
     } else {
-      setPedido([...pedido, { ...producto, cantidad: 1 }])
+      setPedido([...pedido, { ...producto, cantidad: 1 }]);
     }
-  }
+  };
 
   const calcularTotal = () =>
-    pedido.reduce((acc, item) => acc + item.precio * item.cantidad, 0)
+    pedido.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
 
   const enviarPedido = async () => {
     try {
@@ -62,7 +57,7 @@ export default function Dashboard() {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // reemplaza con el ID real del mesero
+            usuario_id: 1, // Cambiar según usuario real
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -73,33 +68,28 @@ export default function Dashboard() {
             habitacion_id: habitacion || null,
           },
           { withCredentials: true }
-        )
+        );
       }
-      setMensaje('✅ Pedido registrado con éxito')
-      setPedido([])
-      setHabitacion('')
+      setMensaje('✅ Pedido registrado con éxito');
+      setPedido([]);
+      setHabitacion('');
     } catch (error) {
-      console.error(error)
-      setMensaje('❌ Error al registrar el pedido')
+      console.error(error);
+      setMensaje('❌ Error al registrar el pedido');
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-start justify-center">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Registro de Pedidos
-        </h2>
+    <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10">
+      <div className="bg-white w-full max-w-2xl p-6 rounded shadow-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">Registro de Pedidos</h1>
 
-        {/* Tipo de Servicio */}
         <div className="mb-4">
-          <label className="block font-semibold mb-2">
-            Tipo de Servicio:
-          </label>
+          <label className="block font-semibold">Tipo de Servicio:</label>
           <select
             value={tipoServicio}
             onChange={(e) => setTipoServicio(e.target.value)}
-            className="border px-4 py-2 rounded w-full"
+            className="w-full border rounded px-3 py-2 mt-1"
           >
             <option value="desayuno">Desayuno</option>
             <option value="almuerzo">Almuerzo</option>
@@ -107,51 +97,41 @@ export default function Dashboard() {
           </select>
         </div>
 
-        {/* Habitación / Cabaña */}
         <div className="mb-4">
-          <label className="block font-semibold mb-2">
-            Habitación o Cabaña (opcional):
-          </label>
+          <label className="block font-semibold">Habitación o Cabaña (opcional):</label>
           <input
             type="text"
             value={habitacion}
             onChange={(e) => setHabitacion(e.target.value)}
             placeholder="Ej: 102"
-            className="border px-4 py-2 rounded w-full"
+            className="w-full border rounded px-3 py-2 mt-1"
           />
         </div>
 
-        {/* Productos */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           {productos.map((prod) => (
             <button
               key={prod.id}
               onClick={() => agregarProducto(prod)}
-              className="bg-white border rounded p-3 shadow hover:bg-gray-200"
+              className="bg-gray-100 border p-3 rounded hover:bg-gray-200"
             >
-              <div className="font-semibold">{prod.nombre}</div>
-              <div className="text-sm text-gray-600">
-                ${prod.precio}
-              </div>
+              <div className="font-medium">{prod.nombre}</div>
+              <div className="text-sm text-gray-600">${prod.precio}</div>
             </button>
           ))}
         </div>
 
-        {/* Pedido Actual */}
-        <h3 className="text-xl font-bold mb-2">Pedido Actual</h3>
-        <ul className="bg-gray-50 rounded p-4 mb-4">
+        <h2 className="text-lg font-bold mb-2">Pedido Actual</h2>
+        <ul className="mb-4">
           {pedido.map((item) => (
             <li key={item.id} className="flex justify-between py-1">
-              {item.nombre} x{item.cantidad} = $
-              {item.precio * item.cantidad}
+              {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
             </li>
           ))}
         </ul>
 
-        {/* Total y Enviar */}
-        <div className="font-bold text-lg mb-4">
-          Total: ${calcularTotal()}
-        </div>
+        <div className="text-lg font-bold mb-4">Total: ${calcularTotal()}</div>
+
         <button
           onClick={enviarPedido}
           className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
@@ -159,11 +139,10 @@ export default function Dashboard() {
           Enviar Pedido
         </button>
 
-        {mensaje && (
-          <p className="mt-4 text-center font-semibold">{mensaje}</p>
-        )}
+        {mensaje && <p className="mt-4 text-center text-sm">{mensaje}</p>}
       </div>
     </div>
-  )
+  );
 }
+
 
