@@ -637,7 +637,6 @@ axios
             <th className="px-3 py-2 border">
               {label === 'Habitaciones' ? 'Número' : 'Nombre'}
             </th>
-            <th className="px-3 py-2 border">Estado</th>
             <th className="px-3 py-2 border">Acción</th>
           </tr>
         </thead>
