@@ -36,13 +36,11 @@ export default function Dashboard() {
   }, [tipoServicio]);
 
   const agregarProducto = (producto) => {
-    const existente = pedido.find((p) => p.id === producto.id);
+    const existente = pedido.find(p => p.id === producto.id);
     if (existente) {
-      setPedido(
-        pedido.map((p) =>
-          p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
-        )
-      );
+      setPedido(pedido.map(p =>
+        p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+      ));
     } else {
       setPedido([...pedido, { ...producto, cantidad: 1 }]);
     }
@@ -57,7 +55,7 @@ export default function Dashboard() {
         await axios.post(
           `${API_URL}/api/pedidos`,
           {
-            usuario_id: 1, // Cambia por el ID real del mesero
+            usuario_id: 1, // reemplaza por el ID real del mesero
             producto_id: item.id,
             nombre_producto: item.nombre,
             cantidad: item.cantidad,
@@ -81,15 +79,23 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10 px-4">
-      {/* w-full para móviles, md:w-1/3 en pantallas medianas */}
-      <div className="bg-white w-full md:w-1/3 p-6 rounded shadow">
+      {/* 
+        - w-full: ocupa todo en pantallas estrechas
+        - max-w-md: ancho máximo ~28rem (450px)
+        - mx-auto: margin horizontal automático (centrado)
+        - md:w-1/3: en pantallas md+ quepa en un tercio
+      */}
+      <div
+        className="bg-white w-full max-w-md md:w-1/3 mx-auto p-6 rounded shadow"
+        style={{ /* inline fallback por si Tailwind falla */ maxWidth: '450px' }}
+      >
         <h1 className="text-2xl font-bold mb-6 text-center">Registro de Pedidos</h1>
 
         <div className="mb-4">
           <label className="block font-semibold mb-1">Tipo de Servicio:</label>
           <select
             value={tipoServicio}
-            onChange={(e) => setTipoServicio(e.target.value)}
+            onChange={e => setTipoServicio(e.target.value)}
             className="w-full border rounded px-3 py-2"
           >
             <option value="desayuno">Desayuno</option>
@@ -99,20 +105,18 @@ export default function Dashboard() {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Habitación o Cabaña (opcional):
-          </label>
+          <label className="block font-semibold mb-1">Habitación o Cabaña (opcional):</label>
           <input
             type="text"
             value={habitacion}
-            onChange={(e) => setHabitacion(e.target.value)}
+            onChange={e => setHabitacion(e.target.value)}
             placeholder="Ej: 102"
             className="w-full border rounded px-3 py-2"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-6">
-          {productos.map((prod) => (
+          {productos.map(prod => (
             <button
               key={prod.id}
               onClick={() => agregarProducto(prod)}
@@ -126,7 +130,7 @@ export default function Dashboard() {
 
         <h2 className="text-lg font-bold mb-2">Pedido Actual</h2>
         <ul className="mb-4 max-h-40 overflow-y-auto">
-          {pedido.map((item) => (
+          {pedido.map(item => (
             <li key={item.id} className="flex justify-between py-1">
               {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
             </li>
@@ -147,3 +151,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
