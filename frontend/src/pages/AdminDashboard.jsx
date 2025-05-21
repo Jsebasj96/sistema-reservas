@@ -180,10 +180,10 @@ function Footer() {
 /* --- Contenido general --- */
 function DashboardContent() {
   const [stats, setStats] = useState({
-    reservasMes: 0,
-    ingresosMes: 0,
-    habitacionesLibres: 0,
-    cabanasLibres: 0,
+    reservasMes: 10,
+    ingresosMes: 5450000,
+    habitacionesLibres: 3,
+    cabanasLibres: 1,
   });
   const [proximasReservas, setProximasReservas] = useState([]);
 
