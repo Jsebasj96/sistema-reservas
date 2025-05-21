@@ -81,8 +81,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-start py-10 px-4">
-      {/* Contenedor con ancho máximo de ~28rem (1/3 aprox en pantallas grandes) */}
-      <div className="bg-white w-full max-w-md p-6 rounded shadow">
+      {/* w-full para móviles, md:w-1/3 en pantallas medianas */}
+      <div className="bg-white w-full md:w-1/3 p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">Registro de Pedidos</h1>
 
         <div className="mb-4">
@@ -99,7 +99,9 @@ export default function Dashboard() {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1">Habitación o Cabaña (opcional):</label>
+          <label className="block font-semibold mb-1">
+            Habitación o Cabaña (opcional):
+          </label>
           <input
             type="text"
             value={habitacion}
