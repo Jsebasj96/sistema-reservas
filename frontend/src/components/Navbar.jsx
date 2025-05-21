@@ -1,15 +1,15 @@
 // src/components/Navbar.js
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { HiHome } from 'react-icons/hi2';
+import { HiHome, HiArrowLeft } from 'react-icons/hi2';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation(); // <- ubicación actual
   const [now, setNow] = useState(new Date());
 
-  // Actualizar la hora cada segundo
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
@@ -20,7 +20,6 @@ const Navbar = () => {
     navigate('/', { state: { message: 'Sesión cerrada exitosamente' } });
   };
 
-  // Formatear fecha y hora: Ej. "11 May 2025, 14:23:45"
   const formatted = now.toLocaleString('es-CO', {
     day: '2-digit',
     month: 'short',
@@ -31,18 +30,29 @@ const Navbar = () => {
   });
 
   return (
-    <nav className="bg-green-700 p-4 text-white flex items-center">
-      {/* Ícono-home */}
-      <Link to="/">
-        <HiHome size={40}/>
+    <nav className="bg-green-700 p-4 text-white flex items-center gap-4">
+      {/* Botón Regresar (oculto en página Home) */}
+      {location.pathname !== '/' && (
+        <button
+          onClick={() => navigate(-1)}
+          className="hover:text-gray-300 transition"
+          title="Volver atrás"
+        >
+          <HiArrowLeft size={32} />
+        </button>
+      )}
+
+      {/* Ícono Home */}
+      <Link to="/" className="hover:text-gray-300 transition">
+        <HiHome size={40} />
       </Link>
 
-      {/* Fecha y hora centradas */}
+      {/* Fecha y hora */}
       <div className="flex-1 text-center text-sm md:text-base">
         {formatted}
       </div>
 
-      {/* Botón cerrar sesión solo si hay user */}
+      {/* Botón cerrar sesión */}
       {user && (
         <button
           onClick={handleLogout}
@@ -56,5 +66,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
