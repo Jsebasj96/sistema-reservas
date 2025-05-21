@@ -1,3 +1,4 @@
+// src/pages/Promociones.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,23 +36,21 @@ export default function Promociones() {
         {promociones.map(promo => (
           <div
             key={promo.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition w-[500px] h-[500px] flex flex-col"
+            className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition w-[250px] h-[250px] flex flex-col"
           >
             <img
               src={promo.imagen}
               alt={promo.titulo}
-              className="w-full h-[250px] object-cover"
+              className="w-full h-[120px] object-cover"
             />
-            <div className="p-6 flex flex-col justify-between flex-1">
-              <div>
-                <h2 className="text-2xl font-semibold mb-2 text-green-800">
-                  {promo.titulo}
-                </h2>
-                <p className="text-gray-700 mb-4">{promo.descripcion}</p>
-              </div>
+            <div className="p-3 flex flex-col justify-between flex-1">
+              <h2 className="text-base font-semibold text-green-800">
+                {promo.titulo}
+              </h2>
+              <p className="text-sm text-gray-700">{promo.descripcion}</p>
               <button
                 onClick={() => navigate('/reservas')}
-                className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+                className="mt-2 w-full bg-green-600 text-white py-1 text-sm rounded hover:bg-green-700 transition"
               >
                 Reservar Ahora
               </button>
