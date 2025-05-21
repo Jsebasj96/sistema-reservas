@@ -179,10 +179,102 @@ function Footer() {
 
 /* --- Contenido general --- */
 function DashboardContent() {
+  const [stats, setStats] = useState({
+    reservasMes: 0,
+    ingresosMes: 0,
+    habitacionesLibres: 0,
+    cabanasLibres: 0,
+  });
+  const [proximasReservas, setProximasReservas] = useState([]);
+
+  useEffect(() => {
+    // 1) Estadísticas resumen
+    axios.get(`${API_URL}/api/admin/dashboard-stats`, { withCredentials: true })
+      .then(res => setStats(res.data))
+      .catch(console.error);
+
+    // 2) Próximas reservas
+    axios.get(`${API_URL}/api/reservas/proximas?dias=7`, { withCredentials: true })
+      .then(res => setProximasReservas(res.data.reservas || []))
+      .catch(console.error);
+  }, []);
+
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold mb-4">Panel de Control</h2>
-      <p>Vista general del sistema.</p>
+    <div className="space-y-8">
+      {/* Título */}
+      <h2 className="text-3xl font-semibold">Panel de Control</h2>
+
+      {/* 1) Tarjetas de resumen */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
+          <span className="text-gray-500">Reservas este mes</span>
+          <span className="text-4xl font-bold mt-2">{stats.reservasMes}</span>
+        </div>
+        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
+          <span className="text-gray-500">Ingresos este mes</span>
+          <span className="text-4xl font-bold mt-2">
+            ${stats.ingresosMes.toLocaleString()}
+          </span>
+        </div>
+        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
+          <span className="text-gray-500">Habitaciones libres</span>
+          <span className="text-4xl font-bold mt-2">{stats.habitacionesLibres}</span>
+        </div>
+        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
+          <span className="text-gray-500">Cabañas libres</span>
+          <span className="text-4xl font-bold mt-2">{stats.cabanasLibres}</span>
+        </div>
+      </div>
+
+      {/* 2) Próximas reservas */}
+      <div className="bg-white rounded shadow overflow-x-auto">
+        <h3 className="text-2xl font-medium px-6 py-4 border-b">
+          Próximas Reservas (7 días)
+        </h3>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 border">ID</th>
+              <th className="px-4 py-2 border">Nombre</th>
+              <th className="px-4 py-2 border">Unidad</th>
+              <th className="px-4 py-2 border">Entrada</th>
+              <th className="px-4 py-2 border">Salida</th>
+            </tr>
+          </thead>
+          <tbody>
+            {proximasReservas.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="text-center py-4 text-gray-500">
+                  No hay reservas próximas
+                </td>
+              </tr>
+            ) : (
+              proximasReservas.map(r => (
+                <tr key={r.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 border">{r.id}</td>
+                  <td className="px-4 py-2 border">{r.nombre_cliente}</td>
+                  <td className="px-4 py-2 border">{r.unidad}</td>
+                  <td className="px-4 py-2 border">
+                    {new Date(r.fecha_inicio).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 border">
+                    {new Date(r.fecha_fin).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* 3) Gráfico de ocupación semanal (placeholder) */}
+      <div className="bg-white rounded shadow p-6">
+        <h3 className="text-2xl font-medium mb-4">Ocupación Semanal</h3>
+        <div className="h-48 flex items-center justify-center text-gray-400">
+          {/* Aquí podrías integrar Chart.js, Recharts u otra librería */}
+          📊 [Gráfico de ocupación]
+        </div>
+      </div>
     </div>
   );
 }
