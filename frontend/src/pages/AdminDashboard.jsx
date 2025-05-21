@@ -120,30 +120,30 @@ function Sidebar({ activeMenu, setActiveMenu }) {
             </button>
           </li>
 
-          {/* Inventarios */}
-          <li className="mb-1 font-semibold">Inventarios</li>
+          {/* Inventarios/Pedidos */}
+          <li className="mb-1 font-semibold">Inventarios/Pedidos</li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioAlimentos')}`}
-              onClick={() => setActiveMenu('inventarioAlimentos')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosCrear')}`}
+              onClick={() => setActiveMenu('PedidosCrear')}
             >
-              Alimentos / Bebidas
+              Crear
             </button>
           </li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioHabitacion')}`}
-              onClick={() => setActiveMenu('inventarioHabitacion')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosHistorial')}`}
+              onClick={() => setActiveMenu('PedidosHistorial')}
             >
-              Implementos Habitaciones
+              Historial
             </button>
           </li>
           <li className="ml-4 mb-4">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventarioMesa')}`}
-              onClick={() => setActiveMenu('inventarioMesa')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventario')}`}
+              onClick={() => setActiveMenu('inventario')}
             >
-              Servicios de Mesa
+              Inventario
             </button>
           </li>
 
@@ -947,6 +947,174 @@ function PasadiaHistorial() {
   );
 }
 
+function PedidosCrear() {
+  const [tipoServicio, setTipoServicio] = useState('desayuno');
+  const [productos, setProductos] = useState([]);
+  const [pedido, setPedido] = useState([]);
+  const [habitacion, setHabitacion] = useState('');
+  const [mensaje, setMensaje] = useState('');
+
+  const productosPorTipo = {
+    desayuno: [
+      { id: 1, nombre: 'Desayuno Tradicional', precio: 10000 },
+      { id: 2, nombre: 'Huevo', precio: 3000 },
+      { id: 3, nombre: 'Jugo natural', precio: 4000 },
+      { id: 4, nombre: 'Caldo', precio: 5000 },
+    ],
+    almuerzo: [
+      { id: 5, nombre: 'Bandeja paisa', precio: 18000 },
+      { id: 6, nombre: 'Pollo asado', precio: 15000 },
+      { id: 7, nombre: 'Arroz adicional', precio: 3000 },
+      { id: 8, nombre: 'Papa adicional', precio: 3000 },
+    ],
+    bar: [
+      { id: 9, nombre: 'Agua', precio: 2500 },
+      { id: 10, nombre: 'Gaseosa', precio: 3000 },
+      { id: 11, nombre: 'Cerveza', precio: 5000 },
+      { id: 12, nombre: 'Ron', precio: 8000 },
+    ],
+  };
+
+  useEffect(() => {
+    setProductos(productosPorTipo[tipoServicio]);
+  }, [tipoServicio]);
+
+  const agregarProducto = (producto) => {
+    const existe = pedido.find(p => p.id === producto.id);
+    if (existe) {
+      setPedido(pedido.map(p =>
+        p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+      ));
+    } else {
+      setPedido([...pedido, { ...producto, cantidad: 1 }]);
+    }
+  };
+
+  const calcularTotal = () =>
+    pedido.reduce((sum, i) => sum + i.precio * i.cantidad, 0);
+
+  const enviarPedido = async () => {
+    try {
+      for (const item of pedido) {
+        await axios.post(
+          `${API_URL}/api/pedidos`,
+          {
+            usuario_id: 1,             // ID del empleado asignado
+            producto_id: item.id,
+            nombre_producto: item.nombre,
+            cantidad: item.cantidad,
+            precio_unitario: item.precio,
+            total: item.precio * item.cantidad,
+            tipo: tipoServicio,
+            categoria: tipoServicio,
+            habitacion_id: habitacion || null,
+          },
+          { withCredentials: true }
+        );
+      }
+      setMensaje('✅ Pedido registrado correctamente');
+      setPedido([]);
+      setHabitacion('');
+    } catch (e) {
+      console.error(e);
+      setMensaje('❌ Error al registrar el pedido');
+    }
+  };
+
+  return (
+    <div className="bg-white p-6 rounded shadow mb-8">
+      <h3 className="text-xl font-semibold mb-4">Crear Pedido</h3>
+
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Tipo de Servicio</label>
+        <select
+          value={tipoServicio}
+          onChange={e => setTipoServicio(e.target.value)}
+          className="w-full border rounded px-3 py-2"
+        >
+          <option value="desayuno">Desayuno</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="bar">Bar</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Habitación / Cabaña (opcional)</label>
+        <input
+          type="text"
+          value={habitacion}
+          onChange={e => setHabitacion(e.target.value)}
+          placeholder="Ej: 101"
+          className="w-full border rounded px-3 py-2"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        {productos.map(prod => (
+          <button
+            key={prod.id}
+            type="button"
+            onClick={() => agregarProducto(prod)}
+            className="border rounded p-2 hover:bg-gray-100"
+          >
+            <div className="font-medium">{prod.nombre}</div>
+            <div className="text-sm text-gray-600">${prod.precio}</div>
+          </button>
+        ))}
+      </div>
+
+      <h4 className="font-medium mb-2">Pedido Actual</h4>
+      <ul className="mb-4">
+        {pedido.map(item => (
+          <li key={item.id} className="flex justify-between">
+            {item.nombre} x{item.cantidad} = ${item.precio * item.cantidad}
+          </li>
+        ))}
+      </ul>
+
+      <div className="font-bold mb-4">Total: ${calcularTotal()}</div>
+
+      <button
+        onClick={enviarPedido}
+        className="bg-green-600 text-white w-full py-2 rounded hover:bg-green-700"
+      >
+        Guardar Pedido
+      </button>
+
+      {mensaje && <p className="mt-3 text-center">{mensaje}</p>}
+    </div>
+  );
+}
+
+function PedidosHistorial() {
+  const [pedidos, setPedidos] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/api/pedidos`, { withCredentials: true })
+      .then(res => setPedidos(res.data.pedidos || res.data))
+      .catch(console.error);
+  }, []);
+
+  return (
+    <div className="bg-white p-6 rounded shadow">
+      <h3 className="text-xl font-semibold mb-4">Historial de Pedidos</h3>
+      {pedidos.length === 0 ? (
+        <p className="text-gray-500">No hay pedidos registrados.</p>
+      ) : (
+        <ul className="space-y-2">
+          {pedidos.map(p => (
+            <li key={p.id} className="border-b pb-2 flex justify-between">
+              <div>
+                <strong>#{p.id}</strong> {p.nombre_producto} x{p.cantidad} — {p.tipo}
+              </div>
+              <div className="font-medium">${p.total}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 /* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
@@ -965,6 +1133,8 @@ export default function AdminDashboard() {
     case 'EventoHistorial':ContentComponent = <EventoHistorial />;break;
     case 'Crearpasadia':ContentComponent = <Crearpasadia />;break;
     case 'PasadiaHistorial':ContentComponent = <PasadiaHistorial />;break;
+    case 'PedidosCrear':ContentComponent = <PedidosCrear />;break;
+    case 'PedidosHistorial':ContentComponent = <PedidosHistorial />;break;
     default:
     ContentComponent = <DashboardContent />;
   }
