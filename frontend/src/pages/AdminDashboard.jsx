@@ -151,41 +151,12 @@ function Sidebar({ activeMenu, setActiveMenu }) {
           <li className="mb-1 font-semibold">Finanzas</li>
           <li className="ml-4 mb-2">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasIngresos')}`}
-              onClick={() => setActiveMenu('finanzasIngresos')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'IngresosPedidos')}`}
+              onClick={() => setActiveMenu('IngresosPedidos')}
             >
               Ingresos
             </button>
           </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasPendientes')}`}
-              onClick={() => setActiveMenu('finanzasPendientes')}
-            >
-              Pagos pendientes
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasRegistro')}`}
-              onClick={() => setActiveMenu('finanzasRegistro')}
-            >
-              Registro de pagos
-            </button>
-          </li>
-          <li className="ml-4 mb-4">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'finanzasReportes')}`}
-              onClick={() => setActiveMenu('finanzasReportes')}
-            >
-              Reportes financieros
-            </button>
-          </li>
-
-          {/* Eventos y Alquileres */}
-          <li className="mb-1 font-semibold">Eventos y Alquileres</li>
-          <li className="ml-4 mb-2">…</li>
-          {/* etc. */}
         </ul>
       </nav>
     </aside>
@@ -1181,6 +1152,87 @@ function PedidosInventario() {
   );
 }
 
+function IngresosPedidos() {
+  const [pedidos, setPedidos] = useState([]);
+  const [ingresosPorCategoria, setIngresosPorCategoria] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Obtener todos los pedidos
+    const fetchPedidos = axios.get(`${API_URL}/api/pedidos`, { withCredentials: true });
+    // Obtener totales por categoría
+    const fetchIngresosCat = axios.get(`${API_URL}/api/pedidos/ingresos-por-categoria`, { withCredentials: true });
+
+    Promise.all([fetchPedidos, fetchIngresosCat])
+      .then(([resPedidos, resIngresos]) => {
+        setPedidos(Array.isArray(resPedidos.data.pedidos) ? resPedidos.data.pedidos : resPedidos.data);
+        setIngresosPorCategoria(resIngresos.data.ingresos || []);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <p className="text-center py-8">Cargando datos de ingresos…</p>;
+  }
+
+  // Cálculo de ingresos totales
+  const ingresoTotal = pedidos.reduce((sum, p) => sum + parseFloat(p.total), 0);
+
+  return (
+    <div className="space-y-8">
+      {/* --- Tarjetas de Resumen --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
+          <span className="text-gray-500">Ingreso Total</span>
+          <span className="text-3xl font-bold mt-2">${ingresoTotal.toLocaleString()}</span>
+        </div>
+        {ingresosPorCategoria.map(cat => (
+          <div key={cat.categoria} className="bg-white rounded shadow p-6 flex flex-col items-center">
+            <span className="text-gray-500 capitalize">{cat.categoria}</span>
+            <span className="text-2xl font-semibold mt-2">${parseFloat(cat.ingreso_total).toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* --- Tabla Detallada de Pedidos --- */}
+      <div className="bg-white rounded shadow overflow-x-auto">
+        <h2 className="text-2xl font-semibold px-6 py-4 border-b">Detalle de Pedidos</h2>
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 border">ID</th>
+              <th className="px-4 py-2 border">Producto</th>
+              <th className="px-4 py-2 border">Cantidad</th>
+              <th className="px-4 py-2 border">Tipo</th>
+              <th className="px-4 py-2 border">Categoría</th>
+              <th className="px-4 py-2 border">Total</th>
+              <th className="px-4 py-2 border">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pedidos.map(p => (
+              <tr key={p.id} className="hover:bg-gray-50">
+                <td className="px-4 py-2 border">{p.id}</td>
+                <td className="px-4 py-2 border">{p.nombre_producto}</td>
+                <td className="px-4 py-2 border">{p.cantidad}</td>
+                <td className="px-4 py-2 border">{p.tipo}</td>
+                <td className="px-4 py-2 border">{p.categoria}</td>
+                <td className="px-4 py-2 border">${parseFloat(p.total).toLocaleString()}</td>
+                <td className="px-4 py-2 border">
+                  {new Date(p.created_at).toLocaleString('es-ES', {
+                    dateStyle: 'short', timeStyle: 'short'
+                  })}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 /* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -1201,6 +1253,7 @@ export default function AdminDashboard() {
     case 'PedidosCrear':ContentComponent = <PedidosCrear />;break;
     case 'PedidosHistorial':ContentComponent = <PedidosHistorial />;break;
     case 'PedidosInventario':ContentComponent = <PedidosInventario />;break;
+    case 'IngresosPedidos':ContentComponent = <IngresosPedidos />;break;
     default:
     ContentComponent = <DashboardContent />;
   }
