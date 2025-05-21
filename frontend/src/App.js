@@ -18,6 +18,7 @@ import Servicios from './pages/Servicios';
 import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
+import Promociones from './pages/Promociones';
 import './styles/tailwind.css';
 
 function App() {
@@ -72,6 +73,14 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Servicios />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/promociones"
+                  element={
+                    <PrivateRoute>
+                      <Promociones />
                     </PrivateRoute>
                   }
                 />

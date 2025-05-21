@@ -202,27 +202,32 @@ const Home = () => {
       </section>
 
       {/* Promociones */}
-      <section className="bg-green-700 text-white py-16">
-        <div className="max-w-screen-xl mx-auto px-4">
-        <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
-        <div className="flex flex-wrap justify-center gap-16">
-          {[
-            ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
-            ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
-            ['Entre Semana', '20% de descuento de lunes a jueves.'],
-          ].map(([title, desc], idx) => (
-            <div
-              key={idx}
-              className="w-1/3 sm:w-[280px] bg-white text-green-800 p-6 rounded shadow text-center"
-            >
-              <h4 className="text-xl font-bold mb-2">{title}</h4>
-              <p>{desc}</p>
-              <button className="mt-4 text-green-700 hover:underline">Ver promociones</button>
-            </div>
-          ))}
-          </div>
+<section className="bg-green-700 text-white py-16">
+  <div className="max-w-screen-xl mx-auto px-4">
+    <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
+    <div className="flex flex-wrap justify-center gap-16">
+      {[
+        ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
+        ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
+        ['Entre Semana', '20% de descuento de lunes a jueves.'],
+      ].map(([title, desc], idx) => (
+        <div
+          key={idx}
+          className="w-1/3 sm:w-[280px] bg-white text-green-800 p-6 rounded shadow text-center"
+        >
+          <h4 className="text-xl font-bold mb-2">{title}</h4>
+          <p>{desc}</p>
+          <button
+            onClick={() => navigate('/promociones')}
+            className="mt-4 text-green-700 hover:underline"
+          >
+            Ver promociones
+          </button>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Formulario de contacto */}
       <section id="contacto" className="bg-white py-16">
