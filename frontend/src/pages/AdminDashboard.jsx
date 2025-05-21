@@ -140,8 +140,8 @@ function Sidebar({ activeMenu, setActiveMenu }) {
           </li>
           <li className="ml-4 mb-4">
             <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'inventario')}`}
-              onClick={() => setActiveMenu('inventario')}
+              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosInventario')}`}
+              onClick={() => setActiveMenu('PedidosInventario')}
             >
               Inventario
             </button>
@@ -1116,6 +1116,71 @@ function PedidosHistorial() {
   );
 }
 
+function PedidosInventario() {
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/api/pedidos`, { withCredentials: true })
+      .then(res => {
+        // tu endpoint devuelve { pedidos: [...] }
+        const list = Array.isArray(res.data.pedidos)
+          ? res.data.pedidos
+          : res.data;
+        setPedidos(list);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <p>Cargando pedidos...</p>;
+  }
+
+  return (
+    <div className="bg-white p-6 rounded shadow">
+      <h2 className="text-2xl font-semibold mb-4">Inventario de Pedidos</h2>
+      {pedidos.length === 0 ? (
+        <p className="text-gray-500">No hay pedidos registrados.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 border">ID</th>
+                <th className="px-4 py-2 border">Producto</th>
+                <th className="px-4 py-2 border">Cantidad</th>
+                <th className="px-4 py-2 border">Tipo</th>
+                <th className="px-4 py-2 border">Categoría</th>
+                <th className="px-4 py-2 border">Habitación</th>
+                <th className="px-4 py-2 border">Total</th>
+                <th className="px-4 py-2 border">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pedidos.map(p => (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 border">{p.id}</td>
+                  <td className="px-4 py-2 border">{p.nombre_producto}</td>
+                  <td className="px-4 py-2 border">{p.cantidad}</td>
+                  <td className="px-4 py-2 border">{p.tipo}</td>
+                  <td className="px-4 py-2 border">{p.categoria}</td>
+                  <td className="px-4 py-2 border">{p.habitacion_id ?? '—'}</td>
+                  <td className="px-4 py-2 border">${p.total}</td>
+                  <td className="px-4 py-2 border">
+                    {new Date(p.created_at).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* --- Componente Principal: integra todo --- */
 export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -1135,6 +1200,7 @@ export default function AdminDashboard() {
     case 'PasadiaHistorial':ContentComponent = <PasadiaHistorial />;break;
     case 'PedidosCrear':ContentComponent = <PedidosCrear />;break;
     case 'PedidosHistorial':ContentComponent = <PedidosHistorial />;break;
+    case 'PedidosInventario':ContentComponent = <PedidosInventario />;break;
     default:
     ContentComponent = <DashboardContent />;
   }
