@@ -135,19 +135,21 @@ const Home = () => {
               },
             ].map(({ title, desc, icon, route }, idx) => (
               <div
-                key={idx}
-                className="min-w-[250px] bg-green-50 p-6 rounded shadow hover:shadow-lg transition text-center"
-              >
+              key={idx}
+              className="min-w-[250px] bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition text-center hover:scale-105"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-full text-5xl shadow-inner">
                 {icon}
-                <h4 className="text-xl font-semibold mb-2">{title}</h4>
-                <p>{desc}</p>
-                <Link
-                  to={route}
-                  className="mt-3 inline-block text-green-700 hover:underline"
-                >
-                  Ver más
-                </Link>
               </div>
+              <h4 className="text-xl font-semibold mb-2 text-zinc-800">{title}</h4>
+              <p className="text-zinc-600">{desc}</p>
+              <Link
+                to={route}
+                className="mt-4 inline-block text-emerald-700 font-medium hover:text-emerald-900 transition"
+              >
+                Ver más →
+              </Link>
+            </div>
             ))}
           </div>
         </div>
