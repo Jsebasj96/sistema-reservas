@@ -497,3 +497,18 @@ a:hover {
   font-style: italic;
   color: #6b7280;
 }
+
+.btn-accion {
+  padding: 6px 12px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-accion:hover {
+  background-color: #1d4ed8;
+}
