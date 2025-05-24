@@ -323,3 +323,26 @@ a:hover {
   text-align: center;
   margin-top: 20px;
 }
+
+.reserva-pasadias-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.imagen-pasadias {
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.formulario-pasadias {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
