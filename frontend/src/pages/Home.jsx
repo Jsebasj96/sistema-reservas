@@ -46,20 +46,14 @@ const Home = () => {
             <a href="#eventos" className="hover:text-emerald-600 transition">Eventos</a>
             <a href="#contacto" className="hover:text-emerald-600 transition">Contacto</a>
           </nav>
-          <div className="flex items-center space-x-8">
-            <button
-              onClick={() => navigate('/login')}
-              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition"
-            >
-              Iniciar Sesión
-            </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition"
-            >
-              Registrarse
-            </button>
-          </div>
+          <div className="flex items-center gap-3">
+          <button onClick={() => navigate('/login')} className="btn">
+            Iniciar Sesión
+          </button>
+          <button onClick={() => navigate('/register')} className="btn">
+            Registrarse
+          </button>
+        </div>
         </div>
       </header>
 
