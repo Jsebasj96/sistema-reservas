@@ -528,18 +528,21 @@ function ReservasHistorial() {
     reservasService.obtenerReservas().then(setReservas).catch(console.error);
   }, []);
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Historial de Reservas</h2>
-      <ul className="bg-white shadow rounded p-4 space-y-2">
+  <div className="bg-white p-6 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4">Historial de Reservas</h2>
+    {reservas.length === 0 ? (
+      <p className="tabla-vacia">No hay reservas registradas.</p>
+    ) : (
+      <ul className="list-admin space-y-2">
         {reservas.map(r => (
-          <li key={r.id} className="border-b py-2">
-            <strong>#{r.id}</strong> {new Date(r.fecha_inicio).toLocaleDateString()} –{' '}
-            {new Date(r.fecha_fin).toLocaleDateString()} (${r.total_pago})
+          <li key={r.id} className="list-item">
+            <span className="font-semibold text-gray-700">#{r.id}</span> — {new Date(r.fecha_inicio).toLocaleDateString()} a {new Date(r.fecha_fin).toLocaleDateString()} — <span className="text-green-700">${parseFloat(r.total_pago).toLocaleString()}</span>
           </li>
         ))}
       </ul>
-    </div>
-  );
+    )}
+  </div>
+);
 }
 
 // ------------- HabitacionesEstado -------------
@@ -857,21 +860,21 @@ function EventoHistorial() {
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Historial de Eventos</h2>
-      <ul className="bg-white shadow rounded p-4 space-y-2">
-        {eventos.length === 0 ? (
-          <p className="text-gray-500">No hay eventos registrados.</p>
-        ) : (
-          eventos.map(e => (
-            <li key={e.id} className="border-b py-2">
-              <strong>#{e.id}</strong> - {e.nombre_evento} ({e.tipo_evento}) el {new Date(e.fecha_evento).toLocaleDateString()} – ${e.costo}
-            </li>
-          ))
-        )}
+  <div className="bg-white p-6 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4">Historial de Eventos</h2>
+    {eventos.length === 0 ? (
+      <p className="tabla-vacia">No hay eventos registrados.</p>
+    ) : (
+      <ul className="list-admin space-y-2">
+        {eventos.map(e => (
+          <li key={e.id} className="list-item">
+            <span className="font-semibold text-gray-700">#{e.id}</span> — {e.nombre_evento} <em>({e.tipo_evento})</em> el {new Date(e.fecha_evento).toLocaleDateString()} — <span className="text-green-700">${parseFloat(e.costo).toLocaleString()}</span>
+          </li>
+        ))}
       </ul>
-    </div>
-  );
+    )}
+  </div>
+);
 }
 
 function Crearpasadia() {
@@ -995,19 +998,21 @@ function PasadiaHistorial() {
   }, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Historial de Pasadías</h2>
-      <ul className="bg-white shadow rounded p-4 space-y-2">
-        {pasadias.map((p) => (
-          <li key={p.id} className="border-b py-2">
-            <strong>#{p.id}</strong> – {new Date(p.fecha).toLocaleDateString()} –{' '}
-            {p.tipo_pasadia.replace('_', ' ')} – {p.cantidad_personas} persona(s) – $
-            {Number(p.total_pago).toLocaleString()}
+  <div className="bg-white p-6 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4">Historial de Pasadías</h2>
+    {pasadias.length === 0 ? (
+      <p className="tabla-vacia">No hay pasadías registrados.</p>
+    ) : (
+      <ul className="list-admin space-y-2">
+        {pasadias.map(p => (
+          <li key={p.id} className="list-item">
+            <span className="font-semibold text-gray-700">#{p.id}</span> — {new Date(p.fecha).toLocaleDateString()} — {p.tipo_pasadia.replace('_', ' ')} — {p.cantidad_personas} persona(s) — <span className="text-green-700">${parseFloat(p.total_pago).toLocaleString()}</span>
           </li>
         ))}
       </ul>
-    </div>
-  );
+    )}
+  </div>
+);
 }
 
 function PedidosCrear() {
@@ -1159,24 +1164,24 @@ function PedidosHistorial() {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h3 className="text-xl font-semibold mb-4">Historial de Pedidos</h3>
-      {pedidos.length === 0 ? (
-        <p className="text-gray-500">No hay pedidos registrados.</p>
-      ) : (
-        <ul className="space-y-2">
-          {pedidos.map(p => (
-            <li key={p.id} className="border-b pb-2 flex justify-between">
-              <div>
-                <strong>#{p.id}</strong> {p.nombre_producto} x{p.cantidad} — {p.tipo}
-              </div>
-              <div className="font-medium">${p.total}</div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+  <div className="bg-white p-6 rounded shadow">
+    <h3 className="text-xl font-semibold mb-4">Historial de Pedidos</h3>
+    {pedidos.length === 0 ? (
+      <p className="tabla-vacia">No hay pedidos registrados.</p>
+    ) : (
+      <ul className="list-admin space-y-2">
+        {pedidos.map(p => (
+          <li key={p.id} className="list-item flex justify-between items-center">
+            <div>
+              <span className="font-semibold text-gray-700">#{p.id}</span> — {p.nombre_producto} ×{p.cantidad} — <span className="italic">{p.tipo}</span>
+            </div>
+            <div className="text-green-700 font-medium">${parseFloat(p.total).toLocaleString()}</div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+);
 }
 
 function PedidosInventario() {
