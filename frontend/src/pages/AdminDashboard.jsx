@@ -6,6 +6,18 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../context/AuthContext';
 import { reservasService } from '../services/reservasService';
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const API_URL =
   process.env.REACT_APP_API_URL ||
@@ -170,45 +182,58 @@ function DashboardContent() {
   const [proximasReservas, setProximasReservas] = useState([]);
 
   useEffect(() => {
-    // 1) Estadísticas resumen
     axios.get(`${API_URL}/api/admin/dashboard-stats`, { withCredentials: true })
       .then(res => setStats(res.data))
       .catch(console.error);
 
-    // 2) Próximas reservas
     axios.get(`${API_URL}/api/reservas/proximas?dias=7`, { withCredentials: true })
       .then(res => setProximasReservas(res.data.reservas || []))
       .catch(console.error);
   }, []);
 
+  // Datos dummy para el gráfico de ocupación semanal
+  const ocupacionData = {
+    labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+    datasets: [
+      {
+        label: 'Porcentaje Ocupación',
+        data: [65, 72, 55, 40, 90, 95, 88], // datos simulados
+        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+        borderRadius: 5
+      }
+    ]
+  };
+
+  const ocupacionOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: false },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          callback: value => `${value}%`
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-8">
-      {/* Título */}
       <h2 className="text-3xl font-semibold">Panel de Control</h2>
 
-      {/* 1) Tarjetas de resumen */}
+      {/* Tarjetas de resumen */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
-          <span className="text-gray-500">Reservas este mes</span>
-          <span className="text-4xl font-bold mt-2">{stats.reservasMes}</span>
-        </div>
-        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
-          <span className="text-gray-500">Ingresos este mes</span>
-          <span className="text-4xl font-bold mt-2">
-            ${stats.ingresosMes.toLocaleString()}
-          </span>
-        </div>
-        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
-          <span className="text-gray-500">Habitaciones libres</span>
-          <span className="text-4xl font-bold mt-2">{stats.habitacionesLibres}</span>
-        </div>
-        <div className="bg-white rounded shadow p-6 flex flex-col items-center">
-          <span className="text-gray-500">Cabañas libres</span>
-          <span className="text-4xl font-bold mt-2">{stats.cabanasLibres}</span>
-        </div>
+        <SummaryCard label="Reservas este mes" value={stats.reservasMes} />
+        <SummaryCard label="Ingresos este mes" value={`$${stats.ingresosMes.toLocaleString()}`} />
+        <SummaryCard label="Habitaciones libres" value={stats.habitacionesLibres} />
+        <SummaryCard label="Cabañas libres" value={stats.cabanasLibres} />
       </div>
 
-      {/* 2) Próximas reservas */}
+      {/* Próximas reservas */}
       <div className="bg-white rounded shadow overflow-x-auto">
         <h3 className="text-2xl font-medium px-6 py-4 border-b">
           Próximas Reservas (7 días)
@@ -236,12 +261,8 @@ function DashboardContent() {
                   <td className="px-4 py-2 border">{r.id}</td>
                   <td className="px-4 py-2 border">{r.nombre_cliente}</td>
                   <td className="px-4 py-2 border">{r.unidad}</td>
-                  <td className="px-4 py-2 border">
-                    {new Date(r.fecha_inicio).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 border">
-                    {new Date(r.fecha_fin).toLocaleDateString()}
-                  </td>
+                  <td className="px-4 py-2 border">{new Date(r.fecha_inicio).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 border">{new Date(r.fecha_fin).toLocaleDateString()}</td>
                 </tr>
               ))
             )}
@@ -249,14 +270,20 @@ function DashboardContent() {
         </table>
       </div>
 
-      {/* 3) Gráfico de ocupación semanal (placeholder) */}
+      {/* Gráfico de ocupación */}
       <div className="bg-white rounded shadow p-6">
         <h3 className="text-2xl font-medium mb-4">Ocupación Semanal</h3>
-        <div className="h-48 flex items-center justify-center text-gray-400">
-          {/* Aquí podrías integrar Chart.js, Recharts u otra librería */}
-          📊 [Gráfico de ocupación]
-        </div>
+        <Bar data={ocupacionData} options={ocupacionOptions} />
       </div>
+    </div>
+  );
+}
+
+function SummaryCard({ label, value }) {
+  return (
+    <div className="bg-white rounded shadow p-6 text-center">
+      <p className="text-gray-500">{label}</p>
+      <p className="text-4xl font-bold mt-2">{value}</p>
     </div>
   );
 }
