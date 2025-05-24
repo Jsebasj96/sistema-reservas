@@ -1,4 +1,3 @@
-// src/pages/Promociones.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,37 +26,31 @@ export default function Promociones() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-200 py-12 px-4">
-      <h1 className="text-4xl font-extrabold text-center mb-8 text-green-900">
+    <section className="servicio-detalle bg-gray-50 py-12 px-6 min-h-screen">
+      <h1 className="text-3xl font-bold text-center text-green-800 mb-12">
         ¡Nuestras Ofertas Especiales!
       </h1>
 
-      <div className="flex flex-wrap justify-center gap-8">
-        {promociones.map(promo => (
-          <div
-            key={promo.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition w-[250px] h-[250px] flex flex-col"
-          >
-            <img
-              src={promo.imagen}
-              alt={promo.titulo}
-              className="w-full h-[120px] object-cover"
-            />
-            <div className="p-3 flex flex-col justify-between flex-1">
-              <h2 className="text-base font-semibold text-green-800">
-                {promo.titulo}
-              </h2>
-              <p className="text-sm text-gray-700">{promo.descripcion}</p>
-              <button
-                onClick={() => navigate('/reservas')}
-                className="mt-2 w-full bg-green-600 text-white py-1 text-sm rounded hover:bg-green-700 transition"
-              >
-                Reservar Ahora
-              </button>
-            </div>
+      {promociones.map((promo) => (
+        <div key={promo.id} className="detalle-contenido flex flex-col md:flex-row items-center gap-6 mb-10 max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-4">
+          <img
+            src={promo.imagen}
+            alt={promo.titulo}
+            className="w-full md:w-1/2 h-auto object-cover rounded"
+          />
+          <div className="detalle-info md:w-1/2">
+            <h2 className="text-2xl font-bold text-green-800 mb-2">{promo.titulo}</h2>
+            <p className="text-gray-700 mb-4">{promo.descripcion}</p>
+            <button
+              onClick={() => navigate('/reservas')}
+              className="bg-green-700 text-white px-5 py-2 rounded hover:bg-green-800 transition"
+            >
+              Reservar Ahora
+            </button>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      ))}
+    </section>
   );
 }
+
