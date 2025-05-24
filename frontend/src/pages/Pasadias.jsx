@@ -72,7 +72,7 @@ const Pasadias = () => {
 
       <div className="reserva-pasadias-container">
         <img
-          src="https://pixabay.com/es/photos/piscina-del-hotel-piscina-del-resort-1065275/"
+          src="https://cdn.pixabay.com/photo/2015/11/27/10/38/hotel-swimming-pool-1065275_1280.jpg"
           alt="Pasadía"
           className="imagen-pasadias"
         />
