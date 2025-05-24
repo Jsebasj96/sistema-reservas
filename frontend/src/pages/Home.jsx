@@ -94,7 +94,7 @@ const Home = () => {
       {/* Nuestros Servicios */}
       <section id="servicios" className="bg-white py-16">
         <h3 className="text-4xl font-bold text-center mb-12 text-zinc-800">Nuestros Servicios</h3>
-        <div className="px-4">
+        <div className="px-14">
         <div className="flex flex-wrap justify-center gap-16">
             {[
               {
