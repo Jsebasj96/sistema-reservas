@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import './custom.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://sistema-reservas-final.onrender.com';
 
@@ -46,72 +47,94 @@ const Eventos = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-8 px-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">Registrar Evento</h2>
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 py-10 px-4">
+      {/* CTA emocional */}
+      <h3 className="text-xl font-semibold text-center text-green-700 mb-2">
+        🎉 ¡Organiza tu evento soñado en el lugar perfecto!
+      </h3>
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        <Form className="space-y-4">
-          <div>
-            <label className="block font-medium">Nombre del Evento</label>
-            <Field
-              type="text"
-              name="nombre_evento"
-              className="w-full border px-3 py-2 rounded"
-            />
-            <ErrorMessage name="nombre_evento" component="div" className="text-red-500 text-sm" />
-          </div>
+      {/* Introducción */}
+      <p className="mb-6 text-gray-600 text-center max-w-xl mx-auto">
+        Completa este formulario para reservar tu evento en nuestras instalaciones.
+        Ideal para celebraciones, eventos sociales, empresariales y más.
+      </p>
 
-          <div>
-            <label className="block font-medium">Descripción</label>
-            <Field
-              as="textarea"
-              name="descripcion"
-              className="w-full border px-3 py-2 rounded"
-            />
-            <ErrorMessage name="descripcion" component="div" className="text-red-500 text-sm" />
-          </div>
+      {/* Información general y layout */}
+      <div className="evento-container">
+        {/* Imagen */}
+        <img
+          src="https://cdn.pixabay.com/photo/2021/01/14/08/46/event-5914903_1280.jpg"
+          alt="Evento"
+          className="imagen-evento"
+        />
 
-          <div>
-            <label className="block font-medium">Fecha del Evento</label>
-            <Field
-              type="date"
-              name="fecha_evento"
-              className="w-full border px-3 py-2 rounded"
-            />
-            <ErrorMessage name="fecha_evento" component="div" className="text-red-500 text-sm" />
-          </div>
-
-          <div>
-            <label className="block font-medium">Tipo de Evento</label>
-            <Field as="select" name="tipo_evento" className="w-full border px-3 py-2 rounded">
-              <option value="privado">Privado</option>
-              <option value="corporativo">Corporativo</option>
-              <option value="social">Social</option>
-            </Field>
-            <ErrorMessage name="tipo_evento" component="div" className="text-red-500 text-sm" />
-          </div>
-
-          <div>
-            <label className="block font-medium">Total a pagar</label>
-            <div className="w-full px-3 py-2 rounded bg-gray-100 border text-gray-800 font-semibold">
-              $450.000
+        {/* Formulario */}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          <Form className="space-y-4 w-full max-w-md">
+            <div>
+              <label className="block font-medium">Nombre del Evento</label>
+              <Field type="text" name="nombre_evento" className="w-full border px-3 py-2 rounded" />
+              <ErrorMessage name="nombre_evento" component="div" className="text-red-500 text-sm" />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800"
-          >
-            Registrar Evento
-          </button>
+            <div>
+              <label className="block font-medium">Descripción</label>
+              <Field as="textarea" name="descripcion" className="w-full border px-3 py-2 rounded" />
+              <ErrorMessage name="descripcion" component="div" className="text-red-500 text-sm" />
+            </div>
 
-          {mensaje && <p className="mt-4 text-center font-medium">{mensaje}</p>}
-        </Form>
-      </Formik>
+            <div>
+              <label className="block font-medium">Fecha del Evento</label>
+              <Field type="date" name="fecha_evento" className="w-full border px-3 py-2 rounded" />
+              <ErrorMessage name="fecha_evento" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div>
+              <label className="block font-medium">Tipo de Evento</label>
+              <Field as="select" name="tipo_evento" className="w-full border px-3 py-2 rounded">
+                <option value="privado">Privado</option>
+                <option value="corporativo">Corporativo</option>
+                <option value="social">Social</option>
+              </Field>
+              <ErrorMessage name="tipo_evento" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div>
+              <label className="block font-medium">Total a pagar</label>
+              <div className="w-full px-3 py-2 rounded bg-gray-100 border text-gray-800 font-semibold">
+                $450.000
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800"
+            >
+              Registrar Evento
+            </button>
+
+            {mensaje && <p className="mt-4 text-center font-medium">{mensaje}</p>}
+          </Form>
+        </Formik>
+      </div>
+
+      {/* Beneficios del servicio de eventos */}
+      <ul className="mt-10 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-sm max-w-3xl">
+        <li>✅ Salones amplios y equipados</li>
+        <li>✅ Personal de apoyo durante el evento</li>
+        <li>✅ Parqueadero gratuito</li>
+        <li>✅ Opción de catering y decoración</li>
+      </ul>
+
+      {/* Información de disponibilidad */}
+      <div className="info-box bg-green-100 text-green-800 p-4 rounded mb-6 text-sm max-w-md mx-auto text-center">
+        <p><strong>Disponibilidad:</strong> Lunes a domingo, de 9:00 a.m. a 10:00 p.m.</p>
+        <p><strong>Tarifa:</strong> $450.000 por evento (servicios básicos incluidos)</p>
+      </div>
     </div>
   );
 };

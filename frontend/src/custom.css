@@ -346,3 +346,17 @@ a:hover {
   flex-direction: column;
   gap: 16px;
 }
+
+.evento-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.imagen-evento {
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
