@@ -1181,46 +1181,44 @@ function PedidosInventario() {
   }
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">Inventario de Pedidos</h2>
-      {pedidos.length === 0 ? (
-        <p className="text-gray-500">No hay pedidos registrados.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2 border">ID</th>
-                <th className="px-4 py-2 border">Producto</th>
-                <th className="px-4 py-2 border">Cantidad</th>
-                <th className="px-4 py-2 border">Tipo</th>
-                <th className="px-4 py-2 border">Categoría</th>
-                <th className="px-4 py-2 border">Habitación</th>
-                <th className="px-4 py-2 border">Total</th>
-                <th className="px-4 py-2 border">Fecha</th>
+  <div className="bg-white p-6 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4">Inventario de Pedidos</h2>
+    {pedidos.length === 0 ? (
+      <p className="tabla-vacia">No hay pedidos registrados.</p>
+    ) : (
+      <div className="overflow-x-auto">
+        <table className="tabla-admin">
+          <thead>
+            <tr>
+              <th className="tabla-th">ID</th>
+              <th className="tabla-th">Producto</th>
+              <th className="tabla-th">Cantidad</th>
+              <th className="tabla-th">Tipo</th>
+              <th className="tabla-th">Categoría</th>
+              <th className="tabla-th">Habitación</th>
+              <th className="tabla-th">Total</th>
+              <th className="tabla-th">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pedidos.map(p => (
+              <tr key={p.id} className="hover:bg-gray-50">
+                <td className="tabla-td">{p.id}</td>
+                <td className="tabla-td">{p.nombre_producto}</td>
+                <td className="tabla-td">{p.cantidad}</td>
+                <td className="tabla-td">{p.tipo}</td>
+                <td className="tabla-td">{p.categoria}</td>
+                <td className="tabla-td">{p.habitacion_id ?? '—'}</td>
+                <td className="tabla-td">${p.total}</td>
+                <td className="tabla-td">{new Date(p.created_at).toLocaleString()}</td>
               </tr>
-            </thead>
-            <tbody>
-              {pedidos.map(p => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{p.id}</td>
-                  <td className="px-4 py-2 border">{p.nombre_producto}</td>
-                  <td className="px-4 py-2 border">{p.cantidad}</td>
-                  <td className="px-4 py-2 border">{p.tipo}</td>
-                  <td className="px-4 py-2 border">{p.categoria}</td>
-                  <td className="px-4 py-2 border">{p.habitacion_id ?? '—'}</td>
-                  <td className="px-4 py-2 border">${p.total}</td>
-                  <td className="px-4 py-2 border">
-                    {new Date(p.created_at).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+);
 }
 
 function IngresosPedidos() {
@@ -1268,38 +1266,39 @@ function IngresosPedidos() {
 
       {/* --- Tabla Detallada de Pedidos --- */}
       <div className="bg-white rounded shadow overflow-x-auto">
-        <h2 className="text-2xl font-semibold px-6 py-4 border-b">Detalle de Pedidos</h2>
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 border">ID</th>
-              <th className="px-4 py-2 border">Producto</th>
-              <th className="px-4 py-2 border">Cantidad</th>
-              <th className="px-4 py-2 border">Tipo</th>
-              <th className="px-4 py-2 border">Categoría</th>
-              <th className="px-4 py-2 border">Total</th>
-              <th className="px-4 py-2 border">Fecha</th>
+      <h2 className="text-2xl font-semibold px-6 py-4 border-b">Detalle de Pedidos</h2>
+      <table className="tabla-admin">
+        <thead>
+          <tr>
+            <th className="tabla-th">ID</th>
+            <th className="tabla-th">Producto</th>
+            <th className="tabla-th">Cantidad</th>
+            <th className="tabla-th">Tipo</th>
+            <th className="tabla-th">Categoría</th>
+            <th className="tabla-th">Total</th>
+            <th className="tabla-th">Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pedidos.map(p => (
+            <tr key={p.id} className="hover:bg-gray-50">
+              <td className="tabla-td">{p.id}</td>
+              <td className="tabla-td">{p.nombre_producto}</td>
+              <td className="tabla-td">{p.cantidad}</td>
+              <td className="tabla-td">{p.tipo}</td>
+              <td className="tabla-td">{p.categoria}</td>
+              <td className="tabla-td">${parseFloat(p.total).toLocaleString()}</td>
+              <td className="tabla-td">
+                {new Date(p.created_at).toLocaleString('es-ES', {
+                  dateStyle: 'short',
+                  timeStyle: 'short'
+                })}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {pedidos.map(p => (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border">{p.id}</td>
-                <td className="px-4 py-2 border">{p.nombre_producto}</td>
-                <td className="px-4 py-2 border">{p.cantidad}</td>
-                <td className="px-4 py-2 border">{p.tipo}</td>
-                <td className="px-4 py-2 border">{p.categoria}</td>
-                <td className="px-4 py-2 border">${parseFloat(p.total).toLocaleString()}</td>
-                <td className="px-4 py-2 border">
-                  {new Date(p.created_at).toLocaleString('es-ES', {
-                    dateStyle: 'short', timeStyle: 'short'
-                  })}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+    </div>
     </div>
   );
 }
