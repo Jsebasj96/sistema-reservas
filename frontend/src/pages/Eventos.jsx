@@ -65,7 +65,7 @@ const Eventos = () => {
 
       <div className="reserva-pasadias-container">
         <img
-          src="https://cdn.pixabay.com/photo/2016/11/19/14/00/balloons-1835340_1280.jpg"
+          src="https://cdn.pixabay.com/photo/2017/12/08/11/53/event-party-3005668_1280.jpg"
           alt="Evento"
           className="imagen-pasadias"
         />
