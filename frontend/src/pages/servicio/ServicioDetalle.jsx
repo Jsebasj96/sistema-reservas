@@ -61,17 +61,23 @@ export default function ServicioDetalle() {
 
       case 'restaurante-bar':
         return (
-          <>
-            <h2 className="text-3xl font-bold mb-4">Restaurante y Bar</h2>
-            <div className="space-y-4">
-              <img src="https://cdn.pixabay.com/photo/2016/11/18/22/21/restaurant-1837150_1280.jpg" alt="Restaurante" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
+        <section className="servicio-detalle">
+          <div className="detalle-contenido">
+            <img
+              src="https://cdn.pixabay.com/photo/2016/11/18/22/21/restaurant-1837150_1280.jpg"
+              alt="Restaurante"
+              className="detalle-imagen"
+            />
+            <div className="detalle-info">
+              <h2 className="titulo-servicio">Restaurante y Bar</h2>
               <p><strong>Horario:</strong> 7:00 am – 10:00 pm</p>
               <p><strong>Especialidades:</strong> Bandeja paisa, sancocho, jugos naturales, cervezas nacionales.</p>
               <p><strong>Recomendaciones:</strong> Reservar mesa en fines de semana, revisar menú del día.</p>
+              <BotonReservar />
             </div>
-            <BotonReservar />
-          </>
-        );
+          </div>
+        </section>
+      );
 
       case 'pasadias':
         return (
@@ -105,25 +111,57 @@ export default function ServicioDetalle() {
 
       case 'actividades':
         return (
-          <>
-            <h2 className="text-3xl font-bold mb-4">Actividades Recreativas</h2>
-            <div className="grid gap-6 md:grid-cols-2">
-              {[
-                { nombre: 'Caminatas ecológicas', img: 'https://cdn.pixabay.com/photo/2021/11/15/18/47/nature-6799071_1280.jpg' },
-                { nombre: 'Alquiler de ciclas', img: 'https://cdn.pixabay.com/photo/2019/04/23/14/23/bike-4149653_1280.jpg' },
-                { nombre: 'Tenis de mesa', img: 'https://cdn.pixabay.com/photo/2016/05/31/23/21/table-tennis-1428051_1280.jpg' },
-                { nombre: 'Billar', img: 'https://cdn.pixabay.com/photo/2017/01/09/22/24/guy-playing-billiard-1967834_1280.jpg' },
-              ].map((a, i) => (
-                <div key={i} className="border rounded p-4">
-                  <img src={a.img} alt={a.nombre} style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow" />
-                  <h3 className="text-lg font-semibold">{a.nombre}</h3>
-                  <p>Disfrútala sin costo adicional con tu entrada.</p>
-                </div>
-              ))}
+           <section className="servicio-detalle">
+            <div className="detalle-contenido">
+              <img
+                src="https://cdn.pixabay.com/photo/2021/11/15/18/47/nature-6799071_1280.jpg"
+                alt="Caminatas ecológicas"
+                className="detalle-imagen"
+              />
+              <div className="detalle-info">
+                <h2 className="titulo-servicio">Caminatas ecológicas</h2>
+                <p>Disfrútala sin costo adicional con tu entrada.</p>
+                <BotonReservar />
+              </div>
             </div>
-            <BotonReservar />
-          </>
-        );
+            <div className="detalle-contenido">
+              <img
+                src="https://cdn.pixabay.com/photo/2019/04/23/14/23/bike-4149653_1280.jpg"
+                alt="Alquiler de ciclas"
+                className="detalle-imagen"
+              />
+              <div className="detalle-info">
+                <h2 className="titulo-servicio">Alquiler de ciclas</h2>
+                <p>Disfrútala sin costo adicional con tu entrada.</p>
+                <BotonReservar />
+              </div>
+            </div>
+            <div className="detalle-contenido">
+              <img
+                src="https://cdn.pixabay.com/photo/2016/05/31/23/21/table-tennis-1428051_1280.jpg"
+                alt="Tenis de mesa"
+                className="detalle-imagen"
+              />
+              <div className="detalle-info">
+                <h2 className="titulo-servicio">Tenis</h2>
+                <p>Disfrútala sin costo adicional con tu entrada.</p>
+                <BotonReservar />
+              </div>
+            </div>
+            <div className="detalle-contenido">
+              <img
+                src="https://cdn.pixabay.com/photo/2017/01/09/22/24/guy-playing-billiard-1967834_1280.jpg"
+                alt="Billar"
+                className="detalle-imagen"
+              />
+              <div className="detalle-info">
+                <h2 className="titulo-servicio">Billar</h2>
+                <p>Disfrútala sin costo adicional con tu entrada.</p>
+                <BotonReservar />
+              </div>
+            </div>
+          </section>
+      );
 
       case 'eventos':
         return (
