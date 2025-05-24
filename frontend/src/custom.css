@@ -88,3 +88,22 @@ a:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
 }
+
+.icon-box {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d1fae5; /* bg-emerald-100 */
+  color: #059669; /* text-emerald-600 */
+  border-radius: 9999px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05); /* shadow-inner */
+  font-size: 2.5rem; /* equivalente a text-4xl */
+}
+
+.icon-box:hover {
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}

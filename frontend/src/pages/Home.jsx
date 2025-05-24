@@ -140,7 +140,7 @@ const Home = () => {
             >
               <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-full shadow-inner">
                 {/* Aquí aplicamos clases directamente al ícono */}
-                <div className="text-4xl">{icon}</div>
+                <div className="icon-box">{icon}</div>
               </div>
               <h4 className="text-xl font-semibold mb-2 text-zinc-800">{title}</h4>
               <p className="text-zinc-600">{desc}</p>
