@@ -30,24 +30,36 @@ export default function ServicioDetalle() {
       );
 
       case 'hospedaje':
-        return (
-          <>
-            <h2 className="text-3xl font-bold mb-6">Cabañas y Habitaciones</h2>
+      return (
+        <>
+          <h2 className="text-3xl font-bold mb-6">Cabañas y Habitaciones</h2>
+          <div className="detalle-contenedor">
             <div className="grid gap-6 md:grid-cols-2">
               <div className="border rounded p-4">
-                <img src="https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg" alt="Habitación" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
+                <img
+                  src="https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg"
+                  alt="Habitación"
+                  style={{ width: '600px', height: '600px', objectFit: 'cover' }}
+                  className="rounded shadow"
+                />
                 <h3 className="text-xl font-semibold">Habitación Estándar</h3>
                 <p>Capacidad: 2 personas. Incluye baño privado, TV, aire acondicionado.</p>
               </div>
               <div className="border rounded p-4">
-                <img src="https://media.istockphoto.com/id/2170176939/photo/cozy-and-modern-living-room-in-the-tree-house.jpg?s=2048x2048&w=is&k=20&c=n2lUqrrUsYjIm6KE_fN7W3qLR-cLoVU9QoY9fzKNX0Q=" alt="Cabaña" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
+                <img
+                  src="https://media.istockphoto.com/id/2170176939/photo/cozy-and-modern-living-room-in-the-tree-house.jpg?s=2048x2048&w=is&k=20&c=n2lUqrrUsYjIm6KE_fN7W3qLR-cLoVU9QoY9fzKNX0Q="
+                  alt="Cabaña"
+                  style={{ width: '600px', height: '600px', objectFit: 'cover' }}
+                  className="rounded shadow"
+                />
                 <h3 className="text-xl font-semibold">Cabaña Familiar</h3>
                 <p>Capacidad: hasta 6 personas. Cocina equipada, zona verde, hamacas.</p>
               </div>
             </div>
-            <BotonReservar />
-          </>
-        );
+          </div>
+          <BotonReservar />
+        </>
+      );
 
       case 'restaurante-bar':
         return (
