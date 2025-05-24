@@ -3,14 +3,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { HiHome, HiArrowLeft } from 'react-icons/hi2';
 import { FaRobot } from 'react-icons/fa';
-import Chatbot from '../components/Chatbot'; // Asegúrate que esta ruta sea correcta
+import ChatbotModal from '../components/ChatbotModal'; // Asegúrate de que la ruta sea correcta
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [now, setNow] = useState(new Date());
-  const [chatVisible, setChatVisible] = useState(false); // 👈 NUEVO estado
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-green-700 p-4 text-white flex items-center gap-4">
+      <nav className="bg-green-700 p-4 text-white flex items-center gap-4 relative z-40">
         {location.pathname !== '/' && (
           <button
             onClick={() => navigate(-1)}
@@ -48,15 +48,16 @@ const Navbar = () => {
           <HiHome size={40} />
         </Link>
 
-        <div className="flex-1 text-center text-sm md:text-base">{formatted}</div>
+        <div className="flex-1 text-center text-sm md:text-base">
+          {formatted}
+        </div>
 
-        {/* Botón chatbot */}
         <button
-          onClick={() => setChatVisible(prev => !prev)}
-          className="hover:text-yellow-300 transition"
-          title="Abrir Chatbot"
+          onClick={() => setChatOpen(prev => !prev)}
+          className="text-white hover:text-gray-300 transition"
+          title="Abrir asistente virtual"
         >
-          <FaRobot size={28} />
+          <FaRobot size={30} />
         </button>
 
         {user && (
@@ -69,8 +70,8 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Chatbot flotante */}
-      {chatVisible && <Chatbot />}
+      {/* Chatbot Modal */}
+      <ChatbotModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
     </>
   );
 };
