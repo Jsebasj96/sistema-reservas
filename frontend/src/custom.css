@@ -166,3 +166,63 @@ a:hover {
   margin-bottom: 1rem;
   color: #14532d;
 }
+
+.pasadia-formulario {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f9fafb;
+  border-radius: 10px;
+  margin-top: 40px;
+}
+
+.formulario-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 500px;
+}
+
+.campo-formulario {
+  margin-bottom: 20px;
+}
+
+.label-formulario {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.input-formulario {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.input-formulario:focus {
+  border-color: #10b981;
+  outline: none;
+}
+
+.btn-formulario {
+  width: 100%;
+  background-color: #047857;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.btn-formulario:hover {
+  background-color: #065f46;
+}

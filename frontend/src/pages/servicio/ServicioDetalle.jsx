@@ -81,33 +81,36 @@ export default function ServicioDetalle() {
 
       case 'pasadias':
         return (
-          <>
-            <h2 className="text-3xl font-bold mb-4">Reserva de Pasadía</h2>
-            <form className="space-y-4 max-w-xl">
-              <div>
-                <label className="block font-medium">Fecha</label>
-                <input type="date" className="w-full border rounded px-3 py-2" />
+        <>
+          <h2 className="text-3xl font-bold mb-6 text-green-800 text-center">Reserva de Pasadía</h2>
+
+          <div className="pasadia-formulario">
+            <form className="formulario-box">
+              <div className="campo-formulario">
+                <label className="label-formulario">Fecha</label>
+                <input type="date" className="input-formulario" />
               </div>
-              <div>
-                <label className="block font-medium">Cantidad de personas</label>
-                <input type="number" className="w-full border rounded px-3 py-2" />
+
+              <div className="campo-formulario">
+                <label className="label-formulario">Cantidad de personas</label>
+                <input type="number" className="input-formulario" />
               </div>
-              <div>
-                <label className="block font-medium">Incluye almuerzo</label>
-                <select className="w-full border rounded px-3 py-2">
+
+              <div className="campo-formulario">
+                <label className="label-formulario">¿Incluye almuerzo?</label>
+                <select className="input-formulario">
                   <option>Sí</option>
                   <option>No</option>
                 </select>
               </div>
-              <button
-                type="submit"
-                className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800"
-              >
+
+              <button type="submit" className="btn-formulario">
                 Reservar pasadía
               </button>
             </form>
-          </>
-        );
+          </div>
+        </>
+      );
 
       case 'actividades':
         return (
