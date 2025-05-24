@@ -137,18 +137,18 @@ a:hover {
   background-color: #fff;
 }
 
-.detalle-contenedor {
+.detalle-contenido {
   display: flex;
-  flex-direction: row;
-  align-items: center;       
-  justify-content: center;   
-  min-height: 80vh;          
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
   padding: 40px;
 }
 
 .detalle-imagen {
-  max-width: 500px;
   width: 100%;
+  max-width: 700px;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -156,7 +156,7 @@ a:hover {
 
 .detalle-info {
   max-width: 700px;
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   color: #374151;
 }
 
