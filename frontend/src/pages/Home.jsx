@@ -37,14 +37,14 @@ const Home = () => {
           <h1 className="text-2xl font-extrabold text-emerald-600 tracking-tight">
             Club Campestre "La Buena Vida"
           </h1>
-          <nav className="hidden md:flex space-x-6">
-            <a href="#inicio" className="hover:text-green-700">Inicio</a>
-            <a href="#servicios" className="hover:text-green-700">Servicios</a>
-            <a href="#reservas" className="hover:text-green-700">Reservas</a>
-            <a href="#pasadias" className="hover:text-green-700">Pasadías</a>
-            <a href="#restaurante-bar" className="hover:text-green-700">Restaurante y Bar</a>
-            <a href="#eventos" className="hover:text-green-700">Eventos</a>
-            <a href="#contacto" className="hover:text-green-700">Contacto</a>
+          <nav className="hidden md:flex space-x-6 text-zinc-700 font-medium">
+            <a href="#inicio" className="hover:text-emerald-600 transition">Inicio</a>
+            <a href="#servicios" className="hover:text-emerald-600 transition">Servicios</a>
+            <a href="#reservas" className="hover:text-emerald-600 transition">Reservas</a>
+            <a href="#pasadias" className="hover:text-emerald-600 transition">Pasadías</a>
+            <a href="#restaurante-bar" className="hover:text-emerald-600 transition">Restaurante y Bar</a>
+            <a href="#eventos" className="hover:text-emerald-600 transition">Eventos</a>
+            <a href="#contacto" className="hover:text-emerald-600 transition">Contacto</a>
           </nav>
           <div className="space-x-3">
             <button
@@ -66,7 +66,7 @@ const Home = () => {
       {/* Hero */}
       <section
         id="inicio"
-        className="pt-0 bg-gradient-to-br from-green-200 to-green-100 text-center"
+        className="pt-24 bg-gradient-to-br from-emerald-100 via-white to-emerald-50 text-center"
       >
         {message && (
           <div className="bg-green-500 text-white p-4 rounded mb-4 max-w-xl mx-auto">
@@ -74,16 +74,16 @@ const Home = () => {
           </div>
         )}
         <div className="max-w-5xl mx-auto px-6 py-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 text-green-800">
+          <h2 className="text-5xl font-bold text-emerald-800 leading-tight">
             Vive la experiencia única en el Club Campestre “La Buena Vida”
           </h2>
-          <p className="text-lg mb-8">
+          <p className="text-xl mt-4 text-zinc-600">
             Naturaleza, descanso y diversión en un solo lugar.
           </p>
           <div className="flex justify-center gap-6 flex-wrap">
             <button
               onClick={handleReservarClick}
-              className="px-8 py-4 bg-green-700 text-white rounded-full text-xl hover:bg-green-800 transition"
+              className="mt-8 px-10 py-4 bg-emerald-600 text-white rounded-full shadow hover:bg-emerald-700 transition-all duration-200"
             >
               Reservar ahora
             </button>
