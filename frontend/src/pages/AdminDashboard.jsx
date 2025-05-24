@@ -23,7 +23,6 @@ const API_URL =
   process.env.REACT_APP_API_URL ||
   'https://sistema-reservas-final.onrender.com';
 
-/* --- Sidebar: Menú lateral con navegación --- */
 function Sidebar({ activeMenu, setActiveMenu }) {
   const menuItemClass = isActive =>
     isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600';
