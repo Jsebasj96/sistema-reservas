@@ -93,7 +93,7 @@ const Home = () => {
 
       {/* Nuestros Servicios */}
       <section id="servicios" className="bg-white py-16">
-        <h3 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h3>
+        <h3 className="text-4xl font-bold text-center mb-12 text-zinc-800">Nuestros Servicios</h3>
         <div className="px-4">
         <div className="flex flex-wrap justify-center gap-16">
             {[
@@ -154,7 +154,7 @@ const Home = () => {
       </section>
 
       {/* Galería */}
-      <section className="bg-white py-16 px-4">
+      <section className="overflow-x-auto py-8 bg-zinc-50">
         <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
         <div className="overflow-x-auto">
           <div className="flex gap-6 min-w-max">
