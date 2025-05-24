@@ -8,20 +8,26 @@ export default function ServicioDetalle() {
 
   const renderContenido = () => {
     switch (tipo) {
-      case 'piscina':
-        return (
-          <>
-            <h2 className="text-3xl font-bold mb-4">Piscina</h2>
-            <div className="space-y-4">
-              <img src="https://cdn.pixabay.com/photo/2013/10/07/13/34/pool-191972_1280.jpg" alt="Piscina" style={{ width: '600px', height: '600px', objectFit: 'cover' }} className="rounded shadow"/>
+     case 'piscina':
+      return (
+        <section className="servicio-detalle">
+          <div className="detalle-contenido">
+            <img
+              src="https://cdn.pixabay.com/photo/2013/10/07/13/34/pool-191972_1280.jpg"
+              alt="Piscina"
+              className="detalle-imagen"
+            />
+            <div className="detalle-info">
+              <h2 className="titulo-servicio">Piscina</h2>
               <p><strong>Horario:</strong> 8:00 am – 6:00 pm</p>
               <p><strong>Reglas:</strong> Uso obligatorio de gorro, no correr, niños bajo supervisión.</p>
               <p><strong>Recomendaciones:</strong> Llegar temprano, usar bloqueador solar, llevar hidratación.</p>
               <p>Disfruta de nuestras piscinas para adultos y niños rodeadas de naturaleza.</p>
+              <BotonReservar />
             </div>
-            <BotonReservar />
-          </>
-        );
+          </div>
+        </section>
+      );
 
       case 'hospedaje':
         return (

@@ -279,7 +279,7 @@ const Home = () => {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.905092748706!2d-74.082!3d4.60971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDLCsDM2JzM0LjkiTiA3NMKwMDUnMDYuMCJX!5e0!3m2!1ses!2sco!4v1648664700000!5m2!1ses!2sco"
             loading="lazy"
           />
-          <div className="flex flex-wrap justify-center gap-16">
+          <div >
             <p><strong>Dirección:</strong> Km 10 vía al paraíso, zona campestre</p>
             <p><strong>Teléfono:</strong> +57 300 123 4567</p>
             <p><strong>Correo:</strong> info@clublabuenavida.com</p>

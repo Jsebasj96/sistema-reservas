@@ -131,3 +131,37 @@ a:hover {
   justify-content: center;
   gap: 6rem 8rem; /* gap-y (vertical) de 6rem y gap-x (horizontal) de 8rem */
 }
+
+.servicio-detalle {
+  padding: 3rem 2rem;
+  background-color: #fff;
+}
+
+.detalle-contenido {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.detalle-imagen {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.detalle-info {
+  max-width: 600px;
+  font-size: 1.1rem;
+  color: #374151;
+}
+
+.titulo-servicio {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #14532d;
+}
