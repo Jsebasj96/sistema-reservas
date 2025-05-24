@@ -5,7 +5,7 @@ body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background-color: #f3f4f6;
-  color: #1f2937;
+  color: #16a34a;
 }
 
 /* Títulos */
@@ -32,7 +32,7 @@ label {
   font-weight: 600;
   display: block;
   margin-bottom: 5px;
-  color: #333;
+  color: #333333;
 }
 
 /* Botones */
