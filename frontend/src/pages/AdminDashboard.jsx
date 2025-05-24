@@ -159,20 +159,6 @@ function Sidebar({ activeMenu, setActiveMenu }) {
   );
 }
 
-/* --- Footer: Contacto, enlaces, versión --- */
-function Footer() {
-  return (
-    <footer className="p-4 bg-gray-50 text-center text-sm text-gray-600 border-t">
-      <p>Contacto: admin@labuenavida.com | Tel: (123) 456-7890</p>
-      <div className="space-x-2">
-        <a href="#" className="hover:underline">Política de Privacidad</a> |{' '}
-        <a href="#" className="hover:underline">Términos de Servicio</a>
-      </div>
-      <p className="mt-2">Versión 1.0.0</p>
-    </footer>
-  );
-}
-
 /* --- Contenido general --- */
 function DashboardContent() {
   const [stats, setStats] = useState({
@@ -290,29 +276,27 @@ function ReservasGestionar() {
   };
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-4">Gestión de Reservas</h2>
-      <table className="min-w-full bg-white shadow rounded overflow-hidden">
+    <h2 className="tabla-titulo">Gestión de Reservas</h2>
+    <div className="tabla-contenedor">
+      <table className="tabla-admin">
         <thead>
-          <tr className="bg-gray-100">
-            {['ID','User','Hab/Cabaña','Inicio','Fin','Total','Acciones'].map(h=>(
-              <th key={h} className="px-4 py-2 text-left">{h}</th>
+          <tr>
+            {['ID','User','Hab/Cabaña','Inicio','Fin','Total','Acciones'].map(h => (
+              <th key={h}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {reservas.map(r => (
-            <tr key={r.id} className="border-t">
-              <td className="px-4 py-2">{r.id}</td>
-              <td className="px-4 py-2">{r.user_id}</td>
-              <td className="px-4 py-2">{r.habitacion_id || r.cabana_id}</td>
-              <td className="px-4 py-2">{new Date(r.fecha_inicio).toLocaleDateString()}</td>
-              <td className="px-4 py-2">{new Date(r.fecha_fin).toLocaleDateString()}</td>
-              <td className="px-4 py-2">${r.total_pago}</td>
-              <td className="px-4 py-2">
-                <button
-                  onClick={()=>onDelete(r.id)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                >
+            <tr key={r.id}>
+              <td>{r.id}</td>
+              <td>{r.user_id}</td>
+              <td>{r.habitacion_id || r.cabana_id}</td>
+              <td>{new Date(r.fecha_inicio).toLocaleDateString()}</td>
+              <td>{new Date(r.fecha_fin).toLocaleDateString()}</td>
+              <td>${r.total_pago}</td>
+              <td>
+                <button onClick={() => onDelete(r.id)} className="btn-rojo">
                   Eliminar
                 </button>
               </td>
@@ -321,6 +305,7 @@ function ReservasGestionar() {
         </tbody>
       </table>
     </div>
+  </div>
   );
 }
 
@@ -1351,7 +1336,6 @@ export default function AdminDashboard() {
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
       <div className="flex flex-col flex-1">
         <main className="flex-1 overflow-auto p-6">{ContentComponent}</main>
-        <Footer />
       </div>
     </div>
   );
