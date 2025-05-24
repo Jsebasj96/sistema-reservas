@@ -170,50 +170,43 @@ const Home = () => {
 
       {/* Galería con botones */}
       <section className="py-16 bg-zinc-50 relative">
-        <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
+      <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
 
-        <div className="relative group">
-          {/* Botón izquierdo */}
-          <button
-            onClick={() => scrollCarousel('left')}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
-          >
-            <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+      <div className="relative group px-6">
+        {/* Botón izquierdo */}
+        <button
+          onClick={() => scrollCarousel('left')}
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
+        >
+          <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-          {/* Carrusel */}
-          <div id="carousel" className="carousel-gallery flex gap-6 px-6">
-            {[
-              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-              "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-            ].map((src, index) => (
-              <div key={index} className="min-w-[260px] max-w-[260px] rounded-xl overflow-hidden shadow-md flex-shrink-0">
-                <img
-                  src={src}
-                  alt={`Galería ${index + 1}`}
-                  className="w-full h-[180px] object-cover"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Botón derecho */}
-          <button
-            onClick={() => scrollCarousel('right')}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
-          >
-            <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+        {/* Carrusel */}
+        <div id="carousel" className="carousel-gallery">
+          {[
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          ].map((src, index) => (
+            <div key={index} className="min-w-[260px] max-w-[260px] rounded-lg overflow-hidden shadow-md flex-shrink-0">
+              <img src={src} alt={`Galería ${index + 1}`} className="w-full h-[180px] object-cover" />
+            </div>
+          ))}
         </div>
-      </section>
+
+        {/* Botón derecho */}
+        <button
+          onClick={() => scrollCarousel('right')}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
+        >
+          <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </section>
 
       {/* Testimonios */}
       <section className="bg-white py-16 mb-20">

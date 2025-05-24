@@ -58,7 +58,7 @@
   overflow-y: auto;
 }
 .rounded-full {
-  border-radius: calc(infinity * 1px);
+  border-radius: 9999px;
 }
 .border {
   border-style: var(--tw-border-style);

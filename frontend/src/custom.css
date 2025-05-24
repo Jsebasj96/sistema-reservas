@@ -113,6 +113,8 @@ a:hover {
 }
 
 .carousel-gallery {
+  display: flex;
+  gap: 1.5rem;
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
