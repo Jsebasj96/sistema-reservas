@@ -19,7 +19,7 @@ import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
 import ChatbotModal from './components/ChatbotModal'; // Aquí sí importamos
-
+import './styles/tailwind.css';
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -83,3 +83,4 @@ function App() {
 }
 
 export default App;
+
