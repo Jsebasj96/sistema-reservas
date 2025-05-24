@@ -168,6 +168,9 @@ const Home = () => {
             "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
           ].map((src, index) => (
             <div key={index} className="min-w-[260px] max-w-[260px] rounded-lg overflow-hidden shadow-md flex-shrink-0">
               <img src={src} alt={`Galería ${index + 1}`} className="w-full h-[180px] object-cover" />
