@@ -67,15 +67,12 @@ const Pasadias = () => {
       </div>
 
       <ul className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 max-w-2xl mx-auto">
-        <li>✅ Acceso a piscinas</li>
-        <li>✅ Actividades recreativas</li>
-        <li>✅ Parqueadero gratuito</li>
-        <li>✅ Almuerzo incluido (opcional)</li>
+        <li>✅ Acceso a piscinas - ✅ Actividades recreativas - ✅ Parqueadero gratuito - ✅ Almuerzo incluido (opcional)</li>
       </ul>
 
       <div className="reserva-pasadias-container">
         <img
-          src="https://cdn.pixabay.com/photo/2016/11/21/15/52/pool-1840794_1280.jpg"
+          src="https://pixabay.com/es/photos/piscina-del-hotel-piscina-del-resort-1065275/"
           alt="Pasadía"
           className="imagen-pasadias"
         />
