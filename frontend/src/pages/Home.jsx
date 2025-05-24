@@ -32,9 +32,9 @@ const Home = () => {
     <div className="font-sans text-gray-800">
       <div className="max-w-screen-xl mx-auto px-4">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white shadow z-50">
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 border-b border-zinc-200">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-green-700">
+          <h1 className="text-2xl font-extrabold text-emerald-600 tracking-tight">
             Club Campestre "La Buena Vida"
           </h1>
           <nav className="hidden md:flex space-x-6">
