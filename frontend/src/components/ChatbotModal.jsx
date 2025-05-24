@@ -1,10 +1,8 @@
 import React from 'react';
 
-const ChatbotModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
+const ChatbotModal = ({ onClose }) => {
   return (
-    <div className="absolute bottom-4 right-4 w-80 h-96 bg-white shadow-2xl border rounded-lg z-50 flex flex-col pointer-events-auto">
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white border shadow-2xl rounded-lg z-[9999] flex flex-col">
       <div className="bg-green-700 text-white p-3 flex justify-between items-center rounded-t-lg">
         <span>Asistente Virtual</span>
         <button onClick={onClose} className="text-white font-bold">✕</button>

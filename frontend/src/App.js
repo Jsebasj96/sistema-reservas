@@ -1,6 +1,5 @@
-// src/App.js
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ReservaProvider } from './context/ReservaContext';
 import { ServicioProvider } from './context/ServicioContext';
@@ -19,103 +18,62 @@ import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
-import './styles/tailwind.css';
+import ChatbotModal from './components/ChatbotModal'; // Aquí sí importamos
 
 function App() {
+  const [chatOpen, setChatOpen] = useState(false);
+
   return (
     <AuthProvider>
       <ReservaProvider>
         <ServicioProvider>
           <PagoProvider>
             <Router>
-              <Navbar />
+              {/* Navbar recibe el handler del chatbot */}
+              <Navbar onToggleChatbot={() => setChatOpen(prev => !prev)} />
+
+              {/* Rutas */}
               <Routes>
-                {/* Públicas */}
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-
-                {/* Protegidas para usuario normal */}
                 <Route
                   path="/dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Dashboard /></PrivateRoute>}
                 />
                 <Route
                   path="/reserva"
-                  element={
-                    <PrivateRoute>
-                      <Reserva />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Reserva /></PrivateRoute>}
                 />
                 <Route
                   path="/pasadias"
-                  element={
-                    <PrivateRoute>
-                      <Pasadias />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Pasadias /></PrivateRoute>}
                 />
                 <Route
                   path="/eventos"
-                  element={
-                    <PrivateRoute>
-                      <Eventos />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Eventos /></PrivateRoute>}
                 />
                 <Route
                   path="/servicios"
-                  element={
-                    <PrivateRoute>
-                      <Servicios />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Servicios /></PrivateRoute>}
                 />
                 <Route
                   path="/promociones"
-                  element={
-                    <PrivateRoute>
-                      <Promociones />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><Promociones /></PrivateRoute>}
                 />
                 <Route
                   path="/servicios/:tipo"
-                  element={
-                    <PrivateRoute>
-                      <ServicioDetalle />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><ServicioDetalle /></PrivateRoute>}
                 />
-
-                {/* Protegida para empleado */}
-                <Route
-                  path="//dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />    
-
-                {/* Protegida para admin */}
                 <Route
                   path="/admin"
-                  element={
-                    <PrivateRoute>
-                      <AdminDashboard />
-                    </PrivateRoute>
-                  }
+                  element={<PrivateRoute><AdminDashboard /></PrivateRoute>}
                 />
-
-                {/* Ruta 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+
+              {/* Renderizar chatbot fuera del flujo de rutas */}
+              {chatOpen && <ChatbotModal onClose={() => setChatOpen(false)} />}
             </Router>
           </PagoProvider>
         </ServicioProvider>
