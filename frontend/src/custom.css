@@ -124,3 +124,10 @@ a:hover {
 .carousel-gallery::-webkit-scrollbar {
   display: none;
 }
+
+.testimonios-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6rem 8rem; /* gap-y (vertical) de 6rem y gap-x (horizontal) de 8rem */
+}
