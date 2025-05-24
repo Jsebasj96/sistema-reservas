@@ -112,16 +112,13 @@ a:hover {
   margin: 10px; /* o 30px, según veas necesario */
 }
 
-.carousel-track {
-  scroll-behavior: smooth;
+.carousel-gallery {
   overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
 }
 
-.carousel-track::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-
-.carousel-item {
-  flex: 0 0 auto;
+.carousel-gallery::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
