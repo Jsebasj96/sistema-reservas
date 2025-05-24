@@ -571,38 +571,38 @@ axios
   };
 
   const renderTable = (items, label) => (
-    <div className="mb-6">
-      <h3 className="text-xl font-medium mb-2">{label}</h3>
-      <table className="min-w-full bg-white shadow rounded">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-3 py-2 border">ID</th>
-            <th className="px-3 py-2 border">
-              {label === 'Habitaciones' ? 'Número' : 'Nombre'}
-            </th>
-            <th className="px-3 py-2 border">Estado</th>
-          </tr>
-        </thead>
-        <tbody>
+  <div className="mb-6">
+    <h3 className="text-xl font-semibold text-gray-800 mb-3">{label}</h3>
+    <table className="tabla-admin">
+      <thead>
+        <tr>
+          <th className="tabla-th">ID</th>
+          <th className="tabla-th">
+            {label === 'Habitaciones' ? 'Número' : 'Nombre'}
+          </th>
+          <th className="tabla-th">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
         {items.length === 0 ? (
           <tr>
-            <td colSpan="4" className="text-center py-4 text-gray-500">
+            <td colSpan="3" className="tabla-td tabla-vacia text-center text-gray-500 py-4">
               No hay datos para mostrar
             </td>
           </tr>
         ) : (
           items.map(it => (
             <tr key={it.id}>
-              <td className="px-3 py-2 border">{it.id}</td>
-              <td className="px-3 py-2 border">{it.numero || it.nombre}</td>
-              <td className="px-3 py-2 border">{it.estado || 'Libre'}</td>
+              <td className="tabla-td">{it.id}</td>
+              <td className="tabla-td">{it.numero || it.nombre}</td>
+              <td className="tabla-td">{it.estado || 'Libre'}</td>
             </tr>
           ))
         )}
       </tbody>
-      </table>
-    </div>
-  );
+    </table>
+  </div>
+);
 
   return (
     <div>
