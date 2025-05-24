@@ -711,44 +711,65 @@ function HabitacionesHistorial() {
 };
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">Historial de Reservas por Unidad</h2>
-      <div className="flex items-center space-x-4 mb-4">
-        <select value={tipo} onChange={e=>setTipo(e.target.value)} className="border p-2 rounded">
-          <option value="habitacion">Habitación</option>
-          <option value="cabana">Cabaña</option>
-        </select>
-        <input
-          type="number" placeholder="ID unidad"
-          value={unitId} onChange={e=>setUnitId(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <button onClick={fetchHistorial} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-          Ver Historial
-        </button>
-      </div>
-      <table className="min-w-full bg-white shadow rounded">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-3 py-2 border">Reserva ID</th>
-            <th className="px-3 py-2 border">Fecha Inicio</th>
-            <th className="px-3 py-2 border">Fecha Fin</th>
-            <th className="px-3 py-2 border">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {historial.map(r => (
-            <tr key={r.id}>
-              <td className="px-3 py-2 border">{r.id}</td>
-              <td className="px-3 py-2 border">{r.fecha_inicio}</td>
-              <td className="px-3 py-2 border">{r.fecha_fin}</td>
-              <td className="px-3 py-2 border">${r.total_pago}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <div className="bg-white p-6 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4">Historial de Reservas por Unidad</h2>
+
+    {/* Filtros */}
+    <div className="flex items-center space-x-4 mb-4">
+      <select
+        value={tipo}
+        onChange={e => setTipo(e.target.value)}
+        className="border p-2 rounded"
+      >
+        <option value="habitacion">Habitación</option>
+        <option value="cabana">Cabaña</option>
+      </select>
+
+      <input
+        type="number"
+        placeholder="ID unidad"
+        value={unitId}
+        onChange={e => setUnitId(e.target.value)}
+        className="border p-2 rounded"
+      />
+
+      <button
+        onClick={fetchHistorial}
+        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Ver Historial
+      </button>
     </div>
-  );
+
+    {/* Tabla */}
+    {historial.length === 0 ? (
+      <p className="tabla-vacia">No hay reservas registradas para esta unidad.</p>
+    ) : (
+      <div className="overflow-x-auto">
+        <table className="tabla-admin">
+          <thead>
+            <tr>
+              <th className="tabla-th">Reserva ID</th>
+              <th className="tabla-th">Fecha Inicio</th>
+              <th className="tabla-th">Fecha Fin</th>
+              <th className="tabla-th">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {historial.map(r => (
+              <tr key={r.id} className="hover:bg-gray-50">
+                <td className="tabla-td">{r.id}</td>
+                <td className="tabla-td">{r.fecha_inicio}</td>
+                <td className="tabla-td">{r.fecha_fin}</td>
+                <td className="tabla-td">${parseFloat(r.total_pago).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+);
 }
 
 function CrearEvento() {
