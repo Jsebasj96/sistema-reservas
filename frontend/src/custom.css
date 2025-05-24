@@ -111,3 +111,17 @@ a:hover {
 .servicio-card {
   margin: 10px; /* o 30px, según veas necesario */
 }
+
+.carousel-track {
+  scroll-behavior: smooth;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+}

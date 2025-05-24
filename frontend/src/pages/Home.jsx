@@ -157,10 +157,10 @@ const Home = () => {
       </section>
 
       {/* Galería */}
-      <section className="overflow-x-auto py-8 bg-zinc-50">
+      <section className="py-16 bg-zinc-50">
         <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
-        <div className="overflow-x-auto">
-          <div className="flex gap-6 min-w-max">
+        <div className="relative overflow-hidden">
+          <div className="carousel-track flex transition-transform duration-500 ease-in-out">
             {[
               "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80",
               "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
@@ -169,11 +169,11 @@ const Home = () => {
               "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
               "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
             ].map((src, index) => (
-              <div key={index} className="rounded-lg shadow-md overflow-hidden min-w-[320px]">
+              <div key={index} className="carousel-item min-w-[300px] md:min-w-[400px] mx-2">
                 <img
                   src={src}
-                  alt={`Galeria ${index + 1}`}
-                  className="w-full h-[208px] object-cover"
+                  alt={`Galería ${index + 1}`}
+                  className="w-full h-[220px] object-cover rounded-lg shadow"
                 />
               </div>
             ))}
