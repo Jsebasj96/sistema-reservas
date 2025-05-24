@@ -62,7 +62,7 @@ const Eventos = () => {
       <div className="evento-container">
         {/* Imagen del evento */}
         <img
-          src="https://cdn.pixabay.com/photo/2016/11/22/19/22/dinner-1850117_1280.jpg"
+          src="https://cdn.pixabay.com/photo/2017/12/08/11/53/event-party-3005668_1280.jpg"
           alt="Evento en el club"
           className="imagen-evento"
         />
@@ -73,7 +73,7 @@ const Eventos = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          <Form className="space-y-4 w-full max-w-md">
+          <Form className="formulario-eventos">
             <div>
               <label className="block font-medium">Nombre del Evento</label>
               <Field type="text" name="nombre_evento" className="w-full border px-3 py-2 rounded" />
