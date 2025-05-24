@@ -369,3 +369,55 @@ a:hover {
   flex-direction: column;
   gap: 16px;
 }
+
+.sidebar-admin {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-title {
+  font-size: 14px;
+  color: #4b5563;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.25rem;
+}
+
+.sidebar-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  color: #374151;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-item:hover {
+  background-color: #f3f4f6;
+  color: #2563eb;
+}
+
+.sidebar-item.active {
+  background-color: #e0f2fe;
+  color: #1d4ed8;
+  font-weight: bold;
+}

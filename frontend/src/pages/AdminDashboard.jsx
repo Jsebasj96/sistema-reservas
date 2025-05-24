@@ -17,149 +17,145 @@ function Sidebar({ activeMenu, setActiveMenu }) {
     isActive ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-600';
 
   return (
-    <aside className="w-64 bg-white border-r overflow-y-auto">
-      <nav className="p-4">
-        <ul>
-          <li className="mb-2">
-            <button
-              className={`w-full text-left py-2 ${menuItemClass(activeMenu === 'dashboard')}`}
-              onClick={() => setActiveMenu('dashboard')}
-            >
-              Panel de Control
-            </button>
-          </li>
+    <aside className="sidebar-admin">
+  <nav className="sidebar-nav">
+    <ul>
+      <li className="sidebar-title">Panel Principal</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('dashboard')}
+        >
+          📊 Panel de Control
+        </button>
+      </li>
 
-          {/* Reservas */}
-          <li className="mb-1 font-semibold">Reservas</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasGestionar')}`}
-              onClick={() => setActiveMenu('reservasGestionar')}
-            >
-              Gestionar
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasCrear')}`}
-              onClick={() => setActiveMenu('reservasCrear')}
-            >
-              Crear
-            </button>
-          </li>
-          <li className="ml-4 mb-4">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'reservasHistorial')}`}
-              onClick={() => setActiveMenu('reservasHistorial')}
-            >
-              Historial
-            </button>
-          </li>
+      <li className="sidebar-title">Reservas</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'reservasGestionar' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('reservasGestionar')}
+        >
+          📋 Gestionar
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'reservasCrear' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('reservasCrear')}
+        >
+          ✍ Crear
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'reservasHistorial' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('reservasHistorial')}
+        >
+          📚 Historial
+        </button>
+      </li>
 
-          {/* Cabañas y Habitaciones */}
-          <li className="mb-1 font-semibold">Cabañas y Habitaciones</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesEstado')}`}
-              onClick={() => setActiveMenu('habitacionesEstado')}
-            >
-              Estado
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesAsignar')}`}
-              onClick={() => setActiveMenu('habitacionesAsignar')}
-            >
-              Asignar
-            </button>
-          </li>
-          <li className="ml-4 mb-4">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'habitacionesHistorial')}`}
-              onClick={() => setActiveMenu('habitacionesHistorial')}
-            >
-              Historial
-            </button>
-          </li>
+      <li className="sidebar-title">Cabañas y Habitaciones</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'habitacionesEstado' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('habitacionesEstado')}
+        >
+          🛏 Estado
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'habitacionesAsignar' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('habitacionesAsignar')}
+        >
+          📝 Asignar
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'habitacionesHistorial' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('habitacionesHistorial')}
+        >
+          🗂 Historial
+        </button>
+      </li>
 
-          {/* Servicios */}
-          <li className="mb-1 font-semibold">Eventos</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'CrearEvento')}`}
-              onClick={() => setActiveMenu('CrearEvento')}
-            >
-              Crear
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'EventoHistorial')}`}
-              onClick={() => setActiveMenu('EventoHistorial')}
-            >
-              Historial
-            </button>
-          </li>
+      <li className="sidebar-title">Eventos</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'CrearEvento' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('CrearEvento')}
+        >
+          🎉 Crear
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'EventoHistorial' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('EventoHistorial')}
+        >
+          📅 Historial
+        </button>
+      </li>
 
-          <li className="mb-1 font-semibold">Pasadias</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'Crearpasadia')}`}
-              onClick={() => setActiveMenu('Crearpasadia')}
-            >
-              Reservar
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PasadiaHistorial')}`}
-              onClick={() => setActiveMenu('PasadiaHistorial')}
-            >
-              Historial
-            </button>
-          </li>
+      <li className="sidebar-title">Pasadías</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'Crearpasadia' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('Crearpasadia')}
+        >
+          🌞 Reservar
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'PasadiaHistorial' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('PasadiaHistorial')}
+        >
+          📆 Historial
+        </button>
+      </li>
 
-          {/* Inventarios/Pedidos */}
-          <li className="mb-1 font-semibold">Inventarios/Pedidos</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosCrear')}`}
-              onClick={() => setActiveMenu('PedidosCrear')}
-            >
-              Crear
-            </button>
-          </li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosHistorial')}`}
-              onClick={() => setActiveMenu('PedidosHistorial')}
-            >
-              Historial
-            </button>
-          </li>
-          <li className="ml-4 mb-4">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'PedidosInventario')}`}
-              onClick={() => setActiveMenu('PedidosInventario')}
-            >
-              Inventario
-            </button>
-          </li>
+      <li className="sidebar-title">Inventarios/Pedidos</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'PedidosCrear' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('PedidosCrear')}
+        >
+          ➕ Crear
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'PedidosHistorial' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('PedidosHistorial')}
+        >
+          🕓 Historial
+        </button>
+      </li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'PedidosInventario' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('PedidosInventario')}
+        >
+          📦 Inventario
+        </button>
+      </li>
 
-          {/* Finanzas */}
-          <li className="mb-1 font-semibold">Finanzas</li>
-          <li className="ml-4 mb-2">
-            <button
-              className={`w-full text-left py-1 ${menuItemClass(activeMenu === 'IngresosPedidos')}`}
-              onClick={() => setActiveMenu('IngresosPedidos')}
-            >
-              Ingresos
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+      <li className="sidebar-title">Finanzas</li>
+      <li>
+        <button
+          className={`sidebar-item ${activeMenu === 'IngresosPedidos' ? 'active' : ''}`}
+          onClick={() => setActiveMenu('IngresosPedidos')}
+        >
+          💰 Ingresos
+        </button>
+      </li>
+    </ul>
+  </nav>
+</aside>
   );
 }
 
