@@ -186,13 +186,13 @@ const Home = () => {
         <h2 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h2>
         <div className="testimonios-container">
           {[
-            ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
-            ['Carlos M.', 'La atención fue excelente, volveremos.'],
-            ['Luisa R.', 'Comida deliciosa y paisajes únicos.'],
+            ['Ana Gutierrez.', '¡Una experiencia inolvidable con mi familia!'],
+            ['Carlos Martinez.', 'La atención fue excelente, volveremos.'],
+            ['Luisa Rodriguez.', 'Comida deliciosa y paisajes únicos.'],
           ].map(([name, quote], idx) => (
             <div
               key={idx}
-              className="w-1/3 sm:w-[280px] bg-green-100 p-6 rounded shadow text-center"
+              className="w-1/3 sm:w-[280px] bg-white text-green-800 p-6 rounded shadow text-center"
             >
               <p className="italic mb-4">"{quote}"</p>
               <h5 className="font-bold">{name}</h5>
