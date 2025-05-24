@@ -1,14 +1,16 @@
-// src/components/Navbar.js
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { HiHome, HiArrowLeft } from 'react-icons/hi2';
+import { FaRobot } from 'react-icons/fa';
+import Chatbot from '../components/Chatbot'; // Asegúrate que esta ruta sea correcta
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation(); // <- ubicación actual
+  const location = useLocation();
   const [now, setNow] = useState(new Date());
+  const [chatVisible, setChatVisible] = useState(false); // 👈 NUEVO estado
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -30,42 +32,47 @@ const Navbar = () => {
   });
 
   return (
-    <nav className="bg-green-700 p-4 text-white flex items-center gap-4">
-      {/* Botón Regresar (oculto en página Home) */}
-      {location.pathname !== '/' && (
+    <>
+      <nav className="bg-green-700 p-4 text-white flex items-center gap-4">
+        {location.pathname !== '/' && (
+          <button
+            onClick={() => navigate(-1)}
+            className="hover:text-gray-300 transition"
+            title="Volver atrás"
+          >
+            <HiArrowLeft size={32} />
+          </button>
+        )}
+
+        <Link to="/" className="hover:text-gray-300 transition">
+          <HiHome size={40} />
+        </Link>
+
+        <div className="flex-1 text-center text-sm md:text-base">{formatted}</div>
+
+        {/* Botón chatbot */}
         <button
-          onClick={() => navigate(-1)}
-          className="hover:text-gray-300 transition"
-          title="Volver atrás"
+          onClick={() => setChatVisible(prev => !prev)}
+          className="hover:text-yellow-300 transition"
+          title="Abrir Chatbot"
         >
-          <HiArrowLeft size={32} />
+          <FaRobot size={28} />
         </button>
-      )}
 
-      {/* Ícono Home */}
-      <Link to="/" className="hover:text-gray-300 transition">
-        <HiHome size={40} />
-      </Link>
+        {user && (
+          <button
+            onClick={handleLogout}
+            className="bg-white text-green-700 px-3 py-1 rounded hover:bg-green-100 transition"
+          >
+            Cerrar sesión
+          </button>
+        )}
+      </nav>
 
-      {/* Fecha y hora */}
-      <div className="flex-1 text-center text-sm md:text-base">
-        {formatted}
-      </div>
-
-      {/* Botón cerrar sesión */}
-      {user && (
-        <button
-          onClick={handleLogout}
-          className="bg-white text-green-700 px-3 py-1 rounded hover:bg-green-100 transition"
-        >
-          Cerrar sesión
-        </button>
-      )}
-    </nav>
+      {/* Chatbot flotante */}
+      {chatVisible && <Chatbot />}
+    </>
   );
 };
 
 export default Navbar;
-
-
-
