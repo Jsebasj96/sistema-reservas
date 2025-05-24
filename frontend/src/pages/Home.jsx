@@ -183,7 +183,7 @@ const Home = () => {
       {/* Testimonios */}
       <section className="bg-white py-16 mb-20">
         <div className="max-w-screen-xl mx-auto px-4">
-        <h3 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h3>
+        <h2 className="text-3xl font-bold text-center mb-10">Lo que dicen nuestros clientes</h2>
         <div className="testimonios-container">
           {[
             ['Ana G.', '¡Una experiencia inolvidable con mi familia!'],
@@ -206,8 +206,8 @@ const Home = () => {
       {/* Promociones */}
 <section className="bg-green-700 text-white py-16">
   <div className="max-w-screen-xl mx-auto px-4">
-    <h3 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h3>
-    <div className="flex flex-wrap justify-center gap-16">
+    <h2 className="text-3xl font-bold text-center mb-10">Promociones Especiales</h2>
+    <div className="testimonios-container">
       {[
         ['Semana de Relax', 'Hospédate 5 noches y paga solo 4.'],
         ['Pasadía Familiar', 'Descuento para grupos mayores a 4 personas.'],
