@@ -28,18 +28,6 @@ const Home = () => {
     }
   };
 
-    function scrollCarousel(direction) {
-    const carousel = document.getElementById("carousel");
-    const scrollAmount = 300;
-
-    if (carousel) {
-      carousel.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  }
-
   return (
     <div className="font-sans text-gray-800">
       <div className="max-w-screen-xl mx-auto px-4">
@@ -173,15 +161,6 @@ const Home = () => {
       <h2 className="text-3xl font-bold text-center text-green-800 mb-10">Galería</h2>
 
       <div className="relative group px-6">
-        {/* Botón izquierdo */}
-        <button
-          onClick={() => scrollCarousel('left')}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
-        >
-          <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
 
         {/* Carrusel */}
         <div id="carousel" className="carousel-gallery">
@@ -195,16 +174,6 @@ const Home = () => {
             </div>
           ))}
         </div>
-
-        {/* Botón derecho */}
-        <button
-          onClick={() => scrollCarousel('right')}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10 opacity-0 group-hover:opacity-100 transition"
-        >
-          <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
     </section>
 
