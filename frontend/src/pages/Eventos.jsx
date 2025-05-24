@@ -3,7 +3,6 @@ import { AuthContext } from '../context/AuthContext';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import './custom.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://sistema-reservas-final.onrender.com';
 
