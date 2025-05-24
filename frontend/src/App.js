@@ -20,6 +20,7 @@ import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
 import './styles/tailwind.css';
+import ChatbotFlotante from './components/Chatbot';
 
 function App() {
   return (
@@ -92,6 +93,7 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+                <ChatbotFlotante /> {/* Aquí va el chatbot */}
 
                 {/* Protegida para empleado */}
                 <Route
