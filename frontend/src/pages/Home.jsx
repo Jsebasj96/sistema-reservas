@@ -189,6 +189,7 @@ const Home = () => {
             ['Ana Gutierrez.', '¡Una experiencia inolvidable con mi familia!'],
             ['Carlos Martinez.', 'La atención fue excelente, volveremos.'],
             ['Luisa Rodriguez.', 'Comida deliciosa y paisajes únicos.'],
+            ['Pedro Perez.', 'Las instalaciones y paqueaderos muy comodos.'],
           ].map(([name, quote], idx) => (
             <div
               key={idx}
