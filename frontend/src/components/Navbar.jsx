@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { HiHome, HiArrowLeft } from 'react-icons/hi2';
 import { FaRobot } from 'react-icons/fa';
-import ChatbotModal from '../components/ChatbotModal'; // Asegúrate de que la ruta sea correcta
+import ChatbotModal from '../components/Chatbot'; // Asegúrate de que la ruta sea correcta
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
