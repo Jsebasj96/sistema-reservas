@@ -82,34 +82,63 @@ export default function ServicioDetalle() {
       case 'pasadias':
         return (
         <>
-          <h2 className="text-3xl font-bold mb-6 text-green-800 text-center">Reserva de Pasadía</h2>
+        <div className="pasadia-wrapper">
+          {/* Columna Izquierda: Imagen */}
+          <div className="pasadia-imagen">
+            <img
+              src="https://cdn.pixabay.com/photo/2016/11/21/15/52/pool-1840794_1280.jpg"
+              alt="Pasadía"
+              className="imagen-pasadias"
+            />
+          </div>
 
-          <div className="pasadia-formulario">
-            <form className="formulario-box">
-              <div className="campo-formulario">
-                <label className="label-formulario">Fecha</label>
-                <input type="date" className="input-formulario" />
+          {/* Columna Derecha: Formulario + info */}
+          <div className="pasadia-contenido">
+            <h3 className="titulo-cta">¡Escapa de la rutina y vive un día inolvidable!</h3>
+            
+            <div className="info-box">
+              <p><strong>Disponibilidad:</strong> Todos los días de 8:00 a.m. a 6:00 p.m.</p>
+              <p><strong>Tarifa:</strong> $30.000 por persona</p>
+            </div>
+
+            <p className="descripcion">
+              Disfruta de un día completo de recreación en nuestro club. Llena este formulario para reservar tu pasadía y asegurar tu cupo.
+            </p>
+
+            <ul className="beneficios">
+              <li>✅ Acceso a piscinas</li>
+              <li>✅ Actividades recreativas</li>
+              <li>✅ Parqueadero gratuito</li>
+              <li>✅ Almuerzo incluido (opcional)</li>
+            </ul>
+
+            <form className="formulario-pasadias">
+              <div>
+                <label className="form-label">Fecha</label>
+                <input type="date" className="form-input" />
               </div>
-
-              <div className="campo-formulario">
-                <label className="label-formulario">Cantidad de personas</label>
-                <input type="number" className="input-formulario" />
+              <div>
+                <label className="form-label">Cantidad de personas</label>
+                <input type="number" className="form-input" />
               </div>
-
-              <div className="campo-formulario">
-                <label className="label-formulario">¿Incluye almuerzo?</label>
-                <select className="input-formulario">
+              <div>
+                <label className="form-label">Incluye almuerzo</label>
+                <select className="form-input">
                   <option>Sí</option>
                   <option>No</option>
                 </select>
               </div>
-
-              <button type="submit" className="btn-formulario">
+              <button type="submit" className="btn-reservar">
                 Reservar pasadía
               </button>
             </form>
+
+            <div className="testimonio-pasadias">
+              “Fue un día maravilloso con mis hijos. Todo muy bien organizado.” — <strong>Laura M.</strong>
+            </div>
           </div>
-        </>
+        </div>
+      </>
       );
 
       case 'actividades':
