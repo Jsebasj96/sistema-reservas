@@ -107,3 +107,7 @@ a:hover {
   transform: scale(1.1);
   transition: all 0.3s ease;
 }
+
+.servicio-card {
+  margin: 20px; /* o 30px, según veas necesario */
+}

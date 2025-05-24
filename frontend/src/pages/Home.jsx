@@ -136,7 +136,7 @@ const Home = () => {
             ].map(({ title, desc, icon, route }, idx) => (
               <div
               key={idx}
-              className="min-w-[250px] bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition text-center hover:scale-105"
+               className="servicio-card min-w-[250px] bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition text-center hover:scale-105"
             >
               <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-full shadow-inner">
                 {/* Aquí aplicamos clases directamente al ícono */}
