@@ -20,7 +20,7 @@ import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
 import './styles/tailwind.css';
-import ChatbotFlotante from './components/Chatbot';
+import ChatbotFlotante from './components/ChatbotModal';
 
 function App() {
   return (
