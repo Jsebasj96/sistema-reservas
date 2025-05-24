@@ -15,7 +15,7 @@ h1, h2, h3 {
   font-weight: bold;
 }
 h1 { font-size: 2rem; color: #16a34a; }
-h2 { font-size: 1.5rem; color: #0ea5e9; }
+h2 { font-size: 1.5rem; color: #16a34a; }
 h3 { font-size: 1.25rem; color: #4caf50; }
 
 /* Formularios */
@@ -73,7 +73,7 @@ button:hover {
 
 /* Enlaces */
 a {
-  color: #0ea5e9;
+  color: #15803d;
   text-decoration: none;
 }
 a:hover {
