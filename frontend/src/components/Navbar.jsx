@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { HiHome, HiArrowLeft } from 'react-icons/hi2';
 import { FaRobot } from 'react-icons/fa';
-import ChatbotModal from '../components/ChatbotModal'; // Asegúrate de que la ruta sea correcta
+import ChatbotModal from './ChatbotModal'; // Asegúrate de que esta ruta es correcta
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -70,8 +70,12 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Chatbot Modal */}
-      <ChatbotModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+      {/* Chatbot Modal: ventana emergente flotante */}
+      {chatOpen && (
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <ChatbotModal isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+        </div>
+      )}
     </>
   );
 };
