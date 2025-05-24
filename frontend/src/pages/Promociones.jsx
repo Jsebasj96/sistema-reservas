@@ -26,24 +26,22 @@ export default function Promociones() {
   const navigate = useNavigate();
 
   return (
-    <section className="servicio-detalle bg-gray-50 py-12 px-6 min-h-screen">
-      <h1 className="text-3xl font-bold text-center text-green-800 mb-12">
-        ¡Nuestras Ofertas Especiales!
-      </h1>
+    <section className="servicio-detalle">
+      <h1 className="titulo-principal">¡Nuestras Ofertas Especiales!</h1>
 
       {promociones.map((promo) => (
-        <div key={promo.id} className="detalle-contenido flex flex-col md:flex-row items-center gap-6 mb-10 max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-4">
+        <div key={promo.id} className="detalle-contenido">
           <img
             src={promo.imagen}
             alt={promo.titulo}
-            className="w-full md:w-1/2 h-auto object-cover rounded"
+            className="detalle-imagen"
           />
-          <div className="detalle-info md:w-1/2">
-            <h2 className="text-2xl font-bold text-green-800 mb-2">{promo.titulo}</h2>
-            <p className="text-gray-700 mb-4">{promo.descripcion}</p>
+          <div className="detalle-info">
+            <h2 className="titulo-servicio">{promo.titulo}</h2>
+            <p>{promo.descripcion}</p>
             <button
+              className="boton-reservar"
               onClick={() => navigate('/reservas')}
-              className="bg-green-700 text-white px-5 py-2 rounded hover:bg-green-800 transition"
             >
               Reservar Ahora
             </button>
@@ -53,4 +51,3 @@ export default function Promociones() {
     </section>
   );
 }
-
