@@ -138,8 +138,9 @@ const Home = () => {
               key={idx}
               className="min-w-[250px] bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition text-center hover:scale-105"
             >
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-full text-5xl shadow-inner">
-                {icon}
+              <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-emerald-100 text-emerald-600 rounded-full shadow-inner">
+                {/* Aquí aplicamos clases directamente al ícono */}
+                <div className="text-4xl">{icon}</div>
               </div>
               <h4 className="text-xl font-semibold mb-2 text-zinc-800">{title}</h4>
               <p className="text-zinc-600">{desc}</p>
