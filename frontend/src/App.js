@@ -93,7 +93,6 @@ function App() {
                     </PrivateRoute>
                   }
                 />
-                <ChatbotFlotante /> {/* Aquí va el chatbot */}
 
                 {/* Protegida para empleado */}
                 <Route
@@ -119,6 +118,7 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Router>
+            <ChatbotFlotante /> 
           </PagoProvider>
         </ServicioProvider>
       </ReservaProvider>
