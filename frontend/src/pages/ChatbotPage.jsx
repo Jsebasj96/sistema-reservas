@@ -82,17 +82,17 @@ const ChatbotPage = () => {
           ))}
         </div>
 
-        <div className="space-y-2">
-          {flujos[flujo].opciones.map((opcion, i) => (
-            <button
-              key={i}
-              onClick={() => manejarOpcion(opcion)}
-              className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded transition"
-            >
-              {opcion.texto}
-            </button>
-          ))}
-        </div>
+        <div className="chatbot-buttons">
+        {flujos[flujo].opciones.map((opcion, i) => (
+          <button
+            key={i}
+            onClick={() => manejarOpcion(opcion)}
+            className="chatbot-btn"
+          >
+            {opcion.texto}
+          </button>
+        ))}
+      </div>
       </div>
     </div>
   );
