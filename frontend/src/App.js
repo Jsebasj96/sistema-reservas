@@ -18,7 +18,7 @@ import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
-import ChatbotModal from './components/ChatbotModal'; // Aquí sí importamos
+import ChatbotPage from './pages/ChatbotPage';
 import './styles/tailwind.css';
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -34,6 +34,7 @@ function App() {
 
               {/* Rutas */}
               <Routes>
+                <Route path="/chatbot" element={<ChatbotPage />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -71,9 +72,6 @@ function App() {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-
-              {/* Renderizar chatbot fuera del flujo de rutas */}
-              {chatOpen && <ChatbotModal onClose={() => setChatOpen(false)} />}
             </Router>
           </PagoProvider>
         </ServicioProvider>

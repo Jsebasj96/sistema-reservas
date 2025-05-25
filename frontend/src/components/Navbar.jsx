@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { HiHome, HiArrowLeft } from 'react-icons/hi2';
 import { FaRobot } from 'react-icons/fa';
 
-const Navbar = ({ onToggleChatbot }) => {
+const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,23 +29,37 @@ const Navbar = ({ onToggleChatbot }) => {
     second: '2-digit',
   });
 
+  const handleOpenChatbotWindow = () => {
+    window.open(
+      '/chatbot',
+      '_blank',
+      'width=400,height=600,resizable=yes,scrollbars=yes'
+    );
+  };
+
   return (
-    <nav className="bg-green-700 p-4 text-white flex items-center gap-4 z-40 relative">
+    <nav className="bg-green-700 p-4 text-white flex items-center gap-4 relative z-40">
       {location.pathname !== '/' && (
-        <button onClick={() => navigate(-1)} title="Volver atrás">
+        <button
+          onClick={() => navigate(-1)}
+          className="hover:text-gray-300 transition"
+          title="Volver atrás"
+        >
           <HiArrowLeft size={32} />
         </button>
       )}
 
-      <Link to="/" title="Inicio">
+      <Link to="/" className="hover:text-gray-300 transition">
         <HiHome size={40} />
       </Link>
 
-      <div className="flex-1 text-center text-sm md:text-base">{formatted}</div>
+      <div className="flex-1 text-center text-sm md:text-base">
+        {formatted}
+      </div>
 
       <button
-        onClick={onToggleChatbot}
-        className="hover:text-gray-300"
+        onClick={handleOpenChatbotWindow}
+        className="text-white hover:text-gray-300 transition"
         title="Abrir asistente virtual"
       >
         <FaRobot size={30} />
@@ -54,7 +68,7 @@ const Navbar = ({ onToggleChatbot }) => {
       {user && (
         <button
           onClick={handleLogout}
-          className="bg-white text-green-700 px-3 py-1 rounded hover:bg-green-100"
+          className="bg-white text-green-700 px-3 py-1 rounded hover:bg-green-100 transition"
         >
           Cerrar sesión
         </button>
