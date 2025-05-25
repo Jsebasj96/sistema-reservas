@@ -46,19 +46,22 @@ const ChatbotPage = () => {
   ]);
 
   const manejarOpcion = (opcion) => {
-    if (opcion.link) {
-      window.opener.location.href = opcion.link;
-      window.close(); // Cierra la ventana del chatbot
-    } else {
-      const nuevoFlujo = flujos[opcion.siguiente];
-      setHistorial([
-        ...historial,
-        { de: 'user', texto: opcion.texto },
-        { de: 'bot', texto: nuevoFlujo.mensaje },
-      ]);
-      setFlujo(opcion.siguiente);
-    }
-  };
+  if (opcion.link) {
+    window.opener.location.href = opcion.link;
+    window.close();
+  } else if (opcion.siguiente === 'inicio') {
+    setFlujo('inicio');
+    setHistorial([{ de: 'bot', texto: flujos['inicio'].mensaje }]);
+  } else {
+    const nuevoFlujo = flujos[opcion.siguiente];
+    setHistorial([
+      ...historial,
+      { de: 'user', texto: opcion.texto },
+      { de: 'bot', texto: nuevoFlujo.mensaje },
+    ]);
+    setFlujo(opcion.siguiente);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-6">

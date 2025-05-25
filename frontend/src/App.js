@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ReservaProvider } from './context/ReservaContext';
 import { ServicioProvider } from './context/ServicioContext';
@@ -18,60 +19,111 @@ import ServicioDetalle from './pages/servicio/ServicioDetalle';
 import NotFound from './pages/NotFound';
 import PrivateRoute from './components/PrivateRoute';
 import Promociones from './pages/Promociones';
-import ChatbotPage from './pages/ChatbotPage';
+import ChatbotPage from './pages/ChatbotPage'; // Asegúrate de importar esta página
 import './styles/tailwind.css';
-function App() {
-  const [chatOpen, setChatOpen] = useState(false);
 
+const AppContent = () => {
+  const location = useLocation();
+
+  // Rutas donde NO se debe mostrar el Navbar
+  const sinNavbar = ['/chatbot'];
+
+  return (
+    <>
+      {!sinNavbar.includes(location.pathname) && <Navbar />}
+
+      <Routes>
+        {/* Rutas públicas */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Rutas protegidas (usuarios normales) */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/reserva"
+          element={
+            <PrivateRoute>
+              <Reserva />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pasadias"
+          element={
+            <PrivateRoute>
+              <Pasadias />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/eventos"
+          element={
+            <PrivateRoute>
+              <Eventos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/servicios"
+          element={
+            <PrivateRoute>
+              <Servicios />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/promociones"
+          element={
+            <PrivateRoute>
+              <Promociones />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/servicios/:tipo"
+          element={
+            <PrivateRoute>
+              <ServicioDetalle />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Admin */}
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminDashboard />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Chatbot */}
+        <Route path="/chatbot" element={<ChatbotPage />} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+};
+
+function App() {
   return (
     <AuthProvider>
       <ReservaProvider>
         <ServicioProvider>
           <PagoProvider>
             <Router>
-              {/* Navbar recibe el handler del chatbot */}
-              <Navbar onToggleChatbot={() => setChatOpen(prev => !prev)} />
-
-              {/* Rutas */}
-              <Routes>
-                <Route path="/chatbot" element={<ChatbotPage />} />
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route
-                  path="/dashboard"
-                  element={<PrivateRoute><Dashboard /></PrivateRoute>}
-                />
-                <Route
-                  path="/reserva"
-                  element={<PrivateRoute><Reserva /></PrivateRoute>}
-                />
-                <Route
-                  path="/pasadias"
-                  element={<PrivateRoute><Pasadias /></PrivateRoute>}
-                />
-                <Route
-                  path="/eventos"
-                  element={<PrivateRoute><Eventos /></PrivateRoute>}
-                />
-                <Route
-                  path="/servicios"
-                  element={<PrivateRoute><Servicios /></PrivateRoute>}
-                />
-                <Route
-                  path="/promociones"
-                  element={<PrivateRoute><Promociones /></PrivateRoute>}
-                />
-                <Route
-                  path="/servicios/:tipo"
-                  element={<PrivateRoute><ServicioDetalle /></PrivateRoute>}
-                />
-                <Route
-                  path="/admin"
-                  element={<PrivateRoute><AdminDashboard /></PrivateRoute>}
-                />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppContent />
             </Router>
           </PagoProvider>
         </ServicioProvider>
@@ -81,4 +133,3 @@ function App() {
 }
 
 export default App;
-
